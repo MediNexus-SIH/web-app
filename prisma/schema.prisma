@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+model Hospital {
+  id                          String                  @id @default(uuid())
+  name                        String
+  contact_number              String                  @unique
+  address                     String
+  username                    String                  @unique 
+  security_question           sec_ques_enum
+  security_question_answer    String
+  password                    String
+  region                      delhi_regions 
+  departments                 Departments[]           @relation("HospitalDepartments")
+  medicalInventory            MedicalInventory[]      @relation("HospitalMedicalInventory")
+  bloodBank                   BloodBank[]             @relation("HospitalBloodBank")
+  resourceSharingDonor        ResourceSharing[]       @relation("DonorHospitalResourceSharing")
+  resourceSharingReceiver     ResourceSharing[]       @relation("ReceiverHospitalResourceSharing")
+  vendorOrders                VendorOrders[]          @relation("HospitalVendorOrders")
+  unifiedInventorySupplyDemand UnifiedInventorySupplyDemand[] @relation("HospitalUnifiedInventorySupplyDemand")
+}
+
+model Departments {
+  id                          String                      @id @default(uuid())
+  hospital_id                 String
+  name                        String
+  contact_number              String                      @unique
+  address                     String
+  password                    String
+  region                      delhi_regions 
+  department                  departments
+
+  hospital                    Hospital                    @relation("HospitalDepartments", fields: [hospital_id], references: [id])
+  medicalInventory            MedicalInventory[]          @relation("DepartmentMedicalInventory")
+}
+
+model MedicalInventory {
+  id                          String                      @id @default(uuid())
+  department_id               String
+  hospital_id                 String
+  item_name                   String
+  batch_number                String
+  expiry_date                 DateTime
+  quantity                    Int
+  unit_price                  Float
+
+  department                  Departments                 @relation("DepartmentMedicalInventory", fields: [department_id], references: [id])
+  hospital                    Hospital                    @relation("HospitalMedicalInventory", fields: [hospital_id], references: [id])
+  stockReplenishmentLog       StockReplenishmentLog[]     @relation("InventoryStockReplenishmentLog")
+}
+
+model StockReplenishmentLog {
+  replenishment_id            String                      @id @default(uuid())
+  inventory_id                String
+  replenishment_date          DateTime
+  quantity_replenished        Int
+  order_placed                OrderStatus
+
+  medicalInventory            MedicalInventory            @relation("InventoryStockReplenishmentLog", fields: [inventory_id], references: [id])
+}
+
+model ResourceSharing {
+  sharing_id                  String                  @id @default(uuid())
+  donor_hospital_id           String
+  receiver_hospital_id        String
+  item_name                   String
+  quantity_shared             Int
+  sharing_date                DateTime
+
+  donorHospital               Hospital                @relation("DonorHospitalResourceSharing", fields: [donor_hospital_id], references: [id])
+  receiverHospital            Hospital                @relation("ReceiverHospitalResourceSharing", fields: [receiver_hospital_id], references: [id])
+}
+
+model BloodBank {
+  blood_bank_id               String                      @id @default(uuid())
+  hospital_id                 String
+  blood_type                  BloodType
+  quantity_in_stock           Int
+  expiry_date                 DateTime
+
+  hospital                    Hospital                    @relation("HospitalBloodBank", fields: [hospital_id], references: [id])
+}
+
+model Vendors {
+  vendor_id                   String                      @id @default(uuid())
+  name                        String
+  contact_number              String                      @unique
+  username                    String                      @unique 
+  password                    String
+  email                       String                      @unique
+  address                     String
+  rating                      Float
+
+  vendorOrders                VendorOrders[]              @relation("VendorOrders")
+  unifiedInventorySupplyDemand UnifiedInventorySupplyDemand[] @relation("VendorUnifiedInventorySupplyDemand")
+}
+
+model VendorOrders {
+  order_id                    String                      @id @default(uuid())
+  vendor_id                   String
+  hospital_id                 String
+  item_name                   String
+  quantity_ordered            Int
+  order_date                  DateTime
+  delivery_date               DateTime
+  status                      OrderStatus
+
+  vendor                      Vendors                     @relation("VendorOrders", fields: [vendor_id], references: [vendor_id])
+  hospital                    Hospital                    @relation("HospitalVendorOrders", fields: [hospital_id], references: [id])
+}
+
+model UnifiedInventorySupplyDemand {
+  id                          String                      @id @default(uuid())
+  vendor_id                   String
+  hospital_id                 String
+  item_name                   String
+  batch_number                String
+  expiry_date                 DateTime
+  quantity_in_stock           Int
+  reorder_level               Int
+  quantity_in_transit         Int
+  dispatch_date               DateTime
+  expected_delivery_date      DateTime
+  average_monthly_usage       Int
+  predicted_demand            Int
+  last_order_date             DateTime
+
+  vendor                      Vendors                     @relation("VendorUnifiedInventorySupplyDemand", fields: [vendor_id], references: [vendor_id])
+  hospital                    Hospital                    @relation("HospitalUnifiedInventorySupplyDemand", fields: [hospital_id], references: [id])
+}
+
+// Enums
+enum delhi_regions {
+  central_delhi
+  east_delhi
+  west_delhi
+  new_delhi
+  north_delhi
+  north_east_delhi
+  north_west_delhi
+  south_delhi
+  south_east_delhi
+  south_west_delhi
+}
+
+enum departments {
+  emergency
+  cardiology 
+  neurology
+  pediatrics 
+  oncology 
+  radiology 
+  orthopedics 
+  dermatology 
+  gastroenterology 
+  psychiatry
+  surgery
+  obstetricsAndGynecology 
+  nephrology 
+  pulmonology 
+  endocrinology 
+  ent
+  ophthalmology
+  pathology
+  anesthesiology
+}
+
+enum sec_ques_enum {
+  q1
+  q2
+  q3
+  q4
+  q5
+}
+
+enum OrderStatus {
+  Yes
+  No
+  Pending
+  Delivered
+  Cancelled
+}
+
+enum BloodType {
+  A_Positive
+  A_Negative
+  B_Positive
+  B_Negative
+  AB_Positive
+  AB_Negative
+  O_Positive
+  O_Negative
+}
