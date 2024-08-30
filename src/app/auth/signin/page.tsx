@@ -1,0 +1,269 @@
+"use client"
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Hospital, Lock, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+export default function Component() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
+  const [error, setError] = useState("");
+  const [step, setStep] = useState("signin"); // 'signin', 'otp', or 'mfa'
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (step === "otp") {
+      otpRefs.current[0]?.focus();
+    }
+  }, [step]);
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (value.length <= 1 && /^\d*$/.test(value)) {
+      const newOtpValues = [...otpValues];
+      newOtpValues[index] = value;
+      setOtpValues(newOtpValues);
+
+      if (value && index < 5) {
+        otpRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleOtpKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !otpValues[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (step === "signin") {
+      if (!email || !password) {
+        setError("Please fill in all fields.");
+        return;
+      }
+
+      if (!email.includes("@") || !email.includes(".")) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters long.");
+        return;
+      }
+
+      setStep("otp");
+    } else if (step === "otp") {
+      const otp = otpValues.join("");
+      if (otp.length !== 6) {
+        setError("Please enter a valid 6-digit OTP.");
+        return;
+      }
+
+      if (otp === "123456") {
+        setStep("mfa");
+      } else {
+        setError("Invalid OTP. Please try again.");
+      }
+    } else if (step === "mfa") {
+      const mfa = otpValues.join("");
+      if (mfa === "789012") {
+        alert("Successfully logged in!");
+        // Here you would typically redirect to the dashboard
+      } else {
+        setError("Invalid MFA code. Please try again.");
+      }
+    }
+  };
+
+  const handleForgotPassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail || !resetEmail.includes("@") || !resetEmail.includes(".")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+    // Simulate password reset email send
+    alert(`Password reset link sent to ${resetEmail}`);
+    setIsDialogOpen(false);
+    setResetEmail("");
+  };
+
+  return (
+    <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <div className="flex items-center justify-center mb-4">
+            <Hospital className="h-12 w-12 text-white" />
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">
+            Hospital Sign In
+          </CardTitle>
+          <CardDescription className="text-center">
+            Access your supply chain inventory and demand management platform
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          <form onSubmit={handleSubmit}>
+            {step === "signin" && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Hospital Email</Label>
+                  <Input
+                    id="email"
+                    placeholder="hospital@example.com"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex items-center space-x-2 mt-4">
+                  <Checkbox id="remember" />
+                  <label
+                    htmlFor="remember"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Remember me
+                  </label>
+                </div>
+              </>
+            )}
+            {(step === "otp" || step === "mfa") && (
+              <div className="space-y-2">
+                <Label htmlFor="otp">
+                  {step === "otp" ? "Enter OTP" : "Enter MFA Code"}
+                </Label>
+                <div className="flex justify-between">
+                  {otpValues.map((value, index) => (
+                    <Input
+                      key={index}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      className="w-12 h-12 text-center text-lg"
+                      value={value}
+                      onChange={(e) => handleOtpChange(index, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                      ref={(el) => (otpRefs.current[index] = el)}
+                      required
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+            <Button className="w-full mt-4" type="submit">
+              {step === "signin"
+                ? "Sign In"
+                : step === "otp"
+                ? "Verify OTP"
+                : "Verify MFA"}
+            </Button>
+          </form>
+          {step !== "signin" && (
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                setStep("signin");
+                setOtpValues(["", "", "", "", "", ""]);
+              }}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Sign In
+            </Button>
+          )}
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-2">
+          <div className="flex items-center justify-center w-full">
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="link"
+                  className="text-sm text-red-600 hover:underline"
+                >
+                  Forgot password?
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Reset Password</DialogTitle>
+                  <DialogDescription>
+                    Enter your email address and we&apos;ll send you a link to reset
+                    your password.
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleForgotPassword}>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="reset-email" className="text-right">
+                        Email
+                      </Label>
+                      <Input
+                        id="reset-email"
+                        value={resetEmail}
+                        onChange={(e) => setResetEmail(e.target.value)}
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Send Reset Link</Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <div className="flex items-center justify-center w-full">
+            <Lock className="h-4 w-4 mr-2 text-gray-500" />
+            <span className="text-sm text-gray-500">Secure Sign-In</span>
+          </div>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+}

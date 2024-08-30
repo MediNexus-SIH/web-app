@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Hospital, Users, UserCog, Check } from "lucide-react";
+import { title } from "process";
 
 export default function Component() {
   const [step, setStep] = useState(1);
@@ -140,6 +140,11 @@ export default function Component() {
     { title: "Account", icon: UserCog },
   ];
 
+function getCardFooterClassName(step:number): string {
+  return `flex justify-between items-center ${
+    step > 1 ? "bg-muted/40 border-t pt-5" : ""
+  }`;
+}
   return (
     <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl mx-auto">
@@ -152,10 +157,13 @@ export default function Component() {
         <CardContent className="p-6">
           <div className="mb-8">
             <div className="relative">
-              <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2" />
+              <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200  -translate-y-1/2" />
               <div className="relative z-10 flex items-center justify-between">
                 {steps.map((s, index) => (
-                  <div key={index} className="flex flex-col justify-center items-center">
+                  <div
+                    key={index}
+                    className="flex flex-col justify-center items-center"
+                  >
                     <motion.div
                       className={`w-12 h-12 rounded-full ${
                         index + 1 < step
@@ -182,9 +190,7 @@ export default function Component() {
                           ? "text-gray-700 font-medium"
                           : "text-gray-400"
                       }`}
-                    >
-                      
-                    </span>
+                    ></span>
                   </div>
                 ))}
               </div>
@@ -211,8 +217,8 @@ export default function Component() {
                   {step === 1 && (
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
-                        <Hospital className="h-5 w-5 text-gray-500" />
-                        <h3 className="text-xl font-semibold text-gray-700">
+                        <Hospital className="h-5 w-5 text-white" />
+                        <h3 className="text-xl font-semibold text-white">
                           Hospital Information
                         </h3>
                       </div>
@@ -279,11 +285,7 @@ export default function Component() {
                             <SelectTrigger>
                               <SelectValue placeholder="Select state" />
                             </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="CA">California</SelectItem>
-                              <SelectItem value="NY">New York</SelectItem>
-                              <SelectItem value="TX">Texas</SelectItem>
-                            </SelectContent>
+                            <StateOptions />
                           </Select>
                         </div>
                         <div className="space-y-2">
@@ -302,8 +304,8 @@ export default function Component() {
                   {step === 2 && (
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
-                        <Users className="h-5 w-5 text-gray-500" />
-                        <h3 className="text-xl font-semibold text-gray-700">
+                        <Users className="h-5 w-5 text-white" />
+                        <h3 className="text-xl font-semibold text-white">
                           Department Details
                         </h3>
                       </div>
@@ -318,17 +320,7 @@ export default function Component() {
                           <SelectTrigger>
                             <SelectValue placeholder="Select department" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="emergency">Emergency</SelectItem>
-                            <SelectItem value="surgery">Surgery</SelectItem>
-                            <SelectItem value="pediatrics">
-                              Pediatrics
-                            </SelectItem>
-                            <SelectItem value="cardiology">
-                              Cardiology
-                            </SelectItem>
-                            <SelectItem value="neurology">Neurology</SelectItem>
-                          </SelectContent>
+                          <DepartmentOptions />
                         </Select>
                       </div>
                       <div className="space-y-2">
@@ -420,12 +412,18 @@ export default function Component() {
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex justify-between bg-muted/40 border-t pt-5">
+        <CardFooter className={getCardFooterClassName(step)}>
           {step > 1 && (
-            <Button variant="outline" onClick={handleBack} disabled={isLoading}>
+            <Button
+              variant="outline"
+              onClick={handleBack}
+              disabled={isLoading}
+              className="justify-start"
+            >
               Back
             </Button>
           )}
+          <div className="flex-grow"></div>
           {step < 3 ? (
             <Button onClick={handleNext} disabled={isLoading}>
               {isLoading ? "Processing..." : "Next"}
@@ -440,3 +438,75 @@ export default function Component() {
     </div>
   );
 }
+
+
+
+const DepartmentOptions = () => {
+  return (
+    <SelectContent>
+      <SelectItem value="emergency">Emergency</SelectItem>
+      <SelectItem value="surgery">Surgery</SelectItem>
+      <SelectItem value="pediatrics">Pediatrics</SelectItem>
+      <SelectItem value="cardiology">Cardiology</SelectItem>
+      <SelectItem value="neurology">Neurology</SelectItem>
+      <SelectItem value="oncology">Oncology</SelectItem>
+      <SelectItem value="radiology">Radiology</SelectItem>
+      <SelectItem value="orthopedics">Orthopedics</SelectItem>
+      <SelectItem value="dermatology">Dermatology</SelectItem>
+      <SelectItem value="gastroenterology">Gastroenterology</SelectItem>
+      <SelectItem value="psychiatry">Psychiatry</SelectItem>
+      <SelectItem value="obstetricsAndGynecology">
+        Obstetrics and Gynecology
+      </SelectItem>
+      <SelectItem value="nephrology">Nephrology</SelectItem>
+      <SelectItem value="pulmonology">Pulmonology</SelectItem>
+      <SelectItem value="endocrinology">Endocrinology</SelectItem>
+      <SelectItem value="ent">ENT</SelectItem>
+      <SelectItem value="ophthalmology">Opthalmology</SelectItem>
+      <SelectItem value="pathology">Pathology</SelectItem>
+      <SelectItem value="anesthesiology">Anesthesiology</SelectItem>
+    </SelectContent>
+  );
+};
+
+const StateOptions = () => {
+  return (
+    <SelectContent>
+      <SelectItem value="andhra">Andhra Pradesh</SelectItem>
+      <SelectItem value="arunachal">Arunachal Pradesh</SelectItem>
+      <SelectItem value="assam">Assam</SelectItem>
+      <SelectItem value="bihar">Bihar</SelectItem>
+      <SelectItem value="chhattisgarh">Chhattisgarh</SelectItem>
+      <SelectItem value="goa">Goa</SelectItem>
+      <SelectItem value="gujrat">Gujarat</SelectItem>
+      <SelectItem value="haryana">Haryana</SelectItem>
+      <SelectItem value="hp">Himachal Pradesh</SelectItem>
+      <SelectItem value="jharkhand">Jharkhand</SelectItem>
+      <SelectItem value="karnataka">Karnataka</SelectItem>
+      <SelectItem value="mp">Madhya Pradesh</SelectItem>
+      <SelectItem value="maharashtra">Maharashtra</SelectItem>
+      <SelectItem value="manipur">Manipur</SelectItem>
+      <SelectItem value="meghalaya">Meghalaya</SelectItem>
+      <SelectItem value="mizoram">Mizoram</SelectItem>
+      <SelectItem value="nagaland">Nagaland</SelectItem>
+      <SelectItem value="odisha">Odisha</SelectItem>
+      <SelectItem value="punjab">Punjab</SelectItem>
+      <SelectItem value="rajasthan">Rajasthan</SelectItem>
+      <SelectItem value="sikkim">Sikkim</SelectItem>
+      <SelectItem value="tn">Tamil Nadu</SelectItem>
+      <SelectItem value="telangana">Telangana</SelectItem>
+      <SelectItem value="up">Uttar Pradesh</SelectItem>
+      <SelectItem value="uttarakhand">Uttarakhand</SelectItem>
+      <SelectItem value="wb">West Bengal</SelectItem>
+      <SelectItem value="andamanNicobar">
+        Andaman and Nicobar Islands
+      </SelectItem>
+      <SelectItem value="lakshadweep">Lakshadweep</SelectItem>
+      <SelectItem value="NCT">
+        Delhi (National Capital Territory of Delhi)
+      </SelectItem>
+      <SelectItem value="ladakh">Ladakh</SelectItem>
+      <SelectItem value="j&k">Jammu and Kashmir</SelectItem>
+    </SelectContent>
+  );
+};
