@@ -12,7 +12,10 @@ model Hospital {
   id                          String                  @id @default(uuid())
   name                        String
   contact_number              String                  @unique
-  address                     String
+  address_line_1              String
+  address_line_2              String?
+  pincode                     Int
+  city                        String
   username                    String                  @unique 
   security_question           sec_ques_enum
   security_question_answer    String
@@ -32,9 +35,7 @@ model Departments {
   hospital_id                 String
   name                        String
   contact_number              String                      @unique
-  address                     String
   password                    String
-  region                      delhi_regions 
   department                  departments
 
   hospital                    Hospital                    @relation("HospitalDepartments", fields: [hospital_id], references: [id])
@@ -59,10 +60,9 @@ model MedicalInventory {
 model StockReplenishmentLog {
   replenishment_id            String                      @id @default(uuid())
   inventory_id                String
-  replenishment_date          DateTime
+  replenishment_date          DateTime                    @default(now())
   quantity_replenished        Int
   order_placed                OrderStatus
-
   medicalInventory            MedicalInventory            @relation("InventoryStockReplenishmentLog", fields: [inventory_id], references: [id])
 }
 
@@ -108,8 +108,8 @@ model VendorOrders {
   hospital_id                 String
   item_name                   String
   quantity_ordered            Int
-  order_date                  DateTime
-  delivery_date               DateTime
+  order_date                  DateTime                    
+  delivery_date               DateTime  
   status                      OrderStatus
 
   vendor                      Vendors                     @relation("VendorOrders", fields: [vendor_id], references: [vendor_id])
