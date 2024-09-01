@@ -1,5 +1,6 @@
 "use client"
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Hospital, Lock, AlertCircle, ArrowLeft } from "lucide-react";
+import { Hospital, Lock, AlertCircle, ArrowLeft, Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ export default function Component() {
   const [password, setPassword] = useState("");
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
-  const [step, setStep] = useState("signin"); // 'signin', 'otp', or 'mfa'
+  const [step, setStep] = useState("signin"); // 'signin', 'otp', 'mfa', or 'confirmation'
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -39,6 +40,8 @@ export default function Component() {
       otpRefs.current[0]?.focus();
     }
   }, [step]);
+
+
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -90,19 +93,11 @@ export default function Component() {
       }
 
       if (otp === "123456") {
-        setStep("mfa");
+        setStep("confirmation");
       } else {
         setError("Invalid OTP. Please try again.");
       }
-    } else if (step === "mfa") {
-      const mfa = otpValues.join("");
-      if (mfa === "789012") {
-        alert("Successfully logged in!");
-        // Here you would typically redirect to the dashboard
-      } else {
-        setError("Invalid MFA code. Please try again.");
-      }
-    }
+    } 
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -116,6 +111,40 @@ export default function Component() {
     setIsDialogOpen(false);
     setResetEmail("");
   };
+
+  const renderConfirmation = () => (
+    <motion.div
+      className="flex flex-col items-center justify-center h-full"
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <motion.div
+        className="rounded-full bg-green-500 p-2 mb-4"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.2, type: "spring", stiffness: 500, damping: 30 }}
+      >
+        <Check className="h-10 w-10 text-white" />
+      </motion.div>
+      <motion.h2
+        className="text-2xl font-bold text-center mb-2"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        Login Successful
+      </motion.h2>
+      <motion.p
+        className="text-center text-gray-600"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        Redirecting to dashboard...
+      </motion.p>
+    </motion.div>
+  );
 
   return (
     <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
@@ -132,95 +161,106 @@ export default function Component() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          <form onSubmit={handleSubmit}>
-            {step === "signin" && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Hospital Email</Label>
-                  <Input
-                    id="email"
-                    placeholder="hospital@example.com"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="flex items-center space-x-2 mt-4">
-                  <Checkbox id="remember" />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Remember me
-                  </label>
-                </div>
-              </>
-            )}
-            {(step === "otp" || step === "mfa") && (
-              <div className="space-y-2">
-                <Label htmlFor="otp">
-                  {step === "otp" ? "Enter OTP" : "Enter MFA Code"}
-                </Label>
-                <div className="flex justify-between">
-                  {otpValues.map((value, index) => (
-                    <Input
-                      key={index}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      className="w-12 h-12 text-center text-lg"
-                      value={value}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      ref={(el) => (otpRefs.current[index] = el)}
-                      required
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-            <Button className="w-full mt-4" type="submit">
-              {step === "signin"
-                ? "Sign In"
-                : step === "otp"
-                ? "Verify OTP"
-                : "Verify MFA"}
-            </Button>
-          </form>
-          {step !== "signin" && (
-            <Button
-              variant="outline"
-              className="w-full"
-              onClick={() => {
-                setStep("signin");
-                setOtpValues(["", "", "", "", "", ""]);
-              }}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Sign In
-            </Button>
+          {step === "confirmation" ? (
+            renderConfirmation()
+          ) : (
+            <>
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              <form onSubmit={handleSubmit}>
+                {step === "signin" && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Hospital Email</Label>
+                      <Input
+                        id="email"
+                        placeholder="hospital@example.com"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="password">Password</Label>
+                      <Input
+                        id="password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="flex items-center space-x-2 mt-4">
+                      <Checkbox id="remember" />
+                      <label
+                        htmlFor="remember"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      >
+                        Remember me
+                      </label>
+                    </div>
+                  </>
+                )}
+                {(step === "otp") && (
+                  <div className="space-y-2">
+                    <Label htmlFor="otp">
+                      {step === "otp" ? "Enter OTP" :null}
+                    </Label>
+                    <div className="flex justify-between">
+                      {otpValues.map((value, index) => (
+                        <Input
+                          key={index}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          className="w-12 h-12 text-center text-lg"
+                          value={value}
+                          onChange={(e) =>
+                            handleOtpChange(index, e.target.value)
+                          }
+                          onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                          ref={(el) => {
+                            otpRefs.current[index] =
+                              el as HTMLInputElement | null;
+                          }}
+                          required
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <Button className="w-full mt-4" type="submit">
+                  {step === "signin"
+                    ? "Sign In"
+                    : step === "otp"
+                    ? "Verify OTP"
+                    :null}
+                </Button>
+              </form>
+              {step !== "signin" && (
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => {
+                    setStep("signin");
+                    setOtpValues(["", "", "", "", "", ""]);
+                  }}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Back to Sign In
+                </Button>
+              )}
+            </>
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="flex items-center justify-center w-full">
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            {step==="signin"?<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="link"
@@ -256,7 +296,8 @@ export default function Component() {
                   </DialogFooter>
                 </form>
               </DialogContent>
-            </Dialog>
+            </Dialog>:null}
+            
           </div>
           <div className="flex items-center justify-center w-full">
             <Lock className="h-4 w-4 mr-2 text-gray-500" />

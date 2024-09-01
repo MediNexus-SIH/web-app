@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter as FontSans, Manrope } from "next/font/google";
 import { Providers } from "./provider";
 import { cn } from "@/lib/utils";
+import FooterSection from "@/components/FooterSection";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -27,17 +28,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-    return (
-      <html lang="en" suppressHydrationWarning={true}>
-        <body
-          className={
-            cn("antialiased", fontHeading.variable, fontBody.variable)}
-        >
-          <Providers>
-            {children}
-          </Providers>
-        </body>
-      </html>
-    );
-
+  return (
+    <html lang="en" suppressHydrationWarning={true}>
+      <body
+        className={cn(
+          "flex flex-col min-h-screen antialiased",
+          fontHeading.variable,
+          fontBody.variable
+        )}
+      >
+        <div className="flex-grow">
+          <Providers>{children}</Providers>
+        </div>
+        <footer>
+          <FooterSection />
+        </footer>
+      </body>
+    </html>
+  );
 }
+
