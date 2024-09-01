@@ -18,7 +18,7 @@ const Layout = ({ children }: LayoutProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="p-5 border-b-2 mb-2">
+      <header className="p-5 border-b-2 mb-2 ">
         <ul className="flex justify-between">
           <Link href="/dashboard">MediNexus</Link>
           <div className="flex space-x-4 ">

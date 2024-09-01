@@ -1,9 +1,4 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/h4wc2N0AW7I
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-export default function Component() {
+export default function Terms() {
   return (
     <div className="bg-background text-foreground">
       <div className="container mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
