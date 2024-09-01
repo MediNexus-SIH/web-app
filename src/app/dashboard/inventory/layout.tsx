@@ -18,14 +18,16 @@ const Layout = ({ children }: LayoutProps) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="p-5 border-b-2 mb-2 ">
-        <ul className="flex justify-between">
-          <Link href="/dashboard">MediNexus</Link>
-          <div className="flex space-x-4 ">
+      <header className="p-5 border-b-2 mb-2">
+        <div className="container mx-auto flex justify-between items-center">
+          <Link href="/dashboard" className="text-xl font-bold">
+            MediNexus
+          </Link>
+          <div className="flex space-x-4 items-center">
             <SearchInputField />
             <DropdownMenuProfile />
           </div>
-        </ul>
+        </div>
       </header>
 
       <main>{children}</main>

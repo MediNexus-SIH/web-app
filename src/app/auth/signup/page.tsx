@@ -20,11 +20,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { Hospital, Users, UserCog, Check } from "lucide-react";
+import { Hospital, Users, UserCog, Check,X,Plus } from "lucide-react";
 import { title } from "process";
 
 export default function Component() {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     hospitalName: "",
     addressLine1: "",
@@ -33,25 +33,61 @@ export default function Component() {
     pincode: "",
     state: "",
     phoneNumber: "",
-    department: "",
-    hodName: "",
-    hodEmail: "",
+    departments: [] as Department[],
     adminName: "",
     adminEmail: "",
     password: "",
     confirmPassword: "",
-  });
+  })
+
+  type Department = {
+  name: string
+  hodName: string
+  hodEmail: string
+}
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const [newDepartment, setNewDepartment] = useState<Department>({
+    name: "",
+    hodName: "",
+    hodEmail: "",
+  })
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
 
   const handleSelectChange = (value: string, name: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleNewDepartmentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setNewDepartment((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const addDepartment = () => {
+    if (newDepartment.name && newDepartment.hodName && newDepartment.hodEmail) {
+      setFormData((prev) => ({
+        ...prev,
+        departments: [...prev.departments, newDepartment],
+      }))
+      setNewDepartment({ name: "", hodName: "", hodEmail: "" })
+    } else {
+      toast({
+        title: "Incomplete Department Information",
+        description: "Please fill in all department fields.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const removeDepartment = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      departments: prev.departments.filter((_, i) => i !== index),
+    }))
+  }
 
   const validateStep = () => {
     if (step === 1) {
@@ -71,13 +107,13 @@ export default function Component() {
         return false;
       }
     } else if (step === 2) {
-      if (!formData.department || !formData.hodName || !formData.hodEmail) {
+      if (formData.departments.length === 0) {
         toast({
-          title: "Incomplete Information",
-          description: "Please fill in all required fields.",
+          title: "No Departments Added",
+          description: "Please add at least one department.",
           variant: "destructive",
-        });
-        return false;
+        })
+        return false
       }
     } else if (step === 3) {
       if (
@@ -301,53 +337,59 @@ function getCardFooterClassName(step:number): string {
                       </div>
                     </div>
                   )}
-                  {step === 2 && (
+{step === 2 && (
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
-                        <Users className="h-5 w-5 text-white" />
-                        <h3 className="text-xl font-semibold text-white">
-                          Department Details
-                        </h3>
+                        <Users className="h-5 w-5 text-gray-500" />
+                        <h3 className="text-xl font-semibold text-white">Department Details</h3>
                       </div>
+                      {formData.departments.map((dept, index) => (
+                        <div key={index} className="p-4 bg-muted/40 rounded-lg relative">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-2 right-2"
+                            onClick={() => removeDepartment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          <p><strong>Department:</strong> {dept.name}</p>
+                          <p><strong>HOD Name:</strong> {dept.hodName}</p>
+                          <p><strong>HOD Email:</strong> {dept.hodEmail}</p>
+                        </div>
+                      ))}
                       <div className="space-y-2">
-                        <Label htmlFor="department">Department</Label>
-                        <Select
-                          name="department"
-                          onValueChange={(value) =>
-                            handleSelectChange(value, "department")
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select department" />
-                          </SelectTrigger>
-                          <DepartmentOptions />
-                        </Select>
+                        <Label htmlFor="departmentName">Department Name</Label>
+                        <Input
+                          id="departmentName"
+                          name="name"
+                          value={newDepartment.name}
+                          onChange={handleNewDepartmentChange}
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="hodName">Head of Department Name</Label>
                         <Input
                           id="hodName"
                           name="hodName"
-                          value={formData.hodName}
-                          onChange={handleInputChange}
-                          required
+                          value={newDepartment.hodName}
+                          onChange={handleNewDepartmentChange}
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="hodEmail">
-                          Head of Department Email
-                        </Label>
+                        <Label htmlFor="hodEmail">Head of Department Email</Label>
                         <Input
                           id="hodEmail"
                           name="hodEmail"
                           type="email"
-                          value={formData.hodEmail}
-                          onChange={handleInputChange}
-                          required
+                          value={newDepartment.hodEmail}
+                          onChange={handleNewDepartmentChange}
                         />
                       </div>
-                    </div>
-                  )}
+                      <Button type="button" onClick={addDepartment} className="w-full">
+                        <Plus className="mr-2 h-4 w-4" /> Add Department
+                      </Button>
+                    </div>)}
                   {step === 3 && (
                     <div className="space-y-4">
                       <div className="flex items-center space-x-2">
