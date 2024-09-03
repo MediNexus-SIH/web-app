@@ -1,3 +1,4 @@
+"use client";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -7,6 +8,25 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import React, { useState, useMemo } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -32,322 +52,326 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Menu } from "lucide-react";
 
 export default function Component() {
   return (
-    <div className="flex w-full flex-col bg-muted/40">
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <Breadcrumb className="hidden md:flex">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink asChild>
-                <Link href="/dashboard" prefetch={false}>
-                  Dashboard
-                </Link>
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Inventory</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Total Items</CardTitle>
-              <CardDescription>
-                The total number of medical supplies, equipment, and
-                pharmaceuticals in your inventory.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold">1,234</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Low Stock</CardTitle>
-              <CardDescription>
-                Items that have fallen below the minimum stock level and need to
-                be reordered.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-red-500">47</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Expiring Soon</CardTitle>
-              <CardDescription>
-                Items that will expire within the next 30 days.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-yellow-500">12</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Reorder Requests</CardTitle>
-              <CardDescription>
-                Pending requests to reorder items that have fallen below the
-                minimum stock level.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-4xl font-bold text-blue-500">8</div>
-            </CardContent>
-          </Card>
-        </div>
-        <Card className="w-full">
-          <CardHeader className="pb-3">
-            <CardTitle>Inventory</CardTitle>
-            <CardDescription>
-              View and manage your hospital&apos;s medical supplies, equipment,
-              and pharmaceuticals.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table className="mb-4">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Item</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Expiration</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Surgical Masks</div>
-                    <div className="text-sm text-muted-foreground">
-                      Medical Supplies
-                    </div>
-                  </TableCell>
-                  <TableCell>Medical Supplies</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="bg-red-500 text-red-50">
-                      12
-                    </Badge>
-                  </TableCell>
-                  <TableCell>Hospital Storeroom</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-yellow-500 text-yellow-50"
-                    >
-                      2023-06-30
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <div className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
-                        <DropdownMenuItem>Reorder</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Nitrile Gloves</div>
-                    <div className="text-sm text-muted-foreground">
-                      Medical Supplies
-                    </div>
-                  </TableCell>
-                  <TableCell>Medical Supplies</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      250
-                    </Badge>
-                  </TableCell>
-                  <TableCell>Hospital Storeroom</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      2024-12-31
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <div className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
-                        <DropdownMenuItem>Reorder</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Ibuprofen 200mg</div>
-                    <div className="text-sm text-muted-foreground">
-                      Pharmaceuticals
-                    </div>
-                  </TableCell>
-                  <TableCell>Pharmaceuticals</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="bg-red-500 text-red-50">
-                      35
-                    </Badge>
-                  </TableCell>
-                  <TableCell>Pharmacy Stockroom</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-yellow-500 text-yellow-50"
-                    >
-                      2023-09-15
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <div className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
-                        <DropdownMenuItem>Reorder</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Oxygen Tanks</div>
-                    <div className="text-sm text-muted-foreground">
-                      Medical Equipment
-                    </div>
-                  </TableCell>
-                  <TableCell>Medical Equipment</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      78
-                    </Badge>
-                  </TableCell>
-                  <TableCell>Biomedical Storeroom</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      2025-06-30
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <div className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
-                        <DropdownMenuItem>Reorder</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>
-                    <div className="font-medium">Saline Solution</div>
-                    <div className="text-sm text-muted-foreground">
-                      Pharmaceuticals
-                    </div>
-                  </TableCell>
-                  <TableCell>Pharmaceuticals</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-yellow-500 text-yellow-50"
-                    >
-                      68
-                    </Badge>
-                  </TableCell>
-                  <TableCell>Pharmacy Stockroom</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-yellow-500 text-yellow-50"
-                    >
-                      2023-11-30
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <div className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
-                        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
-                        <DropdownMenuItem>Reorder</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </main>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 p-8">
+      <div className="flex flex-col  sm:gap-4  ">
+        <BreadcrumbsInv />
+        <main className="grid flex-1 items-start gap-4 md:gap-4 ">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <TotalItemsCard />
+            <LowStockCard />
+            <ExpiryCard />
+            <ReorderReqCard />
+          </div>
+          <InventoryItemsCard />
+          <PaginationInv />
+        </main>
+      </div>
     </div>
+
+    //     <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    //   <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+    //     <DashboardBreadCrumb />
+    //     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+    //       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    //         <DashboardInventoryCard/>
+    //         <DashboardAlertsCard/>
+    //         <DashboardOrdersCard/>
+    //         <DashboardSupplyChainCard/>
+    //       </div>
+    //     </main>
+    //   </div>
+    // </div>
   );
 }
+
+const BreadcrumbsInv = () => {
+  return (
+    <Breadcrumb className="hidden md:flex">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link href="/dashboard" prefetch={false}>
+              Dashboard
+            </Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Inventory</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+  );
+};
+const EditInvDropdown = () => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button aria-haspopup="true" size="icon" variant="ghost">
+          <Menu />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
+        <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
+        <DropdownMenuItem>Reorder</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const TotalItemsCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>Total Items</CardTitle>
+        <CardDescription>
+          The total number of medical supplies, equipment, and pharmaceuticals
+          in your inventory.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-4xl font-bold">1,234</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const LowStockCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>Low Stock</CardTitle>
+        <CardDescription>
+          Items that have fallen below the minimum stock level and need to be
+          reordered.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-4xl font-bold text-red-500">47</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const ExpiryCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>Expiring Soon</CardTitle>
+        <CardDescription>
+          Items that will expire within the next 30 days.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-4xl font-bold text-yellow-500">12</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const ReorderReqCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle>Reorder Requests</CardTitle>
+        <CardDescription>
+          Pending requests to reorder items that have fallen below the minimum
+          stock level.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="text-4xl font-bold text-blue-500">8</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const PaginationInv = () => {
+  return (
+    <Pagination className="mb-2">
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious href="#" />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink href="#">
+            <Button variant={"outline"}>1</Button>
+          </PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext href="#" />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+};
+
+const TableInvRow = ({
+  item,
+  itemCategory,
+  quantity,
+  location,
+  expiration,
+}: {
+  item: string;
+  itemCategory: string;
+  quantity: string;
+  location: string;
+  expiration: string;
+}) => {
+  // Determine color based on quantity
+
+  const quantityOfItem = parseInt(quantity);
+  const quantityColor =
+    quantityOfItem > 50
+      ? "bg-green-500"
+      : quantityOfItem > 20
+      ? "bg-yellow-500"
+      : "bg-red-500";
+  const quantityTextColor =
+    quantityOfItem > 50
+      ? "text-green-50"
+      : quantityOfItem > 20
+      ? "text-yellow-50"
+      : "text-red-50";
+
+  // Determine color based on expiration (example logic)
+
+  const expirationDate = new Date(expiration);
+  const currentDate = new Date();
+  const daysUntilExpiration =
+    (expirationDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
+
+  let expirationColor, expirationTextColor;
+  if (daysUntilExpiration <= 30) {
+    expirationColor = "bg-red-500";
+    expirationTextColor = "text-red-50";
+  } else if (daysUntilExpiration <= 60) {
+    expirationColor = "bg-yellow-500";
+    expirationTextColor = "text-yellow-50";
+  } else {
+    expirationColor = "bg-green-500";
+    expirationTextColor = "text-green-50";
+  }
+
+  return (
+    <TableRow>
+      <TableCell>
+        <div className="font-medium">{item}</div>
+      </TableCell>
+      <TableCell>{itemCategory}</TableCell>
+      <TableCell>
+        <Badge
+          variant="outline"
+          className={`${quantityColor} ${quantityTextColor}`}
+        >
+          {quantity}
+        </Badge>
+      </TableCell>
+      <TableCell>{location}</TableCell>
+      <TableCell>
+        <Badge
+          variant="outline"
+          className={`${expirationColor} ${expirationTextColor}`}
+        >
+          {expiration}
+        </Badge>
+      </TableCell>
+      <TableCell>
+        <EditInvDropdown />
+      </TableCell>
+    </TableRow>
+  );
+};
+
+const InventoryItemsCard = () => {
+  const inventory = [
+    {
+      id: 1,
+      item: "Surgical Masks",
+      category: "Medical Supplies",
+      quantity: "12",
+      location: "Hospital Storeroom",
+      expiration: "2025-06-30",
+    },
+    {
+      id: 2,
+      item: "Nitrile Gloves",
+      category: "Medical Supplies",
+      quantity: "35",
+      location: "Hospital Stockroom",
+      expiration: "2024-11-15",
+    },
+    {
+      id: 3,
+      item: "Ibuprofen 200mg",
+      category: "Pharmaceuticals",
+      quantity: "35",
+      location: "Pharmacy Stockroom",
+      expiration: "2024-10-15",
+    },
+    {
+      id: 4,
+      item: "Oxygen Tanks",
+      category: "Medical Equipment",
+      quantity: "78",
+      location: "Biomedical Storeroom",
+      expiration: "2025-06-30",
+    },
+    {
+      id: 5,
+      item: "Saline Solution",
+      category: "Pharmaceuticals",
+      quantity: "68",
+      location: "Pharmacy Stockroom",
+      expiration: "2024-09-20",
+    },
+  ];
+  return (
+    <Card className="w-full">
+      <CardHeader className="pb-3">
+        <CardTitle>Inventory</CardTitle>
+        <CardDescription>
+          View and manage your hospital&apos;s medical supplies, equipment, and
+          pharmaceuticals.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table className="mb-4">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Item</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Location</TableHead>
+              <TableHead>Expiration</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {inventory.map((value) => {
+              return (
+                <TableInvRow
+                  key={value.id}
+                  item={value.item}
+                  itemCategory={value.category}
+                  quantity={value.quantity}
+                  location={value.location}
+                  expiration={value.expiration}
+                />
+              );
+            })}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+};

@@ -1,12 +1,5 @@
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+"use client";
 import Link from "next/link";
-import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -15,15 +8,6 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
 import {
   Card,
   CardHeader,
@@ -31,350 +15,174 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import Image from "next/image";
 
+const DashboardBreadCrumb = () => {
+  return (
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+      <Breadcrumb className="hidden md:flex">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="#" prefetch={false}>
+                Dashboard
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+        </BreadcrumbList>
+      </Breadcrumb>
+    </header>
+  );
+};
+
+const DashboardInventoryCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle>Inventory Overview</CardTitle>
+        <CardDescription>
+          Quick view of your current inventory levels across all branches.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">12,345</h3>
+              <p className="text-muted-foreground">Total Items</p>
+            </div>
+            <PackageIcon className="h-8 w-8 text-primary" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">45</h3>
+              <p className="text-muted-foreground">Branches</p>
+            </div>
+            <UsersIcon className="h-8 w-8 text-primary" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">$1.2M</h3>
+              <p className="text-muted-foreground">Total Value</p>
+            </div>
+            <DollarSignIcon className="h-8 w-8 text-primary" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">125</h3>
+              <p className="text-muted-foreground">Expiring Soon</p>
+            </div>
+            <CalendarIcon className="h-8 w-8 text-primary" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const DashboardAlertsCard = () => {
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle>Alerts</CardTitle>
+        <CardDescription>
+          Critical alerts for low stock and expiring batches.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold text-red-500">15</h3>
+              <p className="text-muted-foreground">Low Stock</p>
+            </div>
+            <TriangleAlertIcon className="h-8 w-8 text-red-500" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold text-yellow-500">125</h3>
+              <p className="text-muted-foreground">Expiring Soon</p>
+            </div>
+            <CalendarIcon className="h-8 w-8 text-yellow-500" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const DashboardOrdersCard = ()=>{
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle>Orders</CardTitle>
+        <CardDescription>
+          Track your recent orders and their status.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">45</h3>
+              <p className="text-muted-foreground">Pending</p>
+            </div>
+            <TruckIcon className="h-8 w-8 text-primary" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">125</h3>
+              <p className="text-muted-foreground">Delivered</p>
+            </div>
+            <CircleCheckIcon className="h-8 w-8 text-primary" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">12</h3>
+              <p className="text-muted-foreground">Delayed</p>
+            </div>
+            <TriangleAlertIcon className="h-8 w-8 text-yellow-500" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+const DashboardSupplyChainCard = ()=>{
+  return (
+    <Card>
+      <CardHeader className="pb-4">
+        <CardTitle>Supply Chain</CardTitle>
+        <CardDescription>
+          View the overall health of your supply chain.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid gap-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold">95%</h3>
+              <p className="text-muted-foreground">On-Time Delivery</p>
+            </div>
+            <TruckIcon className="h-8 w-8 text-primary" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 export default function Component() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
-        <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
-          <TooltipProvider>
-            <Link
-              href="#"
-              className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
-              prefetch={false}
-            >
-              <Package2Icon className="h-4 w-4 transition-all group-hover:scale-110" />
-              <span className="sr-only">Acme Pharmaceuticals</span>
-            </Link>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <HomeIcon className="h-5 w-5" />
-                  <span className="sr-only">Dashboard</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Dashboard</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="dashboard/inventory"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <PackageIcon className="h-5 w-5" />
-                  <span className="sr-only">Inventory</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Inventory</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <TruckIcon className="h-5 w-5" />
-                  <span className="sr-only">Orders</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Orders</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <UsersIcon className="h-5 w-5" />
-                  <span className="sr-only">Branches</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Branches</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <LineChartIcon className="h-5 w-5" />
-                  <span className="sr-only">Reports</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Reports</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </nav>
-        <nav className="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                  prefetch={false}
-                >
-                  <SettingsIcon className="h-5 w-5" />
-                  <span className="sr-only">Settings</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Settings</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </nav>
-      </aside>
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button size="icon" variant="outline" className="sm:hidden">
-                <MenuIcon className="h-5 w-5" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="sm:max-w-xs">
-              <nav className="grid gap-6 text-lg font-medium">
-                <Link
-                  href="#"
-                  className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
-                  prefetch={false}
-                >
-                  <Package2Icon className="h-5 w-5 transition-all group-hover:scale-110" />
-                  <span className="sr-only">Acme Pharmaceuticals</span>
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  prefetch={false}
-                >
-                  <HomeIcon className="h-5 w-5" />
-                  Dashboard
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-foreground"
-                  prefetch={false}
-                >
-                  <PackageIcon className="h-5 w-5" />
-                  Inventory
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  prefetch={false}
-                >
-                  <TruckIcon className="h-5 w-5" />
-                  Orders
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  prefetch={false}
-                >
-                  <UsersIcon className="h-5 w-5" />
-                  Branches
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  prefetch={false}
-                >
-                  <LineChartIcon className="h-5 w-5" />
-                  Reports
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                  prefetch={false}
-                >
-                  <SettingsIcon className="h-5 w-5" />
-                  Settings
-                </Link>
-              </nav>
-            </SheetContent>
-          </Sheet>
-          <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#" prefetch={false}>
-                    Dashboard
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Inventory</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-          <div className="relative ml-auto flex-1 md:grow-0">
-            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search inventory..."
-              className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-            />
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="overflow-hidden rounded-full"
-              >
-                <Image
-                  src="/placeholder.svg"
-                  width={36}
-                  height={36}
-                  alt="Avatar"
-                  className="overflow-hidden rounded-full"
-                  style={{ aspectRatio: "36/36", objectFit: "cover" }}
-                />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </header>
+    <div className="flex min-h-screen w-full flex-col bg-muted/40 py-4">
+      <div className="flex flex-col sm:gap-4 ">
+        <DashboardBreadCrumb />
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle>Inventory Overview</CardTitle>
-                <CardDescription>
-                  Quick view of your current inventory levels across all
-                  branches.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">12,345</h3>
-                      <p className="text-muted-foreground">Total Items</p>
-                    </div>
-                    <PackageIcon className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">45</h3>
-                      <p className="text-muted-foreground">Branches</p>
-                    </div>
-                    <UsersIcon className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">$1.2M</h3>
-                      <p className="text-muted-foreground">Total Value</p>
-                    </div>
-                    <DollarSignIcon className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">125</h3>
-                      <p className="text-muted-foreground">Expiring Soon</p>
-                    </div>
-                    <CalendarIcon className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle>Alerts</CardTitle>
-                <CardDescription>
-                  Critical alerts for low stock and expiring batches.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold text-red-500">15</h3>
-                      <p className="text-muted-foreground">Low Stock</p>
-                    </div>
-                    <TriangleAlertIcon className="h-8 w-8 text-red-500" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold text-yellow-500">
-                        125
-                      </h3>
-                      <p className="text-muted-foreground">Expiring Soon</p>
-                    </div>
-                    <CalendarIcon className="h-8 w-8 text-yellow-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle>Orders</CardTitle>
-                <CardDescription>
-                  Track your recent orders and their status.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">45</h3>
-                      <p className="text-muted-foreground">Pending</p>
-                    </div>
-                    <TruckIcon className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">125</h3>
-                      <p className="text-muted-foreground">Delivered</p>
-                    </div>
-                    <CircleCheckIcon className="h-8 w-8 text-primary" />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">12</h3>
-                      <p className="text-muted-foreground">Delayed</p>
-                    </div>
-                    <TriangleAlertIcon className="h-8 w-8 text-yellow-500" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle>Supply Chain</CardTitle>
-                <CardDescription>
-                  View the overall health of your supply chain.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold">95%</h3>
-                      <p className="text-muted-foreground">On-Time Delivery</p>
-                    </div>
-                    <TruckIcon className="h-8 w-8 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <DashboardInventoryCard/>
+            <DashboardAlertsCard/>
+            <DashboardOrdersCard/>
+            <DashboardSupplyChainCard/>
           </div>
         </main>
       </div>
@@ -382,7 +190,7 @@ export default function Component() {
   );
 }
 
-function CalendarIcon(props:any) {
+function CalendarIcon(props: any) {
   return (
     <svg
       {...props}
@@ -404,7 +212,7 @@ function CalendarIcon(props:any) {
   );
 }
 
-function CircleCheckIcon(props:any) {
+function CircleCheckIcon(props: any) {
   return (
     <svg
       {...props}
@@ -424,7 +232,7 @@ function CircleCheckIcon(props:any) {
   );
 }
 
-function DollarSignIcon(props:any) {
+function DollarSignIcon(props: any) {
   return (
     <svg
       {...props}
@@ -444,7 +252,7 @@ function DollarSignIcon(props:any) {
   );
 }
 
-function HomeIcon(props:any) {
+function HomeIcon(props: any) {
   return (
     <svg
       {...props}
@@ -464,7 +272,7 @@ function HomeIcon(props:any) {
   );
 }
 
-function LineChartIcon(props:any) {
+function LineChartIcon(props: any) {
   return (
     <svg
       {...props}
@@ -484,7 +292,7 @@ function LineChartIcon(props:any) {
   );
 }
 
-function MenuIcon(props:any) {
+function MenuIcon(props: any) {
   return (
     <svg
       {...props}
@@ -505,7 +313,7 @@ function MenuIcon(props:any) {
   );
 }
 
-function Package2Icon(props:any) {
+function Package2Icon(props: any) {
   return (
     <svg
       {...props}
@@ -526,7 +334,7 @@ function Package2Icon(props:any) {
   );
 }
 
-function PackageIcon(props:any) {
+function PackageIcon(props: any) {
   return (
     <svg
       {...props}
@@ -548,7 +356,7 @@ function PackageIcon(props:any) {
   );
 }
 
-function SearchIcon(props:any) {
+function SearchIcon(props: any) {
   return (
     <svg
       {...props}
@@ -568,7 +376,7 @@ function SearchIcon(props:any) {
   );
 }
 
-function SettingsIcon(props:any) {
+function SettingsIcon(props: any) {
   return (
     <svg
       {...props}
@@ -588,7 +396,7 @@ function SettingsIcon(props:any) {
   );
 }
 
-function TriangleAlertIcon(props:any) {
+function TriangleAlertIcon(props: any) {
   return (
     <svg
       {...props}
@@ -609,7 +417,7 @@ function TriangleAlertIcon(props:any) {
   );
 }
 
-function TruckIcon(props:any) {
+function TruckIcon(props: any) {
   return (
     <svg
       {...props}
@@ -632,7 +440,7 @@ function TruckIcon(props:any) {
   );
 }
 
-function UsersIcon(props:any) {
+function UsersIcon(props: any) {
   return (
     <svg
       {...props}
