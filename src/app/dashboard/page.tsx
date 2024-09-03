@@ -18,7 +18,7 @@ import {
 
 const DashboardBreadCrumb = () => {
   return (
-    <header className="sticky top-0 z-30 flex  items-center gap-4 border-b  px-4 h-auto border-0 bg-transparent ">
+    <header className="sticky flex  items-center gap-4 h-auto bg-transparent ">
       <Breadcrumb className="flex">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -174,10 +174,10 @@ const DashboardSupplyChainCard = ()=>{
 }
 export default function Component() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 py-4">
+    <div className="flex min-h-screen p-6 w-full flex-col bg-muted/40 ">
       <div className="flex flex-col sm:gap-4 ">
         <DashboardBreadCrumb />
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+        <main className="grid flex-1 items-start gap-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <DashboardInventoryCard/>
             <DashboardAlertsCard/>

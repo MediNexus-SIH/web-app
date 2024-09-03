@@ -1,6 +1,6 @@
 import Link from "next/link";
-import SearchInputField from "./SearchInputField";
 import DropdownMenuProfile from "./DropdrownMenuProfile";
+import NotificationPopup from "./NotificationPopup";
 
 const TopBar = ({className}:{className?:string}) => {
   return (
@@ -11,6 +11,7 @@ const TopBar = ({className}:{className?:string}) => {
       </Link>
       <div className="flex space-x-4 items-center">
         <DropdownMenuProfile />
+        <NotificationPopup/>
       </div>
     </header>
     </>

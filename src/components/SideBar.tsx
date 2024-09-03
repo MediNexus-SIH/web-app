@@ -30,14 +30,15 @@ export default function Sidebar({ className }: { className?: string }) {
     return (
       <button
         onClick={() => handleNavigation(path)}
-        className="group flex items-center justify-center group-hover:justify-start  w-full transition-all duration-300 ease-in-out hover:bg-muted/40 rounded-lg h-10"
+        className="group flex items-center justify-center group-hover:justify-start w-full transition-all duration-500 ease-in-out hover:bg-muted/40 rounded-lg h-10 overflow-hidden"
       >
-        <div className="flex items-center justify-center  w-10 h-10 ">
+        <div className="flex items-center justify-center w-10 h-10 transition-all duration-500 ease-in-out group-hover:mr-2">
           {React.cloneElement(icon as React.ReactElement, {
-            className: "h-5 w-5 transition-transform duration-300 ease-in-out",
+            className:
+              "h-5 w-5 transition-all duration-500 ease-in-out group-hover:scale-110",
           })}
         </div>
-        <span className="hidden group-hover:inline-block ml-2 text-sm transition-all duration-300 whitespace-nowrap overflow-hidden">
+        <span className="opacity-0 w-0 text-sm transition-all duration-500 ease-in-out group-hover:opacity-100 group-hover:w-auto whitespace-nowrap overflow-hidden">
           {title}
         </span>
       </button>
@@ -46,7 +47,7 @@ export default function Sidebar({ className }: { className?: string }) {
 
   return (
     <div
-      className={`group hover:w-64 transition-all duration-300 ease-in-out m-2 w-14 flex-col border-22 bg-background flex ${className}`}
+      className={`group hover:w-64 transition-all duration-500 ease-in-out m-2 w-14 flex-col border-22 bg-background flex ${className}`}
     >
       <div className="flex flex-col gap-4 items-center w-full py-4">
         <SideBarComponent
