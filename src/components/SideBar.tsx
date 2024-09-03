@@ -28,28 +28,27 @@ export default function Sidebar({ className }: { className?: string }) {
     title,
   }) => {
     return (
-      <div className="flex items-center w-full">
-        <button
-          onClick={() => handleNavigation(path)}
-          className="flex h-10 w-full shrink-0 items-center justify-center  hover:bg-muted/40 transition-all duration-300 ease-in-out"
-        >
+      <button
+        onClick={() => handleNavigation(path)}
+        className="group flex items-center justify-center group-hover:justify-start  w-full transition-all duration-300 ease-in-out hover:bg-muted/40 rounded-lg h-10"
+      >
+        <div className="flex items-center justify-center  w-10 h-10 ">
           {React.cloneElement(icon as React.ReactElement, {
-            className:
-              "h-5 w-5 transition-transform duration-300 ease-in-out hover:scale-110",
+            className: "h-5 w-5 transition-transform duration-300 ease-in-out",
           })}
-        </button>
-        <span className="ml-4 text-sm opacity-0 transition-opacity duration-300 group-hover:opacity-100 whitespace-nowrap overflow-hidden">
+        </div>
+        <span className="hidden group-hover:inline-block ml-2 text-sm transition-all duration-300 whitespace-nowrap overflow-hidden">
           {title}
         </span>
-      </div>
+      </button>
     );
   };
 
   return (
     <div
-      className={`group hover:w-64 transition-all duration-300 ease-in-out mx-2 w-14 flex-col border-22 bg-background sm:flex ${className}`}
+      className={`group hover:w-64 transition-all duration-300 ease-in-out m-2 w-14 flex-col border-22 bg-background flex ${className}`}
     >
-      <div className="flex flex-col items-start gap-4 px-2 sm:py-5 w-full">
+      <div className="flex flex-col gap-4 items-center w-full py-4">
         <SideBarComponent
           path="/dashboard"
           icon={<House />}
@@ -75,10 +74,8 @@ export default function Sidebar({ className }: { className?: string }) {
           icon={<ChartColumn />}
           title="Reports"
         />
-      </div>
-      <div className="mt-auto flex justify-start px-2 sm:py-5 w-full">
         <SideBarComponent
-          path="/dashboard/settings"
+          path="/settings"
           icon={<Settings />}
           title="Settings"
         />
