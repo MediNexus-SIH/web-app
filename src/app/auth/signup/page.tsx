@@ -121,7 +121,10 @@ export default function HospitalRegistrationForm() {
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
-    setNewDepartment((prev) => ({ ...prev, [name]: value }));
+    setNewDepartment((prev) => ({
+      ...prev,
+      [name]: value.charAt(0).toUpperCase() + value.slice(1),
+    }));
   };
 
   const addDepartment = () => {
@@ -197,7 +200,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Hospital className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold">
           Hospital Information
         </h3>
       </div>
@@ -283,7 +286,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Users className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold">
           Department Details
         </h3>
       </div>
@@ -353,7 +356,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <UserCog className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold text-gray-900">
+        <h3 className="text-xl font-semibold">
           Admin Registration
         </h3>
       </div>
@@ -430,7 +433,6 @@ export default function HospitalRegistrationForm() {
           />
         ))}
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
     </div>
   );
 

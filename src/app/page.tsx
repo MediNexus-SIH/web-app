@@ -1,11 +1,21 @@
-"use client"
+"use client";
 import RevealAnimation from "@/components/framer-motion/revealAnimation";
 import { SmoothTextReveal } from "@/components/framer-motion/smoothTextReveal";
 import GithubBadge from "@/components/GithubBadge";
 import { Icons } from "@/components/Icons";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
-import { BarChart2, BarChart2Icon, Box, Clipboard, Search, ShieldCheck, Truck, TruckIcon, Zap } from "lucide-react";
+import {
+  BarChart2,
+  BarChart2Icon,
+  Box,
+  Clipboard,
+  Search,
+  ShieldCheck,
+  Truck,
+  TruckIcon,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,7 +33,7 @@ const HomePage = () => {
               <SmoothTextReveal
                 className="text-4xl sm:text-6xl font-bold"
                 text="MediNexus"
-                direction = "left"
+                direction="left"
                 animation="easeIn"
                 gradient={true}
               />
@@ -66,8 +76,8 @@ const HomePage = () => {
         </div>
       </div>
       <UtilsSection />
-      <FeaturesSection/>
-      <PumpUpSection/>
+      <FeaturesSection />
+      <PumpUpSection />
     </div>
   );
 };
@@ -76,7 +86,10 @@ export default HomePage;
 
 const UtilsSection = () => {
   return (
-    <section className="w-full py-12 md:py-16 lg:py-24 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
+    <section
+      id="utils-section"
+      className="w-full py-12 md:py-16 lg:py-24 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"
+    >
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <RevealAnimation>
@@ -115,7 +128,7 @@ const UtilsSection = () => {
   );
 };
 
-const FeaturesSection = ()=>{
+const FeaturesSection = () => {
   const features = [
     {
       icon: Clipboard,
@@ -151,7 +164,7 @@ const FeaturesSection = ()=>{
   ];
   return (
     <section
-      id="features"
+      id="features-section"
       className="py-20 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"
     >
       <div className="container mx-auto px-4">
@@ -181,9 +194,9 @@ const FeaturesSection = ()=>{
       </div>
     </section>
   );
-}
+};
 
-const PumpUpSection = ()=>{
+const PumpUpSection = () => {
   return (
     <section className="py-20 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
       <div className="container mx-auto px-4 text-center">
@@ -194,10 +207,10 @@ const PumpUpSection = ()=>{
           Join thousands of healthcare facilities already benefiting from our
           advanced supply chain solutions.
         </p>
-        <Button variant = "outline" className="text-lg">
+        <Button variant="outline" className="text-lg">
           Request a Demo
         </Button>
       </div>
     </section>
   );
-}
+};
