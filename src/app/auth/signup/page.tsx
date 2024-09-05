@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -123,7 +123,7 @@ export default function HospitalRegistrationForm() {
     const { name, value } = e.target;
     setNewDepartment((prev) => ({
       ...prev,
-      [name]: value.charAt(0).toUpperCase() + value.slice(1),
+      [name]: value,
     }));
   };
 
@@ -200,9 +200,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Hospital className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold">
-          Hospital Information
-        </h3>
+        <h3 className="text-xl font-semibold">Hospital Information</h3>
       </div>
       <div className="space-y-2">
         <Label htmlFor="hospitalName">Hospital Name</Label>
@@ -286,9 +284,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <Users className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold">
-          Department Details
-        </h3>
+        <h3 className="text-xl font-semibold">Department Details</h3>
       </div>
       {formData.departments.map((dept, index) => (
         <div key={index} className="p-4 bg-muted/40 rounded-lg relative">
@@ -356,9 +352,7 @@ export default function HospitalRegistrationForm() {
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
         <UserCog className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold">
-          Admin Registration
-        </h3>
+        <h3 className="text-xl font-semibold">Admin Registration</h3>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -412,26 +406,26 @@ export default function HospitalRegistrationForm() {
 
   const renderOtpVerification = () => (
     <div className="flex flex-col items-center space-y-2">
-      <Label htmlFor="otp" className="text-center">
-        Enter OTP
-      </Label>
-      <div className="flex justify-center space-x-2">
-        {otpValues.map((value, index) => (
-          <Input
-            key={index}
-            type="text"
-            inputMode="numeric"
-            maxLength={1}
-            className="w-12 h-12 text-center text-lg"
-            value={value}
-            onChange={(e) => handleOtpChange(index, e.target.value)}
-            onKeyDown={(e) => handleOtpKeyDown(index, e)}
-            ref={(el) => {
-              otpRefs.current[index] = el;
-            }}
-            required
-          />
-        ))}
+      <div className="flex flex-col justify-center space-x-2 space-y-6 ">
+        <h3 className="text-xl ml-2 font-semibold flex">Enter OTP</h3>
+        <div className="flex justify-center space-x-2">
+          {otpValues.map((value, index) => (
+            <Input
+              key={index}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              className="w-12 h-12 text-center text-lg"
+              value={value}
+              onChange={(e) => handleOtpChange(index, e.target.value)}
+              onKeyDown={(e) => handleOtpKeyDown(index, e)}
+              ref={(el) => {
+                otpRefs.current[index] = el;
+              }}
+              required
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -549,7 +543,6 @@ export default function HospitalRegistrationForm() {
   // Add displayName to satisfy the ESLint rule
   StepProgress.displayName = "StepProgress";
 
-
   const getCardFooterClassName = (currentStep: number): string => {
     return `flex justify-between items-center ${
       currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
@@ -625,9 +618,9 @@ export default function HospitalRegistrationForm() {
     if (step === 5) {
       const timer = setTimeout(() => {
         router.push("/dashboard");
-      }, 2000); 
+      }, 2000);
 
-      return () => clearTimeout(timer); 
+      return () => clearTimeout(timer);
     }
   }, [step, router]);
 
@@ -693,27 +686,27 @@ export default function HospitalRegistrationForm() {
 
 const DepartmentOptions = () => (
   <SelectContent>
-    <SelectItem value="emergency">Emergency</SelectItem>
-    <SelectItem value="surgery">Surgery</SelectItem>
-    <SelectItem value="pediatrics">Pediatrics</SelectItem>
-    <SelectItem value="cardiology">Cardiology</SelectItem>
-    <SelectItem value="neurology">Neurology</SelectItem>
-    <SelectItem value="oncology">Oncology</SelectItem>
-    <SelectItem value="radiology">Radiology</SelectItem>
-    <SelectItem value="orthopedics">Orthopedics</SelectItem>
-    <SelectItem value="dermatology">Dermatology</SelectItem>
-    <SelectItem value="gastroenterology">Gastroenterology</SelectItem>
-    <SelectItem value="psychiatry">Psychiatry</SelectItem>
-    <SelectItem value="obstetricsAndGynecology">
+    <SelectItem value="Emergency">Emergency</SelectItem>
+    <SelectItem value="Surgery">Surgery</SelectItem>
+    <SelectItem value="Pediatrics">Pediatrics</SelectItem>
+    <SelectItem value="Cardiology">Cardiology</SelectItem>
+    <SelectItem value="Neurology">Neurology</SelectItem>
+    <SelectItem value="Oncology">Oncology</SelectItem>
+    <SelectItem value="Radiology">Radiology</SelectItem>
+    <SelectItem value="Orthopedics">Orthopedics</SelectItem>
+    <SelectItem value="Dermatology">Dermatology</SelectItem>
+    <SelectItem value="Gastroenterology">Gastroenterology</SelectItem>
+    <SelectItem value="Psychiatry">Psychiatry</SelectItem>
+    <SelectItem value="ObstetricsAndGynecology">
       Obstetrics and Gynecology
     </SelectItem>
-    <SelectItem value="nephrology">Nephrology</SelectItem>
-    <SelectItem value="pulmonology">Pulmonology</SelectItem>
-    <SelectItem value="endocrinology">Endocrinology</SelectItem>
-    <SelectItem value="ent">ENT</SelectItem>
-    <SelectItem value="ophthalmology">Ophthalmology</SelectItem>
-    <SelectItem value="pathology">Pathology</SelectItem>
-    <SelectItem value="anesthesiology">Anesthesiology</SelectItem>
+    <SelectItem value="Nephrology">Nephrology</SelectItem>
+    <SelectItem value="Pulmonology">Pulmonology</SelectItem>
+    <SelectItem value="Endocrinology">Endocrinology</SelectItem>
+    <SelectItem value="ENT">ENT</SelectItem>
+    <SelectItem value="Ophthalmology">Ophthalmology</SelectItem>
+    <SelectItem value="Pathology">Pathology</SelectItem>
+    <SelectItem value="Anesthesiology">Anesthesiology</SelectItem>
   </SelectContent>
 );
 
