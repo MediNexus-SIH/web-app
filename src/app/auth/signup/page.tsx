@@ -475,6 +475,11 @@ export default function HospitalRegistrationForm() {
     { title: "Verification", icon: ShieldCheck },
   ];
 
+  type StepProgressProps = {
+    currentStep: number;
+    steps: Array<{ icon: React.ComponentType<any> }>; // Adjust this type as needed
+  };
+
   // Optimized StepProgress component
   const StepProgress = React.memo(
     ({ currentStep }: { currentStep: number }) => (
@@ -538,6 +543,11 @@ export default function HospitalRegistrationForm() {
       </div>
     )
   );
+
+  // Add displayName to satisfy the ESLint rule
+  StepProgress.displayName = "StepProgress";
+
+
   const getCardFooterClassName = (currentStep: number): string => {
     return `flex justify-between items-center ${
       currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
