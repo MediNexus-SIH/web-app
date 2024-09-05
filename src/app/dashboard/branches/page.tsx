@@ -50,6 +50,24 @@ export default function BranchesPage() {
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState(null);
+  interface Medicine {
+    id: number;
+    name: string;
+    stock: number;
+    branchId: number;
+  }
+
+  interface Branch {
+    id: number;
+    name: string;
+  }
+
+  interface TransferDialogProps {
+    transferDialogOpen: boolean;
+    setTransferDialogOpen: (open: boolean) => void;
+    selectedMedicine?: Medicine;
+    branches: Branch[];
+  }
 
   // Mock data for demonstration
   const branches = [
@@ -165,21 +183,83 @@ export default function BranchesPage() {
     (transfer) => transfer.status === "Pending"
   );
 
-  const handleTransferRequest = (medicine:any) => {
+  const handleTransferRequest = (medicine: any) => {
     setSelectedMedicine(medicine);
     setTransferDialogOpen(true);
   };
 
-  const handleApproveTransfer = (transferId:number) => {
+  const handleApproveTransfer = (transferId: number) => {
     // Logic to approve transfer
     console.log(`Approved transfer ${transferId}`);
   };
 
-  const handleRejectTransfer = (transferId:number) => {
+  const handleRejectTransfer = (transferId: number) => {
     // Logic to reject transfer
     console.log(`Rejected transfer ${transferId}`);
   };
 
+
+const TransferDialog: React.FC<TransferDialogProps> = ({
+  transferDialogOpen,
+  setTransferDialogOpen,
+  selectedMedicine,
+  branches,
+}) => {
+  return (
+    <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Request Transfer</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          {selectedMedicine ? (
+            <>
+              <p>Request transfer for: {selectedMedicine.name}</p>
+              <p>Current stock: {selectedMedicine.stock}</p>
+              <p>
+                From:{" "}
+                {branches.find((b) => b.id === selectedMedicine.branchId)?.name}
+              </p>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select destination branch" />
+                </SelectTrigger>
+                <SelectContent>
+                  {branches
+                    .filter((b) => b.id !== selectedMedicine.branchId)
+                    .map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id.toString()}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Input type="number" placeholder="Quantity to transfer" />
+            </>
+          ) : (
+            <p>No medicine selected</p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => setTransferDialogOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              // Here you would handle the transfer request
+              setTransferDialogOpen(false);
+            }}
+          >
+            Submit Request
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">
@@ -190,10 +270,11 @@ export default function BranchesPage() {
         <div className="flex items-center  space-x-2">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <SearchInputField placeholder="Search Medicines..."
+            <SearchInputField
+              placeholder="Search Medicines..."
               value={searchTerm}
-              onChange={(e:any) => setSearchTerm(e.target.value)}/>
-              
+              onChange={(e: any) => setSearchTerm(e.target.value)}
+            />
           </div>
           <Select value={selectedBranch} onValueChange={setSelectedBranch}>
             <SelectTrigger className="w-[180px]">
@@ -446,7 +527,7 @@ export default function BranchesPage() {
             </Button>
             <Button
               onClick={() => {
-                // Here you would handle the transfer request
+                // Here we will handle the transfer request
                 setTransferDialogOpen(false);
               }}
             >
@@ -458,3 +539,4 @@ export default function BranchesPage() {
     </div>
   );
 }
+
