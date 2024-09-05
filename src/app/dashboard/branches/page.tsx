@@ -49,7 +49,9 @@ export default function BranchesPage() {
   const [selectedBranch, setSelectedBranch] = useState("all");
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
-  const [selectedMedicine, setSelectedMedicine] = useState(null);
+    const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
+      null
+    );
   interface Medicine {
     id: number;
     name: string;
@@ -60,6 +62,7 @@ export default function BranchesPage() {
   interface Branch {
     id: number;
     name: string;
+    city:string;
   }
 
   interface TransferDialogProps {
@@ -70,7 +73,7 @@ export default function BranchesPage() {
   }
 
   // Mock data for demonstration
-  const branches = [
+  const branches :Branch[] = [
     { id: 1, name: "Central Hospital", city: "New York" },
     { id: 2, name: "Mercy Medical Center", city: "Los Angeles" },
     { id: 3, name: "St. John's Hospital", city: "Chicago" },
@@ -197,6 +200,11 @@ export default function BranchesPage() {
     // Logic to reject transfer
     console.log(`Rejected transfer ${transferId}`);
   };
+
+  interface Branch {
+    id: number;
+    name: string;
+  }
 
 
 const TransferDialog: React.FC<TransferDialogProps> = ({

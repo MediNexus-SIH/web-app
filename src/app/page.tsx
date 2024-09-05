@@ -12,7 +12,6 @@ import { Card, CardContent } from "@/components/ui/card";
 const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
-
       <SiteHeader />
       <div className="flex-grow bg-background items-center p-8 lg:p-12 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-12 lg:gap-16">
@@ -24,6 +23,7 @@ const HomePage = () => {
               <SmoothTextReveal
                 className="text-4xl sm:text-6xl font-bold"
                 text="MediNexus"
+                direction = "left"
                 animation="easeIn"
                 gradient={true}
               />
