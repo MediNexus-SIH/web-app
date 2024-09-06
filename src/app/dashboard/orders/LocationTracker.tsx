@@ -39,7 +39,8 @@ export default function LocationTrackerInner() {
 
       mapInstanceRef.current = mapInstance;
 
-      const url = "http://ec2-13-201-18-109.ap-south-1.compute.amazonaws.com:8080/";
+      const url =
+        "http://ec2-13-201-193-206.ap-south-1.compute.amazonaws.com:8080";
       const socket = io(url);
 
       socket.on("locationUpdate", (location: Location) => {
