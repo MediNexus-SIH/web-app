@@ -38,7 +38,8 @@ export default function TypewriterTitle() {
   }, [blink]);
 
   return (
-    <div className="min-h-[3rem] flex items-center justify-center">
+    <div className="h-[10rem] flex items-center justify-center">
+      {/* Setting min-h to ensure consistent height */}
       <AnimatePresence mode="wait">
         <motion.h1
           key={words[index]}
@@ -49,11 +50,7 @@ export default function TypewriterTitle() {
           className="p-5 text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#b873339c] via-[#c0c0c0] to-[#c0c0c0] dark:from-[#6e3b0c76] dark:via-[#c0c0c0] dark:to-[#c0c0c0]"
         >
           {words[index].substring(0, subIndex)}
-          <span className="cursor">
-            {" "}
-            {/* Ensures cursor renders correctly */}
-            {blink ? "|" : " "}
-          </span>
+          <span className="cursor">{blink ? "|" : " "}</span>
         </motion.h1>
       </AnimatePresence>
     </div>
