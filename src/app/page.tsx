@@ -19,25 +19,17 @@ import {
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import TypewriterTitle from "@/components/TypeWriterTitle";
 const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
       <div className="flex-grow bg-background items-center p-8 lg:p-12 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-12 lg:gap-16">
-          <RevealAnimation>
-            <GithubBadge />
-          </RevealAnimation>
-          <div className="flex flex-col justify-center items-center gap-8 lg:gap-10">
-            <h1 className="text-center text-4xl sm:text-6xl font-bold">
-              <SmoothTextReveal
-                className="text-4xl sm:text-6xl font-bold"
-                text="MediNexus"
-                direction="left"
-                animation="easeIn"
-                gradient={true}
-              />
-            </h1>
+          <div className="flex flex-col justify-center items-center">
+            <div className="text-center text-4xl sm:text-6xl font-bold">
+              <TypewriterTitle />
+            </div>
             <div className="text-center text-foreground">
               <SmoothTextReveal
                 className="text-lg sm:text-xl lg:text-2xl tracking-tight font-semibold"
@@ -56,7 +48,8 @@ const HomePage = () => {
                 direction="left"
               />
             </div>
-            <div className="mt-8 flex gap-4">
+            <div className="flex flex-col space-y-10">
+              <div className="mt-8 flex gap-4">
               <RevealAnimation className="flex justify-center items-center gap-4">
                 <Link
                   href="https://github.com/MediNexus-SIH/web-app"
@@ -72,6 +65,11 @@ const HomePage = () => {
                 <Button variant="secondary">Contact Us</Button>
               </RevealAnimation>
             </div>
+            <RevealAnimation>
+              <GithubBadge />
+            </RevealAnimation>
+            </div>
+            
           </div>
         </div>
       </div>
