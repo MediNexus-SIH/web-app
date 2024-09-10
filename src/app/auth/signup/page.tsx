@@ -417,7 +417,7 @@ export default function HospitalRegistrationForm() {
       <div className="flex flex-col justify-center space-x-2 space-y-6 ">
         <div className="flex  justify-between items-center">
           <div className="text-xl ml-2 font-semibold flex">Enter OTP</div>
-          <div className="text-sm ">"123456" for the time being</div>
+          <div className="text-sm ">&quot;123456&quot; for the time being</div>
         </div>
 
         <div className="flex justify-center space-x-2">

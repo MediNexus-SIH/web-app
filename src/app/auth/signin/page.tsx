@@ -156,7 +156,7 @@ export default function Component() {
             Hospital Sign In
           </CardTitle>
           <CardDescription className="flex justify-center space-x-4">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link className="hover:underline" href={"/auth/signup"}>
               Signup
             </Link>
