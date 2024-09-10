@@ -51,7 +51,6 @@ type FormData = {
   securityQuestion: string;
   securityAnswer: string;
 };
-// ... (keep the existing types and other imports)
 
 export default function HospitalRegistrationForm() {
   const [step, setStep] = useState(1);
@@ -80,10 +79,7 @@ export default function HospitalRegistrationForm() {
     hodEmail: "",
   });
 
-  // Refs
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  // Memoized toast function
   const { toast } = useToast();
   const showToast = useCallback(
     (
@@ -116,8 +112,8 @@ export default function HospitalRegistrationForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (value: string, name: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSelectChange = (label: string, name: string) => {
+    setFormData((prev) => ({ ...prev, [name]: label }));
   };
 
   const handleNewDepartmentChange = (
@@ -203,7 +199,6 @@ export default function HospitalRegistrationForm() {
     }
   };
 
-  // Component rendering functions
   const renderHospitalInfo = () => {
     return (
       <div className="space-y-4">
@@ -392,11 +387,12 @@ export default function HospitalRegistrationForm() {
           <Label htmlFor="departmentName">Security Question</Label>
           <SelectDropdown
             name="securityQuestion"
+            placeholder = "Select your Security Question"
+            value = {formData.securityQuestion}
             options={securityOptions}
             onValueChange={(label) =>
               handleSelectChange(label, "securityQuestion")
             }
-            placeholder="Select Security Question"
           />
         </div>
 
@@ -404,7 +400,7 @@ export default function HospitalRegistrationForm() {
           label="Security Answer"
           id="securityAnswer"
           name="securityAnswer"
-          value={formData.confirmPassword}
+          value={formData.securityAnswer}
           onChange={handleInputChange}
           required
         />

@@ -13,6 +13,7 @@ interface Option {
 }
 
 interface SelectDropdownProps {
+  value?: string,
   name?:string
   options: Option[];
   onValueChange: (value: string) => void;
@@ -20,19 +21,20 @@ interface SelectDropdownProps {
 }
 
 export const SelectDropdown: React.FC<SelectDropdownProps> = ({
+  value,
   name,
   options,
   onValueChange,
   placeholder,
 }) => {
   return (
-    <Select name={name} onValueChange={onValueChange}>
+    <Select value={value} name={name} onValueChange={onValueChange}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
+          <SelectItem key={option.label} value={option.label}>
             {option.label}
           </SelectItem>
         ))}
