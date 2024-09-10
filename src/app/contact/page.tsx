@@ -65,7 +65,7 @@ export default function ContactUs() {
           toast({
             title: "Message Sent",
             description:
-              "Thank you for your message. We'll get back to you soon!",
+              "Thank you for your message. We will get back to you soon!",
             action: (
               <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
             ),
@@ -102,7 +102,7 @@ export default function ContactUs() {
         <div className="container mx-auto px-4 py-16">
           <h1 className="text-4xl font-bold text-center mb-4">Contact Us</h1>
           <p className="text-xl text-center mb-12">
-            We're here to help with your pharmaceutical supply chain needs
+            We&apos;re here to help with your pharmaceutical supply chain needs
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card>
@@ -111,7 +111,7 @@ export default function ContactUs() {
                   Send us a message
                 </CardTitle>
                 <CardDescription>
-                  Fill out the form below and we'll get back to you as soon as
+                  Fill out the form below and we&apos;ll get back to you as soon as
                   possible.
                 </CardDescription>
               </CardHeader>
