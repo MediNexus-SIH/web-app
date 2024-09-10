@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 export default function Component() {
   const [email, setEmail] = useState("");
@@ -40,8 +41,6 @@ export default function Component() {
       otpRefs.current[0]?.focus();
     }
   }, [step]);
-
-
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
@@ -97,7 +96,7 @@ export default function Component() {
       } else {
         setError("Invalid OTP. Please try again.");
       }
-    } 
+    }
   };
 
   const handleForgotPassword = (e: React.FormEvent) => {
@@ -156,8 +155,11 @@ export default function Component() {
           <CardTitle className="text-2xl font-bold text-center">
             Hospital Sign In
           </CardTitle>
-          <CardDescription className="text-center">
-            Access your supply chain inventory and demand management platform
+          <CardDescription className="flex justify-center space-x-4">
+            Don't have an account?{" "}
+            <Link className="hover:underline" href={"/auth/signup"}>
+              Signup
+            </Link>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -207,10 +209,10 @@ export default function Component() {
                     </div>
                   </>
                 )}
-                {(step === "otp") && (
+                {step === "otp" && (
                   <div className="space-y-2">
                     <Label htmlFor="otp">
-                      {step === "otp" ? "Enter OTP" :null}
+                      {step === "otp" ? "Enter OTP" : null}
                     </Label>
                     <div className="flex justify-between">
                       {otpValues.map((value, index) => (
@@ -240,7 +242,7 @@ export default function Component() {
                     ? "Sign In"
                     : step === "otp"
                     ? "Verify OTP"
-                    :null}
+                    : null}
                 </Button>
               </form>
               {step !== "signin" && (
@@ -260,44 +262,45 @@ export default function Component() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="flex items-center justify-center w-full">
-            {step==="signin"?<Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="link"
-                  className="text-sm text-red-600 hover:underline"
-                >
-                  Forgot password?
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>Reset Password</DialogTitle>
-                  <DialogDescription>
-                    Enter your email address and we&apos;ll send you a link to reset
-                    your password.
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleForgotPassword}>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="reset-email" className="text-right">
-                        Email
-                      </Label>
-                      <Input
-                        id="reset-email"
-                        value={resetEmail}
-                        onChange={(e) => setResetEmail(e.target.value)}
-                        className="col-span-3"
-                      />
+            {step === "signin" ? (
+              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="link"
+                    className="text-sm text-red-600 hover:underline"
+                  >
+                    Forgot password?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Reset Password</DialogTitle>
+                    <DialogDescription>
+                      Enter your email address and we&apos;ll send you a link to
+                      reset your password.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleForgotPassword}>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="reset-email" className="text-right">
+                          Email
+                        </Label>
+                        <Input
+                          id="reset-email"
+                          value={resetEmail}
+                          onChange={(e) => setResetEmail(e.target.value)}
+                          className="col-span-3"
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <DialogFooter>
-                    <Button type="submit">Send Reset Link</Button>
-                  </DialogFooter>
-                </form>
-              </DialogContent>
-            </Dialog>:null}
-            
+                    <DialogFooter>
+                      <Button type="submit">Send Reset Link</Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            ) : null}
           </div>
           <div className="flex items-center justify-center w-full">
             <Lock className="h-4 w-4 mr-2 text-gray-500" />

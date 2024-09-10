@@ -97,67 +97,7 @@ export default function About() {
             </div>
           </section>
 
-          {/* Leadership Section */}
-          <section className="py-16 ">
-            <h2 className="text-2xl font-bold mb-6">Leadership Team</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Dhruv Dawar</h3>
-                <p className="mt-2">Dumbo Dawar</p>
-                <p className="mt-2">
-                  Dhruv, our team lead, may be new but brings strong leadership
-                  and enthusiasm, driving the team toward success in supply
-                  chain and pharmaceutical tech.
-                </p>
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Arnav Singhal</h3>
-                <p className="mt-2">Lambu No.1</p>
-                <p className="mt-2">
-                  Arnav, a web development genius, builds scalable,
-                  high-performance platforms, ensuring our digital
-                  infrastructure is always top-tier.
-                </p>
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Arnav Nigam</h3>
-                <p className="mt-2">Nigga</p>
-                <p className="mt-2">
-                  Arnav optimizes operations, ensuring smooth pharmaceutical
-                  distribution and efficient supply chain management.
-                </p>
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Dharmeshwar Sharma</h3>
-                <p className="mt-2">Fatty Dharmu</p>
-                <p className="mt-2">
-                  Dharmeshwar leads app development, creating seamless,
-                  responsive platforms for real-time inventory management and
-                  tracking.
-                </p>
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Aryav Gupta</h3>
-                <p className="mt-2">Lambu No. 2</p>
-                <p className="mt-2">
-                  Aryav powers our predictive capabilities with advanced machine
-                  learning and AI, improving demand forecasting and inventory
-                  optimization.
-                </p>
-              </div>
-              <div className="text-center">
-                <h3 className="text-xl font-semibold">Ananya Mangal</h3>
-                <p className="mt-2">Skill Issue</p>
-                <p className="mt-2">
-                  Ananya integrates blockchain technology, ensuring secure,
-                  transparent tracking of transactions and inventory across the
-                  supply chain.
-                </p>
-              </div>
-            </div>
-          </section>
-
-          {/* Contact Section */}
+          <LeadershipSection/>
           <section className="py-16 text-center">
             <p>
               Interested in joining us to revolutionize pharmaceutical
@@ -171,5 +111,67 @@ export default function About() {
         </div>
       </RevealAnimation>
     </div>
+  );
+}
+
+
+const LeadershipSection = ()=>{
+  return (
+    <section className="py-16 ">
+      <h2 className="text-2xl font-bold mb-6">Leadership Team</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Dhruv Dawar</h3>
+          <p className="mt-2">Dumbo Dawar</p>
+          <p className="mt-2">
+            Dhruv, our team lead, may be new but brings strong leadership and
+            enthusiasm, driving the team toward success in supply chain and
+            pharmaceutical tech.
+          </p>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Arnav Singhal</h3>
+          <p className="mt-2">Lambu No.1</p>
+          <p className="mt-2">
+            Arnav, a web development genius, builds scalable, high-performance
+            platforms, ensuring our digital infrastructure is always top-tier.
+          </p>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Arnav Nigam</h3>
+          <p className="mt-2">Nigga</p>
+          <p className="mt-2">
+            Arnav optimizes operations, ensuring smooth pharmaceutical
+            distribution and efficient supply chain management.
+          </p>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Dharmeshwar Sharma</h3>
+          <p className="mt-2">Fatty Dharmu</p>
+          <p className="mt-2">
+            Dharmeshwar leads app development, creating seamless, responsive
+            platforms for real-time inventory management and tracking.
+          </p>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Aryav Gupta</h3>
+          <p className="mt-2">Lambu No. 2</p>
+          <p className="mt-2">
+            Aryav powers our predictive capabilities with advanced machine
+            learning and AI, improving demand forecasting and inventory
+            optimization.
+          </p>
+        </div>
+        <div className="text-center">
+          <h3 className="text-xl font-semibold">Ananya Mangal</h3>
+          <p className="mt-2">Skill Issue</p>
+          <p className="mt-2">
+            Ananya integrates blockchain technology, ensuring secure,
+            transparent tracking of transactions and inventory across the supply
+            chain.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
