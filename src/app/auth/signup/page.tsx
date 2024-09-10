@@ -2,23 +2,18 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
 import {
   Card,
   CardContent,
   CardFooter,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
 import {
   Hospital,
   Users,
@@ -29,9 +24,13 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import GeneralizedInput from "@/components/GeneralizedInput";
+import { departmentOptions, indiaStatesAndUTs, securityOptions } from "@/lib/dropdownOptions";
+import { SelectDropdown } from "@/components/SelectDropdown";
 // Types
 type Department = {
-  name: string;
+  departmentName: string;
   hodName: string;
   hodEmail: string;
 };
@@ -49,6 +48,8 @@ type FormData = {
   adminEmail: string;
   password: string;
   confirmPassword: string;
+  securityQuestion: string;
+  securityAnswer: string;
 };
 // ... (keep the existing types and other imports)
 
@@ -70,9 +71,11 @@ export default function HospitalRegistrationForm() {
     adminEmail: "",
     password: "",
     confirmPassword: "",
+    securityQuestion: "",
+    securityAnswer: "",
   });
   const [newDepartment, setNewDepartment] = useState<Department>({
-    name: "",
+    departmentName: "",
     hodName: "",
     hodEmail: "",
   });
@@ -118,9 +121,9 @@ export default function HospitalRegistrationForm() {
   };
 
   const handleNewDepartmentChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement> | { name: string; value: string }
   ) => {
-    const { name, value } = e.target;
+    const { name, value } = "target" in e ? e.target : e;
     setNewDepartment((prev) => ({
       ...prev,
       [name]: value,
@@ -128,12 +131,17 @@ export default function HospitalRegistrationForm() {
   };
 
   const addDepartment = () => {
-    if (newDepartment.name && newDepartment.hodName && newDepartment.hodEmail) {
+    console.log(newDepartment);
+    if (
+      newDepartment.departmentName &&
+      newDepartment.hodName &&
+      newDepartment.hodEmail
+    ) {
       setFormData((prev) => ({
         ...prev,
         departments: [...prev.departments, newDepartment],
       }));
-      setNewDepartment({ name: "", hodName: "", hodEmail: "" });
+      setNewDepartment({ departmentName: "", hodName: "", hodEmail: "" });
     } else {
       toast({
         title: "Incomplete Department Information",
@@ -196,79 +204,67 @@ export default function HospitalRegistrationForm() {
   };
 
   // Component rendering functions
-  const renderHospitalInfo = () => (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2">
-        <Hospital className="h-5 w-5 text-gray-500" />
-        <h3 className="text-xl font-semibold">Hospital Information</h3>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="hospitalName">Hospital Name</Label>
-        <Input
+  const renderHospitalInfo = () => {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Hospital className="h-5 w-5 text-gray-500" />
+          <h3 className="text-xl font-semibold">Hospital Information</h3>
+        </div>
+        <GeneralizedInput
+          label="Hospital Name"
           id="hospitalName"
           name="hospitalName"
           value={formData.hospitalName}
           onChange={handleInputChange}
           required
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="addressLine1">Address Line 1</Label>
-        <Input
+        <GeneralizedInput
           id="addressLine1"
           name="addressLine1"
           value={formData.addressLine1}
+          label="Address Line 1"
           onChange={handleInputChange}
           required
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="addressLine2">Address Line 2</Label>
-        <Input
+        />{" "}
+        <GeneralizedInput
           id="addressLine2"
           name="addressLine2"
           value={formData.addressLine2}
+          label="Address Line 2"
           onChange={handleInputChange}
         />
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="region">Region</Label>
-          <Input
+        <div className="grid grid-cols-2 gap-4">
+          <GeneralizedInput
             id="region"
             name="region"
             value={formData.region}
-            onChange={handleInputChange}
+            label="Region"
             required
+            onChange={handleInputChange}
           />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="pincode">Pincode</Label>
-          <Input
+          <GeneralizedInput
             id="pincode"
             name="pincode"
             value={formData.pincode}
-            onChange={handleInputChange}
+            label="Pincode"
             required
+            onChange={handleInputChange}
           />
         </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="state">State</Label>
-          <Select
-            name="state"
-            onValueChange={(value) => handleSelectChange(value, "state")}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select state" />
-            </SelectTrigger>
-            <StateOptions />
-          </Select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="phoneNumber">Phone Number</Label>
-          <Input
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="state">State</Label>
+            <SelectDropdown
+              name="state"
+              options={indiaStatesAndUTs}
+              onValueChange={(value: any) => handleSelectChange(value, "state")}
+              placeholder="Select a state or union territory"
+            />
+          </div>
+
+          <GeneralizedInput
+            label="Phone Number"
             id="phoneNumber"
             name="phoneNumber"
             value={formData.phoneNumber}
@@ -277,8 +273,8 @@ export default function HospitalRegistrationForm() {
           />
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderDepartmentDetails = () => (
     <div className="space-y-4">
@@ -297,7 +293,7 @@ export default function HospitalRegistrationForm() {
             <X className="h-4 w-4" />
           </Button>
           <p>
-            <strong>Department:</strong> {dept.name}
+            <strong>Department:</strong> {dept.departmentName}
           </p>
           <p>
             <strong>HOD Name:</strong> {dept.hodName}
@@ -309,39 +305,32 @@ export default function HospitalRegistrationForm() {
       ))}
       <div className="space-y-2">
         <Label htmlFor="departmentName">Department Name</Label>
-        <Select
+        <SelectDropdown
           name="departmentName"
+          options={departmentOptions}
           onValueChange={(value) =>
-            handleNewDepartmentChange({
-              target: { name: "name", value },
-            } as React.ChangeEvent<HTMLInputElement>)
+            handleNewDepartmentChange({ name: "departmentName", value })
           }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select department" />
-          </SelectTrigger>
-          <DepartmentOptions />
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="hodName">Head of Department Name</Label>
-        <Input
-          id="hodName"
-          name="hodName"
-          value={newDepartment.hodName}
-          onChange={handleNewDepartmentChange}
+          placeholder="Select department"
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="hodEmail">Head of Department Email</Label>
-        <Input
-          id="hodEmail"
-          name="hodEmail"
-          type="email"
-          value={newDepartment.hodEmail}
-          onChange={handleNewDepartmentChange}
-        />
-      </div>
+
+      <GeneralizedInput
+        label="Head of Department Name"
+        id="hodName"
+        name="hodName"
+        value={newDepartment.hodName}
+        onChange={handleNewDepartmentChange}
+      />
+
+      <GeneralizedInput
+        label="Head of Department Email"
+        id="hodEmail"
+        name="hodEmail"
+        type="email"
+        value={newDepartment.hodEmail}
+        onChange={handleNewDepartmentChange}
+      />
       <Button variant={"default"} onClick={addDepartment} className="w-full">
         <Plus className="mr-2 h-4 w-4" /> Add Department
       </Button>
@@ -356,8 +345,8 @@ export default function HospitalRegistrationForm() {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="adminName">Admin Name</Label>
-          <Input
+          <GeneralizedInput
+            label="Admin Name"
             id="adminName"
             name="adminName"
             value={formData.adminName}
@@ -366,8 +355,8 @@ export default function HospitalRegistrationForm() {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="adminEmail">Admin Email</Label>
-          <Input
+          <GeneralizedInput
+            label="Admin Email"
             id="adminEmail"
             name="adminEmail"
             type="email"
@@ -378,28 +367,47 @@ export default function HospitalRegistrationForm() {
         </div>
       </div>
       <div className="grid grid-cols-2 gap-4">
+        <GeneralizedInput
+          label="Password"
+          id="password"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          required
+        />
+
+        <GeneralizedInput
+          label="Confirm Password"
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          value={formData.confirmPassword}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
+          <Label htmlFor="departmentName">Department Name</Label>
+          <SelectDropdown
+            name="securityQuestion"
+            options={securityOptions}
+            onValueChange={(label) =>
+              handleSelectChange(label, "securityQuestion")
+            }
+            placeholder="Select department"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="confirmPassword">Confirm Password</Label>
-          <Input
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
+
+        <GeneralizedInput
+          label="Security Answer"
+          id="securityAnswer"
+          name="securityAnswer"
+          value={formData.confirmPassword}
+          onChange={handleInputChange}
+          required
+        />
       </div>
     </div>
   );
@@ -407,7 +415,11 @@ export default function HospitalRegistrationForm() {
   const renderOtpVerification = () => (
     <div className="flex flex-col items-center space-y-2">
       <div className="flex flex-col justify-center space-x-2 space-y-6 ">
-        <h3 className="text-xl ml-2 font-semibold flex">Enter OTP</h3>
+        <div className="flex  justify-between items-center">
+          <div className="text-xl ml-2 font-semibold flex">Enter OTP</div>
+          <div className="text-sm ">"123456" for the time being</div>
+        </div>
+
         <div className="flex justify-center space-x-2">
           {otpValues.map((value, index) => (
             <Input
@@ -540,7 +552,6 @@ export default function HospitalRegistrationForm() {
     )
   );
 
-  // Add displayName to satisfy the ESLint rule
   StepProgress.displayName = "StepProgress";
 
   const getCardFooterClassName = (currentStep: number): string => {
@@ -548,9 +559,9 @@ export default function HospitalRegistrationForm() {
       currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
     }`;
   };
-  // ... (keep existing rendering functions)
 
   const validateStep = () => {
+    console.log(formData);
     if (step === 1) {
       if (
         !formData.hospitalName ||
@@ -603,10 +614,12 @@ export default function HospitalRegistrationForm() {
   };
 
   const handleNext = () => {
+    console.log(step);
     if (validateStep()) {
       setIsLoading(true);
       setTimeout(() => {
         setStep((prev) => prev + 1);
+        console.log(step);
         setIsLoading(false);
         showToast("Step Completed", "Moving to the next step.", "default");
       }, 500);
@@ -626,12 +639,19 @@ export default function HospitalRegistrationForm() {
 
   return (
     <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
+      <Toaster />
       <Card className="w-full max-w-4xl mx-auto">
-        <CardHeader className="border-b">
+        <CardHeader className="border-b flex flex-col space-y-2 justify-center items-center">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
             <Hospital className="h-6 w-6" />
             Hospital Registration
           </CardTitle>
+          <CardDescription>
+            Already have an account?{" "}
+            <Link className="hover:underline" href={"/auth/signin"}>
+              Signin
+            </Link>
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
           <StepProgress currentStep={step} />
@@ -683,72 +703,3 @@ export default function HospitalRegistrationForm() {
     </div>
   );
 }
-
-const DepartmentOptions = () => (
-  <SelectContent>
-    <SelectItem value="Emergency">Emergency</SelectItem>
-    <SelectItem value="Surgery">Surgery</SelectItem>
-    <SelectItem value="Pediatrics">Pediatrics</SelectItem>
-    <SelectItem value="Cardiology">Cardiology</SelectItem>
-    <SelectItem value="Neurology">Neurology</SelectItem>
-    <SelectItem value="Oncology">Oncology</SelectItem>
-    <SelectItem value="Radiology">Radiology</SelectItem>
-    <SelectItem value="Orthopedics">Orthopedics</SelectItem>
-    <SelectItem value="Dermatology">Dermatology</SelectItem>
-    <SelectItem value="Gastroenterology">Gastroenterology</SelectItem>
-    <SelectItem value="Psychiatry">Psychiatry</SelectItem>
-    <SelectItem value="ObstetricsAndGynecology">
-      Obstetrics and Gynecology
-    </SelectItem>
-    <SelectItem value="Nephrology">Nephrology</SelectItem>
-    <SelectItem value="Pulmonology">Pulmonology</SelectItem>
-    <SelectItem value="Endocrinology">Endocrinology</SelectItem>
-    <SelectItem value="ENT">ENT</SelectItem>
-    <SelectItem value="Ophthalmology">Ophthalmology</SelectItem>
-    <SelectItem value="Pathology">Pathology</SelectItem>
-    <SelectItem value="Anesthesiology">Anesthesiology</SelectItem>
-  </SelectContent>
-);
-
-const StateOptions = () => (
-  <SelectContent>
-    <SelectItem value="andhra">Andhra Pradesh</SelectItem>
-    <SelectItem value="arunachal">Arunachal Pradesh</SelectItem>
-    <SelectItem value="assam">Assam</SelectItem>
-    <SelectItem value="bihar">Bihar</SelectItem>
-    <SelectItem value="chhattisgarh">Chhattisgarh</SelectItem>
-    <SelectItem value="goa">Goa</SelectItem>
-    <SelectItem value="gujarat">Gujarat</SelectItem>
-    <SelectItem value="haryana">Haryana</SelectItem>
-    <SelectItem value="himachal">Himachal Pradesh</SelectItem>
-    <SelectItem value="jharkhand">Jharkhand</SelectItem>
-    <SelectItem value="karnataka">Karnataka</SelectItem>
-    <SelectItem value="kerala">Kerala</SelectItem>
-    <SelectItem value="madhya">Madhya Pradesh</SelectItem>
-    <SelectItem value="maharashtra">Maharashtra</SelectItem>
-    <SelectItem value="manipur">Manipur</SelectItem>
-    <SelectItem value="meghalaya">Meghalaya</SelectItem>
-    <SelectItem value="mizoram">Mizoram</SelectItem>
-    <SelectItem value="nagaland">Nagaland</SelectItem>
-    <SelectItem value="odisha">Odisha</SelectItem>
-    <SelectItem value="punjab">Punjab</SelectItem>
-    <SelectItem value="rajasthan">Rajasthan</SelectItem>
-    <SelectItem value="sikkim">Sikkim</SelectItem>
-    <SelectItem value="tamil">Tamil Nadu</SelectItem>
-    <SelectItem value="telangana">Telangana</SelectItem>
-    <SelectItem value="tripura">Tripura</SelectItem>
-    <SelectItem value="uttar">Uttar Pradesh</SelectItem>
-    <SelectItem value="uttarakhand">Uttarakhand</SelectItem>
-    <SelectItem value="west">West Bengal</SelectItem>
-    <SelectItem value="andaman">Andaman and Nicobar Islands</SelectItem>
-    <SelectItem value="chandigarh">Chandigarh</SelectItem>
-    <SelectItem value="dadra">
-      Dadra and Nagar Haveli and Daman and Diu
-    </SelectItem>
-    <SelectItem value="delhi">Delhi</SelectItem>
-    <SelectItem value="jammu">Jammu and Kashmir</SelectItem>
-    <SelectItem value="ladakh">Ladakh</SelectItem>
-    <SelectItem value="lakshadweep">Lakshadweep</SelectItem>
-    <SelectItem value="puducherry">Puducherry</SelectItem>
-  </SelectContent>
-);

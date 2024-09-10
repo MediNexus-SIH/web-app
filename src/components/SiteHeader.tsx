@@ -23,6 +23,12 @@ export function SiteHeader() {
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6">
         <RevealAnimation className="flex justify-center items-center gap-4">
+          <Link
+            className="text-sm font-medium text-primary hover:underline transition-colors duration-200"
+            href="/dashboard"
+          >
+            Dashboard
+          </Link>
           <button
             className="text-sm font-medium text-primary hover:underline transition-colors duration-200"
             onClick={handleScroll}
