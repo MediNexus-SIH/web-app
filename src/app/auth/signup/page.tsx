@@ -389,14 +389,14 @@ export default function HospitalRegistrationForm() {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="departmentName">Department Name</Label>
+          <Label htmlFor="departmentName">Security Question</Label>
           <SelectDropdown
             name="securityQuestion"
             options={securityOptions}
             onValueChange={(label) =>
               handleSelectChange(label, "securityQuestion")
             }
-            placeholder="Select department"
+            placeholder="Select Security Question"
           />
         </div>
 
