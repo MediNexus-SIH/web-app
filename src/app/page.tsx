@@ -27,6 +27,9 @@ const HomePage = () => {
       <div className="flex-grow bg-background items-center p-8 lg:p-12 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
         <div className="max-w-6xl mx-auto flex flex-col items-center gap-12 lg:gap-16">
           <div className="flex flex-col justify-center items-center">
+            <RevealAnimation className="my-5">
+              <GithubBadge />
+            </RevealAnimation>
             <div className="text-center text-4xl sm:text-6xl font-bold">
               <TypewriterTitle />
             </div>
@@ -50,26 +53,22 @@ const HomePage = () => {
             </div>
             <div className="flex flex-col space-y-10">
               <div className="mt-8 flex gap-4">
-              <RevealAnimation className="flex justify-center items-center gap-4">
-                <Link
-                  href="https://github.com/MediNexus-SIH/web-app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center"
-                >
-                  <Button>
-                    Go to GitHub{" "}
-                    <Icons.arrowRight className="pl-0.5" size={16} />
-                  </Button>
-                </Link>
-                <Button variant="secondary">Contact Us</Button>
-              </RevealAnimation>
+                <RevealAnimation className="flex justify-center items-center gap-4">
+                  <Link
+                    href="https://github.com/MediNexus-SIH/web-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center"
+                  >
+                    <Button>
+                      Go to GitHub{" "}
+                      <Icons.arrowRight className="pl-0.5" size={16} />
+                    </Button>
+                  </Link>
+                  <Button variant="secondary">Contact Us</Button>
+                </RevealAnimation>
+              </div>
             </div>
-            <RevealAnimation>
-              <GithubBadge />
-            </RevealAnimation>
-            </div>
-            
           </div>
         </div>
       </div>
