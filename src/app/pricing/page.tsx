@@ -1,6 +1,5 @@
 import RevealAnimation from "@/components/framer-motion/revealAnimation";
-import { PricingSiteHeader } from "@/components/PricingSiteHeader";
-import { SiteHeader } from "@/components/SiteHeader";
+import { SiteHeader2 } from "@/components/SiteHeader2";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -57,7 +56,7 @@ export default function PricingPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <PricingSiteHeader />
+      <SiteHeader2 />
       <div className="min-h-screen bg-muted/40">
         <div className="container mx-auto px-4 py-16">
           <h1 className="text-4xl font-bold text-center mb-4">Pricing Plans</h1>

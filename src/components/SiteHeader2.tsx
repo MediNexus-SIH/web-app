@@ -2,7 +2,7 @@ import { Hospital } from "lucide-react";
 import Link from "next/link";
 import RevealAnimation from "./framer-motion/revealAnimation";
 
-export function PricingSiteHeader() {
+export function SiteHeader2() {
   return (
     <header className="px-4 lg:px-6 h-14 flex items-center border-b-2">
       <Link className="flex items-center justify-center" href="/">
