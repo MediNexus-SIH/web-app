@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useAnimation } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
@@ -387,8 +387,8 @@ export default function HospitalRegistrationForm() {
           <Label htmlFor="departmentName">Security Question</Label>
           <SelectDropdown
             name="securityQuestion"
-            placeholder = "Select your Security Question"
-            value = {formData.securityQuestion}
+            placeholder="Select your Security Question"
+            value={formData.securityQuestion}
             options={securityOptions}
             onValueChange={(label) =>
               handleSelectChange(label, "securityQuestion")
@@ -479,82 +479,91 @@ export default function HospitalRegistrationForm() {
     { title: "Verification", icon: ShieldCheck },
   ];
 
-  type StepProgressProps = {
+  //Is rerendering unnecessarily
+  interface StepProgressProps {
     currentStep: number;
-    steps: Array<{ icon: React.ComponentType<any> }>; // Adjust this type as needed
-  };
+  }
 
-  // Optimized StepProgress component
-  const StepProgress = React.memo(
-    ({ currentStep }: { currentStep: number }) => (
-      <div className="mb-8">
-        <div className="relative">
-          <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2" />
-          <motion.div
-            className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2"
-            style={{
+  const StepProgress: React.FC<StepProgressProps> = React.memo(
+    ({ currentStep }) => {
+      const prevStepRef = useRef(currentStep);
+      const controls = useAnimation();
+
+      useEffect(() => {
+        const animate = async () => {
+          if (currentStep !== prevStepRef.current) {
+            await controls.start({
               width: `${
                 ((Math.min(currentStep, steps.length) - 1) /
                   (steps.length - 1)) *
                 100
               }%`,
-            }}
-            initial={{ width: 0 }}
-            animate={{
-              width: `${
-                ((Math.min(currentStep, steps.length) - 1) /
-                  (steps.length - 1)) *
-                100
-              }%`,
-            }}
-            transition={{ duration: 0.5 }}
-          />
-          <div className="relative z-10 flex items-center justify-between">
-            {steps.map((s, index) => (
-              <div
-                key={index}
-                className="flex flex-col justify-center items-center relative"
-              >
-                <motion.div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white mb-2 ${
-                    index < currentStep - 1
-                      ? "bg-green-500"
-                      : index === currentStep - 1 &&
-                        currentStep - 1 <= steps.length
-                      ? "bg-blue-500"
-                      : "bg-gray-300"
-                  }`}
-                  initial={false}
-                  animate={{
-                    scale:
-                      index === currentStep - 1 &&
-                      currentStep - 1 <= steps.length
-                        ? 1.2
-                        : 1,
-                    transition: { duration: 0.3 },
-                  }}
+              transition: { duration: 0.5 },
+            });
+            prevStepRef.current = currentStep;
+          }
+        };
+        animate();
+      }, [currentStep, controls]);
+
+      return (
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -translate-y-1/2" />
+            <motion.div
+              className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2"
+              initial={{
+                width: `${
+                  ((Math.min(prevStepRef.current, steps.length) - 1) /
+                    (steps.length - 1)) *
+                  100
+                }%`,
+              }}
+              animate={controls}
+            />
+            <div className="relative z-10 flex items-center justify-between">
+              {steps.map((s, index) => (
+                <div
+                  key={index}
+                  className="flex flex-col justify-center items-center relative"
                 >
-                  {index < currentStep - 1 ? (
-                    <Check className="h-6 w-6" />
-                  ) : (
-                    <s.icon className="h-6 w-6" />
-                  )}
-                </motion.div>
-              </div>
-            ))}
+                  <motion.div
+                    className={`w-12 h-12 rounded-full flex items-center justify-center text-white mb-2 ${
+                      index < currentStep - 1
+                        ? "bg-green-500"
+                        : index === currentStep - 1 &&
+                          currentStep - 1 <= steps.length
+                        ? "bg-blue-500"
+                        : "bg-gray-300"
+                    }`}
+                    initial={false}
+                    animate={{
+                      scale:
+                        index === currentStep - 1 &&
+                        currentStep - 1 <= steps.length
+                          ? 1.2
+                          : 1,
+                      transition: { duration: 0.3 },
+                    }}
+                  >
+                    {index < currentStep - 1 ? (
+                      <Check className="h-6 w-6" />
+                    ) : (
+                      <s.icon className="h-6 w-6" />
+                    )}
+                  </motion.div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-    )
+      );
+    }
   );
 
   StepProgress.displayName = "StepProgress";
 
-  const getCardFooterClassName = (currentStep: number): string => {
-    return `flex justify-between items-center ${
-      currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
-    }`;
-  };
+
 
   const validateStep = () => {
     console.log(formData);
@@ -633,6 +642,12 @@ export default function HospitalRegistrationForm() {
     }
   }, [step, router]);
 
+  const getCardFooterClassName = (currentStep: number): string => {
+    return `flex justify-between items-center ${
+      currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
+    }`;
+  };
+
   return (
     <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
       <Toaster />
@@ -650,12 +665,12 @@ export default function HospitalRegistrationForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6">
-          <StepProgress currentStep={step} />
+          {step < 5 ? <StepProgress currentStep={step} /> : null}
           <form onSubmit={handleSubmit}>
             <div className="space-y-6">
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={step}
+                  key={step.toString()}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -699,3 +714,4 @@ export default function HospitalRegistrationForm() {
     </div>
   );
 }
+
