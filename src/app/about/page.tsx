@@ -97,7 +97,7 @@ export default function About() {
             </div>
           </section>
 
-          <LeadershipSection/>
+          {/* <LeadershipSection/> */}
           <section className="py-16 text-center">
             <p>
               Interested in joining us to revolutionize pharmaceutical
