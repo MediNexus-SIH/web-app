@@ -269,7 +269,7 @@ const TransferDialog: React.FC<TransferDialogProps> = ({
   );
 };
   return (
-    <div className="container mx-auto p-4">
+    <div className="mx-auto p-4 w-screen min-h-screen flex-1 overflow-y-auto  md:p-6 bg-muted/40">
       <h1 className="text-2xl font-bold mb-4">
         Hospital Branches Inventory Management
       </h1>
@@ -300,12 +300,14 @@ const TransferDialog: React.FC<TransferDialogProps> = ({
         </div>
         <Dialog open={alertsOpen} onOpenChange={setAlertsOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Ambulance className="h-4 w-4" />
+            <div className="relative">
+              <Button variant="outline" size="icon">
+                <Ambulance className="h-4 w-4" />
+              </Button>
               {(emergencyAlerts.length > 0 || pendingTransfers.length > 0) && (
                 <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full" />
               )}
-            </Button>
+            </div>
           </DialogTrigger>
           <DialogContent className="max-w-3xl">
             <DialogHeader>

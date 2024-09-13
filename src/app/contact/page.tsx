@@ -13,7 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Mail, Phone, MapPin } from "lucide-react";
+import dynamic from "next/dynamic";
+
 import { SiteHeader2 } from "@/components/SiteHeader2";
+ 
 import GeneralizedInput from "@/components/GeneralizedInput";
 import GeneralizedTextArea from "@/components/GeneralizedTextArea";
 
@@ -182,7 +185,7 @@ const ContactDetail = () => {
       <CardContent className="space-y-4">
         <div className="flex items-center space-x-5">
           <Mail className="h-5 w-5" />
-          <span>arnavsinghal06@gmail.com</span>
+          <span>arnavsinghal_23cs079.dtu.ac.in</span>
         </div>
         <div className="flex items-center space-x-5">
           <Phone className="h-5 w-5" />
