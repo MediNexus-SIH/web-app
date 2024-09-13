@@ -38,9 +38,29 @@ The primary goal is to design an innovative, technology-driven system that ensur
     ```bash
     npm run dev
 ---
+## Screenshots
+### Homepage 
+![SS_Homepage_English](./public/assets/screenshots/ss_homepage_english.png)
+![SS_Homepage_Hindi](./public/assets/screenshots/ss_homepage_hindi.png)
+
+### Dashboard 
+![SS_Dashboard](./public/assets/screenshots/ss_dashboard.png)
+
+### Inventory
+![SS_Inventory](./public/assets/screenshots/ss_inventory.png)
+
+### Orders
+![SS_Orders](./public/assets/screenshots/ss_order.png)
+![SS_Orders_Details](./public/assets/screenshots/ss_order_details.png)
+
+### Multi Hospital Resource Sharing
+![SS_Orders](./public/assets/screenshots/ss_branch_inventory.png)
+![SS_Orders_Details](./public/assets/screenshots/ss_branch_transferHistory.png)
+
+### Reports and Ananlytics
+![SS_Reports](./public/assets/screenshots/ss_reports.png)
 
 ## Core Features (Hospital & Vendor Dashboard)
-
 ### 1. **Inventory Management Card**
    - Displays real-time stock levels of medical items.
    - Highlights items that are low in stock, near expiry, or in high demand.
