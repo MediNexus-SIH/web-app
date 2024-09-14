@@ -7,7 +7,10 @@ import { z } from "zod";
 async function checkExistingHospital(hospitalName: string, contact_number: string) {
   const existingHospital = await prisma.hospital.findFirst({
     where: {
-      OR: [{ hospitalName }, { contact_number }],
+      OR: [
+        { hospitalName: { equals: hospitalName } },
+        { contact_number: { equals: contact_number } },
+      ],
     },
   });
   return existingHospital;
