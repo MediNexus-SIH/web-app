@@ -9,35 +9,34 @@ datasource db {
 }
 
 model Hospital {
-  id                          String                  @id @default(uuid())
-  name                        String
-  contact_number              String                  @unique
+  id                          String                      @id @default(uuid())
+  hospitalName                String
+  contact_number              String                      @unique
   address_line_1              String
   address_line_2              String?
-  pincode                     Int
-  city                        String
-  username                    String                  @unique 
-  security_question           sec_ques_enum
-  security_question_answer    String
+  pincode                     String
+  region                      String
+  admin_name                  String
+  admin_email                 String                      @unique 
+  security_question           String
+  security_answer             String
   password                    String
-  region                      delhi_regions 
-  departments                 Departments[]           @relation("HospitalDepartments")
-  medicalInventory            MedicalInventory[]      @relation("HospitalMedicalInventory")
-  bloodBank                   BloodBank[]             @relation("HospitalBloodBank")
-  resourceSharingDonor        ResourceSharing[]       @relation("DonorHospitalResourceSharing")
-  resourceSharingReceiver     ResourceSharing[]       @relation("ReceiverHospitalResourceSharing")
-  vendorOrders                VendorOrders[]          @relation("HospitalVendorOrders")
+  state                       String
+  departments                 Departments[]               @relation("HospitalDepartments")
+  bloodBank                   BloodBank[]                 @relation("HospitalBloodBank")
+  resourceSharingDonor        ResourceSharing[]           @relation("DonorHospitalResourceSharing")
+  resourceSharingReceiver     ResourceSharing[]           @relation("ReceiverHospitalResourceSharing")
+  vendorOrders                VendorOrders[]              @relation("HospitalVendorOrders")
   unifiedInventorySupplyDemand UnifiedInventorySupplyDemand[] @relation("HospitalUnifiedInventorySupplyDemand")
+  medicalInventories          MedicalInventory[]          @relation("HospitalMedicalInventory") // Added this line
 }
 
 model Departments {
   id                          String                      @id @default(uuid())
   hospital_id                 String
-  name                        String
-  contact_number              String                      @unique
-  password                    String
-  department                  departments
-
+  hod_name                    String
+  hod_email                   String                      @unique
+  department                  String
   hospital                    Hospital                    @relation("HospitalDepartments", fields: [hospital_id], references: [id])
   medicalInventory            MedicalInventory[]          @relation("DepartmentMedicalInventory")
 }
@@ -67,21 +66,21 @@ model StockReplenishmentLog {
 }
 
 model ResourceSharing {
-  sharing_id                  String                  @id @default(uuid())
+  sharing_id                  String                      @id @default(uuid())
   donor_hospital_id           String
   receiver_hospital_id        String
   item_name                   String
   quantity_shared             Int
   sharing_date                DateTime
 
-  donorHospital               Hospital                @relation("DonorHospitalResourceSharing", fields: [donor_hospital_id], references: [id])
-  receiverHospital            Hospital                @relation("ReceiverHospitalResourceSharing", fields: [receiver_hospital_id], references: [id])
+  donorHospital               Hospital                    @relation("DonorHospitalResourceSharing", fields: [donor_hospital_id], references: [id])
+  receiverHospital            Hospital                    @relation("ReceiverHospitalResourceSharing", fields: [receiver_hospital_id], references: [id])
 }
 
 model BloodBank {
   blood_bank_id               String                      @id @default(uuid())
   hospital_id                 String
-  blood_type                  BloodType
+  blood_type                  String
   quantity_in_stock           Int
   expiry_date                 DateTime
 
@@ -136,65 +135,10 @@ model UnifiedInventorySupplyDemand {
   hospital                    Hospital                    @relation("HospitalUnifiedInventorySupplyDemand", fields: [hospital_id], references: [id])
 }
 
-// Enums
-enum delhi_regions {
-  central_delhi
-  east_delhi
-  west_delhi
-  new_delhi
-  north_delhi
-  north_east_delhi
-  north_west_delhi
-  south_delhi
-  south_east_delhi
-  south_west_delhi
-}
-
-enum departments {
-  emergency
-  cardiology 
-  neurology
-  pediatrics 
-  oncology 
-  radiology 
-  orthopedics 
-  dermatology 
-  gastroenterology 
-  psychiatry
-  surgery
-  obstetricsAndGynecology 
-  nephrology 
-  pulmonology 
-  endocrinology 
-  ent
-  ophthalmology
-  pathology
-  anesthesiology
-}
-
-enum sec_ques_enum {
-  q1
-  q2
-  q3
-  q4
-  q5
-}
-
 enum OrderStatus {
   Yes
   No
   Pending
   Delivered
   Cancelled
-}
-
-enum BloodType {
-  A_Positive
-  A_Negative
-  B_Positive
-  B_Negative
-  AB_Positive
-  AB_Negative
-  O_Positive
-  O_Negative
 }

@@ -18,7 +18,7 @@ const DropdownMenuProfile = () => {
           className="overflow-hidden rounded-full"
         >
           <Image
-            src="/placeholder.svg"
+            src="/assets/placeholders/placeholder.jpg"
             width={36}
             height={36}
             alt="Avatar"

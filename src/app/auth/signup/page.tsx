@@ -28,55 +28,59 @@ import Link from "next/link";
 import GeneralizedInput from "@/components/GeneralizedInput";
 import { departmentOptions, indiaStatesAndUTs, securityOptions } from "@/lib/dropdownOptions";
 import { SelectDropdown } from "@/components/SelectDropdown";
-// Types
+import useCreateHospital from "@/hooks/useCreateHospital";
+// import { FormData } from "@/lib/zodSchema/formSchema";
+// // Types
 type Department = {
-  departmentName: string;
-  hodName: string;
-  hodEmail: string;
+  department: string;
+  hod_name: string;
+  hod_email: string;
 };
 
 type FormData = {
   hospitalName: string;
-  addressLine1: string;
-  addressLine2: string;
+  address_line_1: string;
+  address_line_2: string;
   region: string;
   pincode: string;
   state: string;
-  phoneNumber: string;
+  contact_number: string;
   departments: Department[];
-  adminName: string;
-  adminEmail: string;
+  admin_name: string;
+  admin_email: string;
   password: string;
   confirmPassword: string;
-  securityQuestion: string;
-  securityAnswer: string;
+  security_question: string;
+  security_answer: string;
 };
 
 export default function HospitalRegistrationForm() {
+  const { createHospital, isFormLoading, formError } = useCreateHospital();
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState<FormData>({
     hospitalName: "",
-    addressLine1: "",
-    addressLine2: "",
+    address_line_1: "",
+    address_line_2: "",
     region: "",
     pincode: "",
     state: "",
-    phoneNumber: "",
+    contact_number: "",
     departments: [],
-    adminName: "",
-    adminEmail: "",
+    admin_name: "",
+    admin_email: "",
     password: "",
     confirmPassword: "",
-    securityQuestion: "",
-    securityAnswer: "",
+    security_question: "",
+    security_answer: "",
   });
+
   const [newDepartment, setNewDepartment] = useState<Department>({
-    departmentName: "",
-    hodName: "",
-    hodEmail: "",
+    department: "",
+    hod_name: "",
+    hod_email: "",
   });
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -129,15 +133,15 @@ export default function HospitalRegistrationForm() {
   const addDepartment = () => {
     console.log(newDepartment);
     if (
-      newDepartment.departmentName &&
-      newDepartment.hodName &&
-      newDepartment.hodEmail
+      newDepartment.department &&
+      newDepartment.hod_name &&
+      newDepartment.hod_email
     ) {
       setFormData((prev) => ({
         ...prev,
         departments: [...prev.departments, newDepartment],
       }));
-      setNewDepartment({ departmentName: "", hodName: "", hodEmail: "" });
+      setNewDepartment({ department: "", hod_name: "", hod_email: "" });
     } else {
       toast({
         title: "Incomplete Department Information",
@@ -179,8 +183,10 @@ export default function HospitalRegistrationForm() {
     setStep((prev) => prev - 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const data = await createHospital(formData);
+    console.log(data)
     const otp = otpValues.join("");
     if (otp.length !== 6) {
       setError("Please enter a valid 6-digit OTP.");
@@ -215,17 +221,17 @@ export default function HospitalRegistrationForm() {
           required
         />
         <GeneralizedInput
-          id="addressLine1"
-          name="addressLine1"
-          value={formData.addressLine1}
+          id="address_line_1"
+          name="address_line_1"
+          value={formData.address_line_1}
           label="Address Line 1"
           onChange={handleInputChange}
           required
         />{" "}
         <GeneralizedInput
-          id="addressLine2"
-          name="addressLine2"
-          value={formData.addressLine2}
+          id="address_line_2"
+          name="address_line_2"
+          value={formData.address_line_2}
           label="Address Line 2"
           onChange={handleInputChange}
         />
@@ -260,9 +266,9 @@ export default function HospitalRegistrationForm() {
 
           <GeneralizedInput
             label="Phone Number"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
+            id="contact_number"
+            name="contact_number"
+            value={formData.contact_number}
             onChange={handleInputChange}
             required
           />
@@ -288,23 +294,23 @@ export default function HospitalRegistrationForm() {
             <X className="h-4 w-4" />
           </Button>
           <p>
-            <strong>Department:</strong> {dept.departmentName}
+            <strong>Department:</strong> {dept.department}
           </p>
           <p>
-            <strong>HOD Name:</strong> {dept.hodName}
+            <strong>HOD Name:</strong> {dept.hod_name}
           </p>
           <p>
-            <strong>HOD Email:</strong> {dept.hodEmail}
+            <strong>HOD Email:</strong> {dept.hod_email}
           </p>
         </div>
       ))}
       <div className="space-y-2">
-        <Label htmlFor="departmentName">Department Name</Label>
+        <Label htmlFor="department">Department Name</Label>
         <SelectDropdown
-          name="departmentName"
+          name="department"
           options={departmentOptions}
           onValueChange={(value) =>
-            handleNewDepartmentChange({ name: "departmentName", value })
+            handleNewDepartmentChange({ name: "department", value })
           }
           placeholder="Select department"
         />
@@ -312,18 +318,18 @@ export default function HospitalRegistrationForm() {
 
       <GeneralizedInput
         label="Head of Department Name"
-        id="hodName"
-        name="hodName"
-        value={newDepartment.hodName}
+        id="hod_name"
+        name="hod_name"
+        value={newDepartment.hod_name}
         onChange={handleNewDepartmentChange}
       />
 
       <GeneralizedInput
         label="Head of Department Email"
-        id="hodEmail"
-        name="hodEmail"
+        id="hod_email"
+        name="hod_email"
         type="email"
-        value={newDepartment.hodEmail}
+        value={newDepartment.hod_email}
         onChange={handleNewDepartmentChange}
       />
       <Button variant={"default"} onClick={addDepartment} className="w-full">
@@ -342,9 +348,9 @@ export default function HospitalRegistrationForm() {
         <div className="space-y-2">
           <GeneralizedInput
             label="Admin Name"
-            id="adminName"
-            name="adminName"
-            value={formData.adminName}
+            id="admin_name"
+            name="admin_name"
+            value={formData.admin_name}
             onChange={handleInputChange}
             required
           />
@@ -352,10 +358,10 @@ export default function HospitalRegistrationForm() {
         <div className="space-y-2">
           <GeneralizedInput
             label="Admin Email"
-            id="adminEmail"
-            name="adminEmail"
+            id="admin_email"
+            name="admin_email"
             type="email"
-            value={formData.adminEmail}
+            value={formData.admin_email}
             onChange={handleInputChange}
             required
           />
@@ -386,21 +392,21 @@ export default function HospitalRegistrationForm() {
         <div className="space-y-2">
           <Label htmlFor="departmentName">Security Question</Label>
           <SelectDropdown
-            name="securityQuestion"
+            name="security_question"
             placeholder="Select your Security Question"
-            value={formData.securityQuestion}
+            value={formData.security_question}
             options={securityOptions}
             onValueChange={(label) =>
-              handleSelectChange(label, "securityQuestion")
+              handleSelectChange(label, "security_question")
             }
           />
         </div>
 
         <GeneralizedInput
           label="Security Answer"
-          id="securityAnswer"
-          name="securityAnswer"
-          value={formData.securityAnswer}
+          id="security_answer"
+          name="security_answer"
+          value={formData.security_answer}
           onChange={handleInputChange}
           required
         />
@@ -568,13 +574,14 @@ export default function HospitalRegistrationForm() {
   const validateStep = () => {
     console.log(formData);
     if (step === 1) {
+      console.log("Entered the validate stepp")
       if (
         !formData.hospitalName ||
-        !formData.addressLine1 ||
+        !formData.address_line_1 ||
         !formData.region ||
         !formData.pincode ||
         !formData.state ||
-        !formData.phoneNumber
+        !formData.contact_number
       ) {
         showToast(
           "Incomplete Information",
@@ -594,8 +601,8 @@ export default function HospitalRegistrationForm() {
       }
     } else if (step === 3) {
       if (
-        !formData.adminName ||
-        !formData.adminEmail ||
+        !formData.admin_name ||
+        !formData.admin_email ||
         !formData.password ||
         !formData.confirmPassword
       ) {
@@ -619,7 +626,6 @@ export default function HospitalRegistrationForm() {
   };
 
   const handleNext = () => {
-    console.log(step);
     if (validateStep()) {
       setIsLoading(true);
       setTimeout(() => {

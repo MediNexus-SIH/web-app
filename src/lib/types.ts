@@ -17,4 +17,6 @@ export interface FormData {
   adminEmail: string;
   password: string;
   confirmPassword: string;
+  securityQuestion:string;
+  securityAnswer:string;
 }

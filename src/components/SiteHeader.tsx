@@ -26,9 +26,9 @@ export function SiteHeader() {
 
   return (
     <header className="px-4 lg:px-6 h-14 flex justify-between items-center border-b-2">
-      <Link className="flex items-center justify-center" href="/">
-        <Hospital className="h-6 w-6" />
-        <span className="sr-only">MediNexus</span>
+      <Link href="/" className="flex items-center text-2xl font-bold">
+        <Hospital className="mr-4" /> {/* Added margin-right to the icon */}
+        MediNexus
       </Link>
       <div className="ml-auto gap-4 hidden md:block sm:gap-6">
         <RevealAnimation className="flex justify-center items-center gap-4">

@@ -9,7 +9,7 @@ const TopBar = ({ className }: { className?: string }) => {
       className={`flex justify-between items-center border-b-2 p-5 ${className}`}
     >
       <Link href="/dashboard" className="flex items-center text-2xl font-bold">
-        <Hospital className="mr-2" /> {/* Added margin-right to the icon */}
+        <Hospital className="mr-4" /> 
         MediNexus
       </Link>
       <div className="flex space-x-4 items-center">
