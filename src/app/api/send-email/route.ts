@@ -12,7 +12,6 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(request: Request) {
   const { name, email, subject, message } = await request.json();
-  console.log(process.env.EMAIL_USER)
   // Validate the email address from the form
   const recipientEmail = process.env.RECIPIENT_EMAIL; // Default recipient
   const senderEmail = email; // Email from form

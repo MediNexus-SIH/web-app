@@ -85,8 +85,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const validatedData = formSchema.parse(body);
-    console.log(validatedData);
-
     const newHospital = await createHospital(validatedData);
 
     return NextResponse.json(

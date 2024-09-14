@@ -26,7 +26,11 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import GeneralizedInput from "@/components/GeneralizedInput";
-import { departmentOptions, indiaStatesAndUTs, securityOptions } from "@/lib/dropdownOptions";
+import {
+  departmentOptions,
+  indiaStatesAndUTs,
+  securityOptions,
+} from "@/lib/dropdownOptions";
 import { SelectDropdown } from "@/components/SelectDropdown";
 import useCreateHospital from "@/hooks/useCreateHospital";
 // import { FormData } from "@/lib/zodSchema/formSchema";
@@ -59,7 +63,6 @@ export default function HospitalRegistrationForm() {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState<FormData>({
     hospitalName: "",
     address_line_1: "",
@@ -131,7 +134,6 @@ export default function HospitalRegistrationForm() {
   };
 
   const addDepartment = () => {
-    console.log(newDepartment);
     if (
       newDepartment.department &&
       newDepartment.hod_name &&
@@ -142,11 +144,17 @@ export default function HospitalRegistrationForm() {
         departments: [...prev.departments, newDepartment],
       }));
       setNewDepartment({ department: "", hod_name: "", hod_email: "" });
-    } else {
       toast({
         title: "Incomplete Department Information",
         description: "Please fill in all department fields.",
         variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Department added succesfully",
+        description:
+          "Department addtion was successfull, if you want to add more feel free to do so, or proceed next",
+        variant: "default",
       });
     }
   };
@@ -186,30 +194,54 @@ export default function HospitalRegistrationForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const otp = otpValues.join("");
-    if (otp.length !== 6) {
-      setError("Please enter a valid 6-digit OTP.");
+    if (otp !== "123456") {
+      toast({
+        title: "Invalid OTP",
+        description: "Please fill in the correct OTP.",
+        variant: "destructive",
+      });
       return;
     }
 
-    if (otp === "123456") {
-      try {
-        const data = await createHospital(formData);
-        setStep((prev) => prev + 1);
-        setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 1000);
-      } catch {
-        toast({
-          title: "Signup Unsuccessful",
-          description: "Please fill in the correct fields or Try again later",
-          variant: "destructive",
-        });
+    try {
+      await createHospital(formData);
+      if (formError) {
+        if (formError.startsWith("Validation error")) {
+          toast({
+            title: "Signup Unsuccessful",
+            description: "You inputted something with the wrong format",
+            variant: "destructive",
+          });
+          return;
+        } else if (formError.startsWith("Conflict error")) {
+          toast({
+            title: "Signup Unsuccessful",
+            description:
+              "A hospital or a department with this name or contact details already exists. Please try again later.",
+            variant: "destructive",
+          });
+          return;
+        } else {
+          toast({
+            title: "Signup Unsuccessful",
+            description: "An unknown error occurred. Please try again later.",
+            variant: "destructive",
+          });
+        }
+        return;
       }
-    } else {
+
+      setStep((prev) => prev + 1);
+      setIsLoading(true);
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    } catch (error) {
       toast({
-        title: "Invalid OTP",
-        description: "Please fill in the Correct OTP.",
+        title: "Error",
+        description:
+          "An error occurred while creating the hospital. Please try again later.",
         variant: "destructive",
       });
     }
@@ -579,12 +611,8 @@ export default function HospitalRegistrationForm() {
 
   StepProgress.displayName = "StepProgress";
 
-
-
   const validateStep = () => {
-    console.log(formData);
     if (step === 1) {
-      console.log("Entered the validate stepp")
       if (
         !formData.hospitalName ||
         !formData.address_line_1 ||
@@ -640,7 +668,6 @@ export default function HospitalRegistrationForm() {
       setIsLoading(true);
       setTimeout(() => {
         setStep((prev) => prev + 1);
-        console.log(step);
         setIsLoading(false);
         showToast("Step Completed", "Moving to the next step.", "default");
       }, 500);
@@ -730,4 +757,3 @@ export default function HospitalRegistrationForm() {
     </div>
   );
 }
-
