@@ -185,8 +185,6 @@ export default function HospitalRegistrationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = await createHospital(formData);
-    console.log(data)
     const otp = otpValues.join("");
     if (otp.length !== 6) {
       setError("Please enter a valid 6-digit OTP.");
@@ -194,14 +192,26 @@ export default function HospitalRegistrationForm() {
     }
 
     if (otp === "123456") {
-      setStep((prev) => prev + 1);
-      setIsLoading(true);
-      setTimeout(() => {
-        console.log("Form submitted:", formData);
-        setIsLoading(false);
-      }, 1000);
+      try {
+        const data = await createHospital(formData);
+        setStep((prev) => prev + 1);
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 1000);
+      } catch {
+        toast({
+          title: "Signup Unsuccessful",
+          description: "Please fill in the correct fields or Try again later",
+          variant: "destructive",
+        });
+      }
     } else {
-      setError("Invalid OTP. Please try again.");
+      toast({
+        title: "Invalid OTP",
+        description: "Please fill in the Correct OTP.",
+        variant: "destructive",
+      });
     }
   };
 
