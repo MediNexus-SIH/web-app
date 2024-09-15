@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
 import { formSchema,FormData } from "@/lib/zodSchema/formSchema";
-import prisma from "@/app/db";
+import prisma from "@/config/prisma.config";
 import { z } from "zod";
 
 async function checkExistingHospital(hospitalName: string, contact_number: string) {

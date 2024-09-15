@@ -15,6 +15,10 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { getServerSession } from "next-auth";
+import { options } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const DashboardBreadCrumb = () => {
   return (
@@ -111,7 +115,7 @@ const DashboardAlertsCard = () => {
   );
 };
 
-const DashboardOrdersCard = ()=>{
+const DashboardOrdersCard = () => {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -147,9 +151,9 @@ const DashboardOrdersCard = ()=>{
       </CardContent>
     </Card>
   );
-}
+};
 
-const DashboardSupplyChainCard = ()=>{
+const DashboardSupplyChainCard = () => {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -171,7 +175,8 @@ const DashboardSupplyChainCard = ()=>{
       </CardContent>
     </Card>
   );
-}
+};
+
 export default function Component() {
   return (
     <div className="flex min-h-screen p-6 w-full flex-col bg-muted/40 ">
@@ -179,10 +184,10 @@ export default function Component() {
         <DashboardBreadCrumb />
         <main className="grid flex-1 items-start gap-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <DashboardInventoryCard/>
-            <DashboardAlertsCard/>
-            <DashboardOrdersCard/>
-            <DashboardSupplyChainCard/>
+            <DashboardInventoryCard />
+            <DashboardAlertsCard />
+            <DashboardOrdersCard />
+            <DashboardSupplyChainCard />
           </div>
         </main>
       </div>
@@ -251,27 +256,6 @@ function DollarSignIcon(props: any) {
     </svg>
   );
 }
-
-function HomeIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  );
-}
-
 
 function PackageIcon(props: any) {
   return (
