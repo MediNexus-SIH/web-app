@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import { formSchema,FormData } from "@/lib/zodSchema/formSchema";
+import { formSchema, FormData } from "@/lib/zodSchema/formSchema";
 import prisma from "@/config/prisma.config";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 
-async function checkExistingHospital(hospitalName: string, contact_number: string) {
+async function checkExistingHospital(
+  hospitalName: string,
+  contact_number: string
+) {
   const existingHospital = await prisma.hospital.findFirst({
     where: {
-      OR: [
-        { hospitalName:  hospitalName},
-        { contact_number: contact_number},
-      ],
+      OR: [{ hospitalName: hospitalName }, { contact_number: contact_number }],
     },
   });
   return existingHospital;
@@ -46,7 +46,15 @@ async function createHospital(data: FormData) {
   const hodEmails = data.departments.map((dept) => dept.hod_email);
   const existingDepartments = await checkExistingDepartments(hodEmails);
   if (existingDepartments.length > 0) {
-    const existingEmails = existingDepartments.map((dept) => dept.hod_email);
+    const existingEmails = existingDepartments.map(
+      (dept: {
+        id: string;
+        hospital_id: string;
+        department: string;
+        hod_name: string;
+        hod_email: string;
+      }) => dept.hod_email
+    );
     throw new Error(
       `Departments with the following HOD emails already exist: ${existingEmails.join(
         ", "
@@ -92,7 +100,7 @@ export async function POST(req: Request) {
       { message: "Signup successful", hospital: newHospital },
       { status: 201 }
     );
-  } catch (error:any) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { message: "Validation error", errors: error.errors },
