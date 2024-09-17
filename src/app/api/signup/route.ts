@@ -12,6 +12,7 @@ async function checkExistingHospital(
   // @ts-ignore
   const existingHospital = await prisma.hospital.findFirst({
     where: {
+      // @ts-ignore
       OR: [{ hospitalName: hospitalName }, { contact_number: contact_number }],
     },
   });
