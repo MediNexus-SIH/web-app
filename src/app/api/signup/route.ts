@@ -50,6 +50,7 @@ async function createHospital(data: FormData) {
   const existingDepartments = await checkExistingDepartments(hodEmails);
   if (existingDepartments.length > 0) {
     const existingEmails = existingDepartments.map(
+      // @ts-ignore
       (dept: {
         id: string;
         hospital_id: string;
