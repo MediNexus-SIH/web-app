@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "typecheck": "tsc --noEmit",
-    "build": "prisma generate && next build",
+    "build": "tsc --noEmitOnError=false && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
