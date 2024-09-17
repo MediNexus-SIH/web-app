@@ -1,29 +1,21 @@
 -- CreateEnum
-CREATE TYPE "delhi_regions" AS ENUM ('central_delhi', 'east_delhi', 'west_delhi', 'new_delhi', 'north_delhi', 'north_east_delhi', 'north_west_delhi', 'south_delhi', 'south_east_delhi', 'south_west_delhi');
-
--- CreateEnum
-CREATE TYPE "departments" AS ENUM ('emergency', 'cardiology', 'neurology', 'pediatrics', 'oncology', 'radiology', 'orthopedics', 'dermatology', 'gastroenterology', 'psychiatry', 'surgery', 'obstetricsAndGynecology', 'nephrology', 'pulmonology', 'endocrinology', 'ent', 'ophthalmology', 'pathology', 'anesthesiology');
-
--- CreateEnum
-CREATE TYPE "sec_ques_enum" AS ENUM ('q1', 'q2', 'q3', 'q4', 'q5');
-
--- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('Yes', 'No', 'Pending', 'Delivered', 'Cancelled');
-
--- CreateEnum
-CREATE TYPE "BloodType" AS ENUM ('A_Positive', 'A_Negative', 'B_Positive', 'B_Negative', 'AB_Positive', 'AB_Negative', 'O_Positive', 'O_Negative');
 
 -- CreateTable
 CREATE TABLE "Hospital" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "hospitalName" TEXT NOT NULL,
     "contact_number" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "username" TEXT NOT NULL,
-    "security_question" "sec_ques_enum" NOT NULL,
-    "security_question_answer" TEXT NOT NULL,
+    "address_line_1" TEXT NOT NULL,
+    "address_line_2" TEXT,
+    "pincode" TEXT NOT NULL,
+    "region" TEXT NOT NULL,
+    "admin_name" TEXT NOT NULL,
+    "admin_email" TEXT NOT NULL,
+    "security_question" TEXT NOT NULL,
+    "security_answer" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "region" "delhi_regions" NOT NULL,
+    "state" TEXT NOT NULL,
 
     CONSTRAINT "Hospital_pkey" PRIMARY KEY ("id")
 );
@@ -32,12 +24,9 @@ CREATE TABLE "Hospital" (
 CREATE TABLE "Departments" (
     "id" TEXT NOT NULL,
     "hospital_id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "contact_number" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "password" TEXT NOT NULL,
-    "region" "delhi_regions" NOT NULL,
-    "department" "departments" NOT NULL,
+    "hod_name" TEXT NOT NULL,
+    "hod_email" TEXT NOT NULL,
+    "department" TEXT NOT NULL,
 
     CONSTRAINT "Departments_pkey" PRIMARY KEY ("id")
 );
@@ -60,7 +49,7 @@ CREATE TABLE "MedicalInventory" (
 CREATE TABLE "StockReplenishmentLog" (
     "replenishment_id" TEXT NOT NULL,
     "inventory_id" TEXT NOT NULL,
-    "replenishment_date" TIMESTAMP(3) NOT NULL,
+    "replenishment_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "quantity_replenished" INTEGER NOT NULL,
     "order_placed" "OrderStatus" NOT NULL,
 
@@ -83,7 +72,7 @@ CREATE TABLE "ResourceSharing" (
 CREATE TABLE "BloodBank" (
     "blood_bank_id" TEXT NOT NULL,
     "hospital_id" TEXT NOT NULL,
-    "blood_type" "BloodType" NOT NULL,
+    "blood_type" TEXT NOT NULL,
     "quantity_in_stock" INTEGER NOT NULL,
     "expiry_date" TIMESTAMP(3) NOT NULL,
 
@@ -142,10 +131,10 @@ CREATE TABLE "UnifiedInventorySupplyDemand" (
 CREATE UNIQUE INDEX "Hospital_contact_number_key" ON "Hospital"("contact_number");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Hospital_username_key" ON "Hospital"("username");
+CREATE UNIQUE INDEX "Hospital_admin_email_key" ON "Hospital"("admin_email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Departments_contact_number_key" ON "Departments"("contact_number");
+CREATE UNIQUE INDEX "Departments_hod_email_key" ON "Departments"("hod_email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Vendors_contact_number_key" ON "Vendors"("contact_number");
