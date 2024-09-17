@@ -6,16 +6,11 @@ import { z } from "zod";
 import { Prisma } from "@prisma/client";
 
 async function checkExistingHospital(hospitalName: string, contact_number: string) {
-  type HospitalWhereInput = Prisma.HospitalWhereInput & {
-    hospitalName?: string;
-    contact_number?: string;
-  };
-  
   const existingHospital = await prisma.hospital.findFirst({
     where: {
       OR: [
-        { hospitalName: { equals: hospitalName } },
-        { contact_number: { equals: contact_number } },
+        { hospitalName:  hospitalName},
+        { contact_number: contact_number},
       ],
     },
   });
