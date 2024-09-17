@@ -4,9 +4,8 @@ generator client {
 }
 
 datasource db {
-  directUrl = env("DIRECT_URL")
+  url = env("DATABASE_URL")
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
 }
 
 model Hospital {
