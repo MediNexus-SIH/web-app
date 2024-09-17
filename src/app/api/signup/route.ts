@@ -3,8 +3,14 @@ import { hash } from "bcrypt";
 import { formSchema,FormData } from "@/lib/zodSchema/formSchema";
 import prisma from "@/config/prisma.config";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 async function checkExistingHospital(hospitalName: string, contact_number: string) {
+  type HospitalWhereInput = Prisma.HospitalWhereInput & {
+    hospitalName?: string;
+    contact_number?: string;
+  };
+  
   const existingHospital = await prisma.hospital.findFirst({
     where: {
       OR: [

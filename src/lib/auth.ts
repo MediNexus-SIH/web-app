@@ -5,7 +5,6 @@ import { NextAuthOptions, User, DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { SigninSchema } from "./zodSchema/signinSchema";
 import { ErrorHandler } from "./error";
-import { JWT } from "next-auth/jwt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
