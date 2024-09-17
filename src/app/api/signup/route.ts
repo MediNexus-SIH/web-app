@@ -22,6 +22,7 @@ async function checkExistingHospital(
 async function checkExistingDepartments(hodEmails: string[]) {
   const existingDepartments = await prisma.departments.findMany({
     where: {
+      // @ts-ignore
       hod_email: {
         in: hodEmails,
       },
