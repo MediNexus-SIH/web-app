@@ -60,6 +60,10 @@ The primary goal is to design an innovative, technology-driven system that ensur
 ### Reports and Ananlytics
 ![SS_Reports](./public/assets/screenshots/ss_reports.png)
 
+### Android App Screenshots
+![SS_AppMain](./public/assets/screenshots/ss_AppMain.jpg)
+![SS_AppQR](./public/assets/screenshots/ss_AppQR.jpg)
+
 ## Core Features (Hospital & Vendor Dashboard)
 ### 1. **Inventory Management Card**
    - Displays real-time stock levels of medical items.
