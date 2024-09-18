@@ -58,7 +58,12 @@ The primary goal is to design an innovative, technology-driven system that ensur
 ![SS_Orders_Details](./public/assets/screenshots/ss_branch_transferHistory.png)
 
 ### Reports and Ananlytics
-![SS_Reports](./public/assets/screenshots/ss_reports.png)
+![SS_Reports](./public/assets/screenshots/ss_reports.png)\
+
+### Android App Screenshots
+![SS_AppMain](./public/assets/screenshots/ss_AppMain.png)
+
+![SS_AppQR](./public/assets/screenshots/ss_AppQR.png)
 
 ## Core Features (Hospital & Vendor Dashboard)
 ### 1. **Inventory Management Card**
