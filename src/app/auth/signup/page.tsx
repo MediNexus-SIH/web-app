@@ -133,30 +133,47 @@ export default function HospitalRegistrationForm() {
     }));
   };
 
-  const addDepartment = () => {
+  const addDepartment = (e: React.MouseEvent) => {
+    e.preventDefault();
+    let departmentAlreadyAdded = false;
+    console.log(newDepartment)
     if (
       newDepartment.department &&
       newDepartment.hod_name &&
       newDepartment.hod_email
     ) {
+      formData.departments.map((val) => {
+        val.department == newDepartment.department
+          ? (departmentAlreadyAdded = true)
+          : null;
+      });
+      if (departmentAlreadyAdded) {
+        showToast(
+          "Department is already added",
+          "Department is already added, kindly add a different department",
+          "destructive"
+        );
+        return
+      }
       setFormData((prev) => ({
         ...prev,
         departments: [...prev.departments, newDepartment],
       }));
       setNewDepartment({ department: "", hod_name: "", hod_email: "" });
-      toast({
-        title: "Incomplete Department Information",
-        description: "Please fill in all department fields.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Department added succesfully",
-        description:
-          "Department addtion was successfull, if you want to add more feel free to do so, or proceed next",
-        variant: "default",
-      });
+      showToast(
+        "Department added succesfully",
+        "Department addtion was successfull, if you want to add more feel free to do so, or proceed next",
+        "default"
+      );
+      return;
+    } else if (formData.departments) {
     }
+    showToast(
+      "Incomplete Department Information",
+      "Please fill in all department fields.",
+      "destructive"
+    );
+    return;
   };
 
   const removeDepartment = (index: number) => {
@@ -193,13 +210,17 @@ export default function HospitalRegistrationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Entered handle submit funciotn");
+    setTimeout(() => {
+      console.log("handling some shit");
+    }, 2000);
     const otp = otpValues.join("");
     if (otp !== "123456") {
-      toast({
-        title: "Invalid OTP",
-        description: "Please fill in the correct OTP.",
-        variant: "destructive",
-      });
+      showToast(
+        "Invalid OTP",
+        "Please fill in the correct OTP.",
+        "destructive"
+      );
       return;
     }
 
@@ -207,26 +228,26 @@ export default function HospitalRegistrationForm() {
       await createHospital(formData);
       if (formError) {
         if (formError.startsWith("Validation error")) {
-          toast({
-            title: "Signup Unsuccessful",
-            description: "You inputted something with the wrong format",
-            variant: "destructive",
-          });
+          showToast(
+            "Signup Unsuccessful",
+            "You inputted something with the wrong format",
+            "destructive"
+          );
+
           return;
         } else if (formError.startsWith("Conflict error")) {
-          toast({
-            title: "Signup Unsuccessful",
-            description:
-              "A hospital or a department with this name or contact details already exists. Please try again later.",
-            variant: "destructive",
-          });
+          showToast(
+            "Signup Unsuccessful",
+            "A hospital or a department with this name or contact details already exists. Please try again later.",
+            "destructive"
+          );
           return;
         } else {
-          toast({
-            title: "Signup Unsuccessful",
-            description: "An unknown error occurred. Please try again later.",
-            variant: "destructive",
-          });
+          showToast(
+            "Signup Unsuccessful",
+            "An unknown error occurred. Please try again later.",
+            "destructive"
+          );
         }
         return;
       }
@@ -238,12 +259,11 @@ export default function HospitalRegistrationForm() {
         setIsLoading(false);
       }, 1000);
     } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          "An error occurred while creating the hospital. Please try again later.",
-        variant: "destructive",
-      });
+      showToast(
+        "Error",
+        "An error occurred while creating the hospital. Please try again later.",
+        "destructive"
+      );
     }
   };
 
@@ -612,6 +632,7 @@ export default function HospitalRegistrationForm() {
   StepProgress.displayName = "StepProgress";
 
   const validateStep = () => {
+    console.log(formData);
     if (step === 1) {
       if (
         !formData.hospitalName ||
@@ -624,6 +645,29 @@ export default function HospitalRegistrationForm() {
         showToast(
           "Incomplete Information",
           "Please fill in all required fields.",
+          "destructive"
+        );
+        return false;
+      } else if (formData.contact_number.length != 10) {
+        if (formData.contact_number.length < 10) {
+          showToast(
+            "Contact Number Incorrect",
+            "The contact number entered is smaller than 10.",
+            "destructive"
+          );
+          return false;
+        } else {
+          showToast(
+            "Contact Number Incorrect",
+            "The contact number entered is greater than 10.",
+            "destructive"
+          );
+          return false;
+        }
+      } else if (formData.pincode.length != 6) {
+        showToast(
+          "Pincode Incorrect",
+          "The pincode should be of length 6.",
           "destructive"
         );
         return false;
