@@ -17,6 +17,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     hospitalName?: string;
+    email: string;
   }
 }
 
@@ -79,7 +80,7 @@ export const options: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, trigger, session }) {
       if (trigger === "update" && session?.user) {
         return {
           ...token,
@@ -91,14 +92,17 @@ export const options: NextAuthOptions = {
         token.hospitalName = user.hospitalName;
         token.email = user.email;
       }
+
       return token;
     },
-    session({ session, token }) {
+
+    async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.hospitalName = token.hospitalName as string | undefined;
-        session.user.email = token.email as string | undefined;
+        session.user.email = token.email as string;
       }
+
       return session;
     },
   },
@@ -112,4 +116,6 @@ export const options: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
   },
+  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET,
 };

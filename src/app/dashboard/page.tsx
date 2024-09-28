@@ -1,4 +1,4 @@
-"use client";
+
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -6,7 +6,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbSeparator,
-  BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import {
   Card,
@@ -15,10 +14,9 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { getServerSession } from "next-auth";
-import { options } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { getServerSideProps } from "@/hooks/getServerSideProps";
+import { useEffect } from "react";
 
 const DashboardBreadCrumb = () => {
   return (
@@ -153,7 +151,7 @@ const DashboardOrdersCard = () => {
   );
 };
 
-const DashboardSupplyChainCard = () => {
+const DashboardSupplyChainCard = async () => {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -177,9 +175,15 @@ const DashboardSupplyChainCard = () => {
   );
 };
 
-export default function Component() {
+export default async function Component() {
+
+  const session = await getServerSideProps()
+  if(!session.sessionStatus){
+    redirect("/auth/signin")
+  }
   return (
     <div className="flex min-h-screen p-6 w-full flex-col bg-muted/40 ">
+      
       <div className="flex flex-col sm:gap-4 ">
         <DashboardBreadCrumb />
         <main className="grid flex-1 items-start gap-4">

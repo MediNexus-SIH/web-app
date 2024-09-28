@@ -43,7 +43,6 @@ const useCreateHospital = (): UseCreateHospitalResponse => {
       }
 
       const result = await response.json();
-      console.log(result.message);
     } catch (error: any) {
       console.error("Error:", error.message);
     } finally {

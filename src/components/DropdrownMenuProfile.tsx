@@ -1,4 +1,4 @@
-"use client"
+// pages/profile.tsx
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -8,21 +8,25 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import Avatar from "./Avatar";
-import { signOut, useSession } from "next-auth/react";
+import Avatar from "@/components/Avatar"; // Assuming Avatar is in this directory
+import { LogOutButton } from "./LogOutButton";
+import { getServerSideProps } from "@/hooks/getServerSideProps";
 
-const DropdownMenuProfile = () => {
-  const { data: session } = useSession();
-    const getInitials = (name: string) => {
-      const splitName = name.split(" ");
-      if (splitName.length > 1) {
-        return `${splitName[0][0]}${splitName[1][0]}`.toUpperCase();
-      }
-      return `${splitName[0][0]}`.toUpperCase();
-    };
+const DropdownMenuProfile = async () => {
+  const getInitials = (name: string) => {
+    const splitName = name.split(" ");
+    if (splitName.length > 1) {
+      return `${splitName[0][0]}${splitName[1][0]}`.toUpperCase();
+    }
+    return `${splitName[0][0]}`.toUpperCase();
+  };
+  const sessionProps = await getServerSideProps();
+  const session = sessionProps.user
+  const userName =
+    session?.user?.hospitalName || session?.user?.email || "User";
 
-    const userName = session?.user?.hospitalName || session?.user?.email || "User";
-    const initials = getInitials(userName);
+  const initials = getInitials(userName);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -40,10 +44,14 @@ const DropdownMenuProfile = () => {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={()=>{signOut()}}>Logout</DropdownMenuItem>
+        <DropdownMenuItem>
+          <LogOutButton />
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
+
+// Use getServerSideProps to fetch the session on the server
 
 export default DropdownMenuProfile;

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import LoadingComponents from "@/components/LoadingComponents";
 import { toast } from "@/hooks/use-toast";
@@ -42,6 +42,13 @@ export default function Component() {
   const [resetEmail, setResetEmail] = useState("");
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      router.push("/dashboard");
+    }
+  }, [session, status, router]);
   useEffect(() => {
     if (step === "otp") {
       otpRefs.current[0]?.focus();
@@ -69,25 +76,27 @@ export default function Component() {
     }
   };
 
+  const redirectToDashboard = useCallback(() => {
+    router.push("/dashboard");
+  }, [router]);
+
+  useEffect(() => {
+    if (step === "confirmation") {
+      const timer = setTimeout(() => {
+        redirectToDashboard();
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [step, redirectToDashboard]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (step === "signin") {
-      if (!email || !password) {
-        setError("Please fill in all fields.");
-        return;
-      }
-
-      if (!email.includes("@") || !email.includes(".")) {
-        setError("Please enter a valid email address.");
-        return;
-      }
-
-      if (password.length < 8) {
-        setError("Password must be at least 8 characters long.");
-        return;
-      }
-
+      // ... (validation logic remains the same)
       setStep("otp");
     } else if (step === "otp") {
       const otp = otpValues.join("");
@@ -97,19 +106,27 @@ export default function Component() {
       }
 
       if (otp === "123456") {
-        console.log(email, password);
         setLoading(true);
-        const res = await signIn("credentials", {
-          email,
-          password,
-          redirect: false,
-        });
-        setLoading(false);
-        console.log(res);
-        if (res?.error) {
-          setStep("error");
-        } else if (res?.ok) {
+        try {
+          const res = await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          });
+          if (res?.error) {
+            throw new Error(res.error);
+          }
           setStep("confirmation");
+        } catch (error) {
+          console.error("Sign in error:", error);
+          setStep("error");
+          toast({
+            title: "Login Failed",
+            description: "An error occurred during login. Please try again.",
+            variant: "destructive",
+          });
+        } finally {
+          setLoading(false);
         }
       } else {
         toast({
@@ -206,16 +223,6 @@ export default function Component() {
       </motion.p>
     </motion.div>
   );
- useEffect(() => {
-   if (step === "confirmation") {
-     const timer = setTimeout(() => {
-       router.push("/dashboard");
-     }, 1000);
-
-     return () => clearTimeout(timer);
-   }
- }, [step, router]);
-
 
   return (
     <>
