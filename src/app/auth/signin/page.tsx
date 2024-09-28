@@ -28,6 +28,7 @@ import { redirect, useRouter } from "next/navigation";
 import LoadingComponents from "@/components/LoadingComponents";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { getServerSideProps } from "@/hooks/getServerSideProps";
 
 export default function Component() {
   const [loading, setLoading] = useState(false);
@@ -42,6 +43,10 @@ export default function Component() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
+  // const session = await getServerSideProps();
+  // if (session.sessionStatus) {
+  //   redirect("/dashboard");
+  // }
   useEffect(() => {
     if (status === "authenticated" && session) {
       router.push("/dashboard");
@@ -292,7 +297,7 @@ export default function Component() {
                   {step === "otp" && (
                     <div className="space-y-2">
                       <Label htmlFor="otp">
-                        {step === "otp" ? "Enter OTP" : null}
+                        Enter OTP
                       </Label>
                       <div className="flex justify-between">
                         {otpValues.map((value, index) => (

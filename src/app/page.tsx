@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import RevealAnimation from "@/components/framer-motion/revealAnimation";
 import { SmoothTextReveal } from "@/components/framer-motion/smoothTextReveal";
 import GithubBadge from "@/components/GithubBadge";
