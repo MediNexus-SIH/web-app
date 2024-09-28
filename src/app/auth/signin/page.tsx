@@ -12,9 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Hospital, Lock, AlertCircle, ArrowLeft, Check, X } from "lucide-react";
+import { Hospital, Lock, ArrowLeft, Check, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -225,9 +223,24 @@ export default function Component() {
   );
 
   return (
-    <>
+    <div className="bg-muted/40">
+      <div className="items-end flex flex-col space-y-2 p-5">
+        {step === "signin" && (
+          <>
+            <div className="">For testing purposes credentials:</div>
+            <div>Email: test123@gmail.com</div>
+            <div>Password: 12345678</div>
+          </>
+        )}
+        {step === "otp" && (
+          <>
+            <div className="">OTP for the time being is </div>
+            <div>OTP : 123456</div>
+          </>
+        )}
+      </div>
       <Toaster />
-      <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
             <div className="flex items-center justify-center mb-4">
@@ -273,15 +286,6 @@ export default function Component() {
                           onChange={(e) => setPassword(e.target.value)}
                           required
                         />
-                      </div>
-                      <div className="flex items-center space-x-2 mt-4">
-                        <Checkbox id="remember" />
-                        <label
-                          htmlFor="remember"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Remember me
-                        </label>
                       </div>
                     </>
                   )}
@@ -393,6 +397,6 @@ export default function Component() {
           </CardFooter>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

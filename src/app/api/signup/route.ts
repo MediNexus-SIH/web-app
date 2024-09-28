@@ -3,16 +3,13 @@ import { hash } from "bcrypt";
 import { formSchema, FormData } from "@/lib/zodSchema/formSchema";
 import prisma from "@/config/prisma.config";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 
 async function checkExistingHospital(
   hospitalName: string,
   contact_number: string
 ) {
-  // @ts-ignore
   const existingHospital = await prisma.hospital.findFirst({
     where: {
-      // @ts-ignore
       OR: [{ hospitalName: hospitalName }, { contact_number: contact_number }],
     },
   });
@@ -22,7 +19,6 @@ async function checkExistingHospital(
 async function checkExistingDepartments(hodEmails: string[]) {
   const existingDepartments = await prisma.departments.findMany({
     where: {
-      // @ts-ignore
       hod_email: {
         in: hodEmails,
       },
@@ -34,7 +30,6 @@ async function checkExistingDepartments(hodEmails: string[]) {
 async function createHospital(data: FormData) {
   const hashedPassword = await hash(data.password, 13);
 
-  // Check for existing hospital
   const existingHospital = await checkExistingHospital(
     data.hospitalName,
     data.contact_number
@@ -45,12 +40,10 @@ async function createHospital(data: FormData) {
     );
   }
 
-  // Check for existing departments
   const hodEmails = data.departments.map((dept) => dept.hod_email);
   const existingDepartments = await checkExistingDepartments(hodEmails);
   if (existingDepartments.length > 0) {
     const existingEmails = existingDepartments.map(
-      // @ts-ignore
       (dept: {
         id: string;
         hospital_id: string;
