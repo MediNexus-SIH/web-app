@@ -13,9 +13,6 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { redirect } from "next/navigation";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
-import { useEffect } from "react";
 
 const DashboardBreadCrumb = () => {
   return (
@@ -175,11 +172,6 @@ const DashboardSupplyChainCard = async () => {
 };
 
 export default async function Component() {
-
-  const session = await getServerSideProps()
-  if(!session.sessionStatus){
-    redirect("/auth/signin")
-  }
   return (
     <div className="flex min-h-screen p-6 w-full flex-col bg-muted/40 ">
       <div className="flex flex-col sm:gap-4 ">
