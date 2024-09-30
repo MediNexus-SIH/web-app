@@ -1,18 +1,6 @@
-"use client"
+"use client";
+
 import React from "react";
-import { Bar, Line, Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -40,78 +28,67 @@ import {
   Download,
   Filter,
 } from "lucide-react";
+import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import {
+  InventoryStatusChart,
+  DemandAnalyticsChart,
+  StockUsageTrendsChart,
+} from "./ChartImages";
+import PDFReport from "./PDFReport";
 
 export default function ReportAnalytics() {
-  // Mock data for charts
-  const inventoryStatusData = {
-    labels: ["In Stock", "Low Stock", "Out of Stock"],
-    datasets: [
-      {
-        data: [300, 50, 10],
-        backgroundColor: ["#10B981", "#FBBF24", "#EF4444"],
-      },
+  // Data for PDF
+  const reportData = {
+    inventoryStatus: {
+      inStock: 300,
+      lowStock: 50,
+      outOfStock: 10,
+    },
+    criticalItems: [
+      { name: "Item A", status: "Low Stock" },
+      { name: "Item B", status: "Expiring Soon" },
+      { name: "Item C", status: "Out of Stock" },
     ],
   };
 
-  const trendData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "Stock Usage",
-        data: [65, 59, 80, 81, 56, 55],
-        borderColor: "#3B82F6",
-        tension: 0.1,
-      },
-    ],
-  };
+  interface DownloadButtonProps {
+    url: string | null;
+    loading: boolean;
+    error: Error | null;
+  }
 
-  const demandData = {
-    labels: ["Item A", "Item B", "Item C", "Item D", "Item E"],
-    datasets: [
-      {
-        label: "Demand",
-        data: [12, 19, 3, 5, 2],
-        backgroundColor: "#8B5CF6",
-      },
-    ],
-  };
+  const DownloadButton: React.FC<DownloadButtonProps> = ({
+    url,
+    loading,
+    error,
+  }) => (
+    <Button
+      disabled={loading}
+      onClick={() => {
+        console.log("url is :",url)
+        if (url) {
+          console.log("Entered if url statement")
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = "MediNexus_Inventory_Report.pdf";
+          link.click();
+        }
+      }}
+    >
+      {loading ? (
+        "Generating PDF..."
+      ) : (
+        <>
+          <Download className="mr-2 h-4 w-4" />
+          Export Report
+        </>
+      )}
+    </Button>
+  );
 
-  return (
-    <div className=" mx-auto p-4 bg-muted/40 w-full">
-      <h1 className="text-3xl font-bold mb-6">Report Analytics</h1>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 mb-6">
-        <Select defaultValue="all">
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Department" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Departments</SelectItem>
-            <SelectItem value="emergency">Emergency</SelectItem>
-            <SelectItem value="surgery">Surgery</SelectItem>
-            <SelectItem value="pediatrics">Pediatrics</SelectItem>
-          </SelectContent>
-        </Select>
-        <Input type="date" className="w-[180px]" />
-        <Button variant="outline">
-          <Filter className="mr-2 h-4 w-4" /> More Filters
-        </Button>
-      </div>
-
-      {/* Real-time Inventory Status Overview */}
+  const RTCGraphs = () => {
+    return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -121,7 +98,7 @@ export default function ReportAnalytics() {
             <PieChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <Pie data={inventoryStatusData} />
+            <InventoryStatusChart />
           </CardContent>
         </Card>
         <Card>
@@ -130,25 +107,7 @@ export default function ReportAnalytics() {
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <Bar
-              data={{
-                labels: ["Medical Devices", "Consumables", "Pharmaceuticals"],
-                datasets: [
-                  {
-                    label: "Current Stock",
-                    data: [300, 450, 200],
-                    backgroundColor: "#3B82F6",
-                  },
-                ],
-              }}
-              options={{
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            <DemandAnalyticsChart />
           </CardContent>
         </Card>
         <Card>
@@ -178,18 +137,24 @@ export default function ReportAnalytics() {
           </CardContent>
         </Card>
       </div>
+    );
+  };
 
-      {/* Trend Graphs */}
+  const TrendsGraphs = () => {
+    return (
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Stock Usage Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <Line data={trendData} />
+          <StockUsageTrendsChart />
         </CardContent>
       </Card>
+    );
+  };
 
-      {/* Expiry Analytics */}
+  const ExpiryAnalytics = () => {
+    return (
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Expiry Analytics</CardTitle>
@@ -233,18 +198,24 @@ export default function ReportAnalytics() {
           </Table>
         </CardContent>
       </Card>
+    );
+  };
 
-      {/* Demand Analytics */}
+  const DemandAnalytics = () => {
+    return (
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Demand Analytics</CardTitle>
         </CardHeader>
         <CardContent>
-          <Bar data={demandData} />
+          <DemandAnalyticsChart />
         </CardContent>
       </Card>
+    );
+  };
 
-      {/* Order History and Efficiency */}
+  const OrderHistory = () => {
+    return (
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Order History and Efficiency</CardTitle>
@@ -290,6 +261,46 @@ export default function ReportAnalytics() {
           </div>
         </CardContent>
       </Card>
+    );
+  };
+
+  return (
+    <div className="container mx-auto p-4 bg-muted/40 min-h-screen">
+      <h1 className="text-3xl font-bold mb-6">Report Analytics</h1>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-4 mb-6">
+        <Select defaultValue="all">
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Select Department" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Departments</SelectItem>
+            <SelectItem value="emergency">Emergency</SelectItem>
+            <SelectItem value="surgery">Surgery</SelectItem>
+            <SelectItem value="pediatrics">Pediatrics</SelectItem>
+          </SelectContent>
+        </Select>
+        <Input type="date" className="w-[180px]" />
+        <Button variant="outline">
+          <Filter className="mr-2 h-4 w-4" /> More Filters
+        </Button>
+      </div>
+
+      {/* Real-time Inventory Status Overview */}
+      <RTCGraphs />
+
+      {/* Trend Graphs */}
+      <TrendsGraphs />
+
+      {/* Expiry Analytics */}
+      <ExpiryAnalytics />
+
+      {/* Demand Analytics */}
+      <DemandAnalytics />
+
+      {/* Order History and Efficiency */}
+      <OrderHistory />
 
       {/* Export and Sharing */}
       <div className="flex justify-end space-x-4">
@@ -297,10 +308,12 @@ export default function ReportAnalytics() {
           <Calendar className="mr-2 h-4 w-4" />
           Schedule Report
         </Button>
-        <Button>
-          <Download className="mr-2 h-4 w-4" />
-          Export Report
-        </Button>
+
+        <BlobProvider document={<PDFReport data={reportData} />}>
+          {({ url, loading, error }) => (
+            <DownloadButton url={url} loading={loading} error={error} />
+          )}
+        </BlobProvider>
       </div>
     </div>
   );

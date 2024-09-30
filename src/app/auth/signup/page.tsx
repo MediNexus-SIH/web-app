@@ -33,6 +33,8 @@ import {
 } from "@/lib/dropdownOptions";
 import { SelectDropdown } from "@/components/SelectDropdown";
 import useCreateHospital from "@/hooks/useCreateHospital";
+import { getServerSideProps } from "@/hooks/getServerSideProps";
+import { useSession } from "next-auth/react";
 // import { FormData } from "@/lib/zodSchema/formSchema";
 // // Types
 type Department = {
@@ -734,7 +736,11 @@ export default function HospitalRegistrationForm() {
       currentStep > 1 ? "bg-muted/40 border-t pt-5" : ""
     }`;
   };
-
+  const session = useSession()
+ 
+  if (session){
+    router.push("/dashboard")
+  }
   return (
     <div className="min-h-screen bg-muted/40 flex items-center justify-center p-4">
       <Toaster />
