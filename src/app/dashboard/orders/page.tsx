@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React from "react";
 import { DotIcon, X, Plus, ListOrdered, Filter } from "lucide-react";
 import {
@@ -22,20 +22,13 @@ import {
   TableBody,
 } from "@/components/ui/table";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetClose,
-} from "@/components/ui/sheet";
-
 import SearchInputField from "@/components/SearchInputField";
 import InventoryLevelsChart from "./graphCharts/InventoryLevelsChart";
 import OrderTableRow from "./OrderTableRow";
 import OrderStatusChart from "./graphCharts/OrderStatusChart";
 import SupplierPerformanceChart from "./graphCharts/SupplierPerformanceChart";
 import TotalSalesChart from "./graphCharts/TotalSalesChart";
+import BreadCrumb from "@/components/BreadCrumb";
 
 const OrderTable = () => {
   type OrderStatus = "failure" | "pending" | "success";
@@ -155,7 +148,13 @@ const OrderSorting = () => {
 
 const page = () => {
   return (
-    <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-muted/40">
+    <div className="flex-1 w-full overflow-y-auto p-4 md:p-6 bg-muted/40 space-y-4">
+      <BreadCrumb
+        paths={[
+          { pageName: "Dashboard", path: "/dashboard" },
+          { pageName: "Orders", path: "/dashboard/orders" },
+        ]}
+      />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Orders</h1>
         <Button size="sm">

@@ -1,11 +1,3 @@
-import Link from "next/link";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import {
   Card,
   CardHeader,
@@ -13,25 +5,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-
-const DashboardBreadCrumb = () => {
-  return (
-    <header className="sticky flex  items-center gap-4 h-auto bg-transparent ">
-      <Breadcrumb className="flex">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink asChild>
-              <Link href="#" prefetch={false}>
-                Dashboard
-              </Link>
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-        </BreadcrumbList>
-      </Breadcrumb>
-    </header>
-  );
-};
+import BreadCrumb from "@/components/BreadCrumb";
 
 const DashboardInventoryCard = () => {
   return (
@@ -173,9 +147,10 @@ const DashboardSupplyChainCard = async () => {
 
 export default async function Component() {
   return (
-    <div className="flex min-h-screen p-6 w-full flex-col bg-muted/40 ">
+    <div className="flex-1 min-h-screen p-6 w-full bg-muted/40 ">
       <div className="flex flex-col sm:gap-4 ">
-        <DashboardBreadCrumb />
+        <BreadCrumb paths={[{ pageName: "Dashboard", path: "/dashboard" }]} />
+        <h1 className="text-2xl font-bold">Dashboard</h1>
         <main className="grid flex-1 items-start gap-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <DashboardInventoryCard />

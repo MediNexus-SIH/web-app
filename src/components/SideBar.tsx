@@ -10,8 +10,7 @@ import {
   Settings,
 } from "lucide-react";
 
-
-export default function Sidebar({ className }: { className?: string }) {
+export default function SideBar({ className }: { className?: string }) {
   const router = useRouter();
   const handleNavigation = (path: string) => {
     router.push(path);
@@ -85,4 +84,3 @@ export default function Sidebar({ className }: { className?: string }) {
     </div>
   );
 }
-

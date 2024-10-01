@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import BreadCrumb from "@/components/BreadCrumb";
 import {
   Dialog,
   DialogContent,
@@ -29,55 +30,49 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Bell,
   Search,
   AlertTriangle,
-  Package,
   Ambulance,
   ArrowLeftRight,
   Check,
   X,
-  AmbulanceIcon,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/components/ui/use-toast";
 import SearchInputField from "@/components/SearchInputField";
+
+interface Medicine {
+  id: number;
+  name: string;
+  stock: number;
+  branchId: number;
+  capacity: number;
+  critical: number;
+}
+
+interface Branch {
+  id: number;
+  name: string;
+  city: string;
+}
+
+// Mock data for demonstration
+const branches: Branch[] = [
+  { id: 1, name: "Central Hospital", city: "New York" },
+  { id: 2, name: "Mercy Medical Center", city: "Los Angeles" },
+  { id: 3, name: "St. John's Hospital", city: "Chicago" },
+];
 
 export default function BranchesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedBranch, setSelectedBranch] = useState("all");
   const [alertsOpen, setAlertsOpen] = useState(false);
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
-    const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
-      null
-    );
-  interface Medicine {
-    id: number;
-    name: string;
-    stock: number;
-    branchId: number;
-  }
-
-  interface Branch {
-    id: number;
-    name: string;
-    city:string;
-  }
-
-  interface TransferDialogProps {
-    transferDialogOpen: boolean;
-    setTransferDialogOpen: (open: boolean) => void;
-    selectedMedicine?: Medicine;
-    branches: Branch[];
-  }
-
-  // Mock data for demonstration
-  const branches :Branch[] = [
-    { id: 1, name: "Central Hospital", city: "New York" },
-    { id: 2, name: "Mercy Medical Center", city: "Los Angeles" },
-    { id: 3, name: "St. John's Hospital", city: "Chicago" },
-  ];
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
+    null
+  );
 
   const inventory = [
     {
@@ -186,15 +181,40 @@ export default function BranchesPage() {
     (transfer) => transfer.status === "Pending"
   );
 
-  const handleTransferRequest = (medicine: any) => {
+  const handleTransferRequest = (medicine: Medicine) => {
     setSelectedMedicine(medicine);
     setTransferDialogOpen(true);
+  };
+
+  const handleTransferSubmit = (
+    fromBranch: number,
+    toBranch: number,
+    quantity: number
+  ) => {
+    // Here you would typically make an API call to submit the transfer request
+    console.log(
+      `Transfer request submitted: ${quantity} units from branch ${fromBranch} to branch ${toBranch}`
+    );
+    toast({
+      title: "Transfer Request Submitted",
+      description: `${quantity} units of ${selectedMedicine?.name} requested for transfer.`,
+    });
+    // Update the local state to reflect the transfer
+    const updatedInventory = inventory.map((item) => {
+      if (item.id === selectedMedicine?.id) {
+        return { ...item, stock: item.stock - quantity };
+      }
+      return item;
+    });
+    // You would update your state here, e.g.:
+    // setInventory(updatedInventory);
   };
 
   const handleApproveTransfer = (transferId: number) => {
     // Logic to approve transfer
     console.log(`Approved transfer ${transferId}`);
   };
+
 
   const handleRejectTransfer = (transferId: number) => {
     // Logic to reject transfer
@@ -206,70 +226,14 @@ export default function BranchesPage() {
     name: string;
   }
 
-
-const TransferDialog: React.FC<TransferDialogProps> = ({
-  transferDialogOpen,
-  setTransferDialogOpen,
-  selectedMedicine,
-  branches,
-}) => {
   return (
-    <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Request Transfer</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          {selectedMedicine ? (
-            <>
-              <p>Request transfer for: {selectedMedicine.name}</p>
-              <p>Current stock: {selectedMedicine.stock}</p>
-              <p>
-                From:{" "}
-                {branches.find((b) => b.id === selectedMedicine.branchId)?.name}
-              </p>
-              <Select>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select destination branch" />
-                </SelectTrigger>
-                <SelectContent>
-                  {branches
-                    .filter((b) => b.id !== selectedMedicine.branchId)
-                    .map((branch) => (
-                      <SelectItem key={branch.id} value={branch.id.toString()}>
-                        {branch.name}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-              <Input type="number" placeholder="Quantity to transfer" />
-            </>
-          ) : (
-            <p>No medicine selected</p>
-          )}
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => setTransferDialogOpen(false)}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              // Here you would handle the transfer request
-              setTransferDialogOpen(false);
-            }}
-          >
-            Submit Request
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-};
-  return (
-    <div className="mx-auto p-4 w-screen min-h-screen flex-1 overflow-y-auto  md:p-6 bg-muted/40">
+    <div className="p-4 w-full min-h-screen flex-1 overflow-y-auto space-y-4 md:p-6 bg-muted/40">
+      <BreadCrumb
+        paths={[
+          { pageName: "Dashboard", path: "/dashboard" },
+          { pageName: "Branches", path: "/dashboard/branches" },
+        ]}
+      />
       <h1 className="text-2xl font-bold mb-4">
         Hospital Branches Inventory Management
       </h1>
@@ -500,53 +464,114 @@ const TransferDialog: React.FC<TransferDialogProps> = ({
         </TabsContent>
       </Tabs>
 
-      <Dialog open={transferDialogOpen} onOpenChange={setTransferDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Request Transfer</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <p>Request transfer for: {selectedMedicine?.name}</p>
-            <p>Current stock: {selectedMedicine?.stock}</p>
-            <p>
-              From:{" "}
-              {branches.find((b) => b.id === selectedMedicine?.branchId)?.name}
-            </p>
-            <Select>
-              <SelectTrigger>
-                <SelectValue placeholder="Select destination branch" />
-              </SelectTrigger>
-              <SelectContent>
-                {branches
-                  .filter((b) => b.id !== selectedMedicine?.branchId)
-                  .map((branch) => (
-                    <SelectItem key={branch.id} value={branch.id.toString()}>
-                      {branch.name}
-                    </SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
-            <Input type="number" placeholder="Quantity to transfer" />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setTransferDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                // Here we will handle the transfer request
-                setTransferDialogOpen(false);
-              }}
-            >
-              Submit Request
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <TransferDialog
+        isOpen={transferDialogOpen}
+        onClose={() => setTransferDialogOpen(false)}
+        selectedMedicine={selectedMedicine}
+        branches={branches}
+        onTransferSubmit={handleTransferSubmit}
+      />
     </div>
   );
 }
+interface TransferDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedMedicine: Medicine | null;
+  branches: Branch[];
+  onTransferSubmit: (
+    fromBranch: number,
+    toBranch: number,
+    quantity: number
+  ) => void;
+}
 
+const TransferDialog: React.FC<TransferDialogProps> = ({
+  isOpen,
+  onClose,
+  selectedMedicine,
+  branches,
+  onTransferSubmit,
+}) => {
+  const [destinationBranch, setDestinationBranch] = useState<string>("");
+  const [quantity, setQuantity] = useState<string>("");
+
+  const handleSubmit = () => {
+    if (selectedMedicine && destinationBranch && quantity) {
+      onTransferSubmit(
+        selectedMedicine.branchId,
+        parseInt(destinationBranch),
+        parseInt(quantity)
+      );
+      onClose();
+    } else {
+      toast({
+        title: "Error",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Request Transfer</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          {selectedMedicine ? (
+            <>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">Medicine:</span>
+                <span>{selectedMedicine.name}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">Current stock:</span>
+                <span>{selectedMedicine.stock}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-semibold">From:</span>
+                <span>
+                  {
+                    branches.find((b) => b.id === selectedMedicine.branchId)
+                      ?.name
+                  }
+                </span>
+              </div>
+              <Select onValueChange={setDestinationBranch}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select destination branch" />
+                </SelectTrigger>
+                <SelectContent>
+                  {branches
+                    .filter((b) => b.id !== selectedMedicine.branchId)
+                    .map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id.toString()}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="number"
+                placeholder="Quantity to transfer"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                max={selectedMedicine.stock}
+              />
+            </>
+          ) : (
+            <p>No medicine selected</p>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit}>Submit Request</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};

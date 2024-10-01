@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import BreadCrumb from "@/components/BreadCrumb"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -265,8 +266,14 @@ export default function ReportAnalytics() {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-muted/40 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6">Report Analytics</h1>
+    <div className="flex-1 mx-auto p-4 bg-muted/40 space-y-4 min-h-screen">
+      <BreadCrumb
+        paths={[
+          { pageName: "Dashboard", path: "/dashboard" },
+          { pageName: "Reports", path: "/dashboard/reports" },
+        ]}
+      />
+      <h1 className="text-2xl font-bold mb-4">Reports Analytics</h1>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">

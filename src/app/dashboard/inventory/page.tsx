@@ -1,4 +1,3 @@
-"use client";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -8,9 +7,7 @@ import {
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import React, { useState, useMemo } from "react";
+import React from "react";
 import {
   Pagination,
   PaginationContent,
@@ -20,13 +17,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -53,14 +44,21 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Menu } from "lucide-react";
+import BreadCrumb from "@/components/BreadCrumb";
 
 export default function Component() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40 p-6">
-      <div className="flex flex-col sm:gap-4  ">
-        <BreadcrumbsInv />
-        <main className="grid flex-1 items-start gap-4 md:gap-4 ">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="flex-1 min-h-screen bg-muted/40 p-6 overflow-auto">
+      <div className="flex flex-col gap-4">
+        <BreadCrumb
+          paths={[
+            { pageName: "Dashboard", path: "/dashboard" },
+            { pageName: "Inventory", path: "/dashboard/inventory" },
+          ]}
+        />
+        <h1 className="text-2xl font-bold">Inventory</h1>
+        <main className="flex-1 flex flex-col items-start gap-4">
+          <div className="flex flex-wrap gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             <TotalItemsCard />
             <LowStockCard />
             <ExpiryCard />
@@ -74,25 +72,6 @@ export default function Component() {
   );
 }
 
-const BreadcrumbsInv = () => {
-  return (
-    <Breadcrumb className="hidden md:flex">
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/dashboard" prefetch={false}>
-              Dashboard
-            </Link>
-          </BreadcrumbLink>
-        </BreadcrumbItem>
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <BreadcrumbPage>Inventory</BreadcrumbPage>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
-  );
-};
 const EditInvDropdown = () => {
   return (
     <DropdownMenu>
@@ -112,7 +91,7 @@ const EditInvDropdown = () => {
 
 const TotalItemsCard = () => {
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle>Total Items</CardTitle>
         <CardDescription>
@@ -129,7 +108,7 @@ const TotalItemsCard = () => {
 
 const LowStockCard = () => {
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle>Low Stock</CardTitle>
         <CardDescription>
@@ -146,7 +125,7 @@ const LowStockCard = () => {
 
 const ExpiryCard = () => {
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle>Expiring Soon</CardTitle>
         <CardDescription>
@@ -162,7 +141,7 @@ const ExpiryCard = () => {
 
 const ReorderReqCard = () => {
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle>Reorder Requests</CardTitle>
         <CardDescription>

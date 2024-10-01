@@ -16,7 +16,7 @@ const fontOptions = Poppins({
 const Custom404Page = () => {
   return (
     <div
-      className={`min-h-screen flex flex-col justify-center items-center px-4 py-8 bg-gradient-to-br from-gray-900 to-gray-800 ${fontOptions.className}`}
+      className={`min-h-screen flex flex-col justify-center items-center px-4 py-8 bg-background ${fontOptions.className}`}
     >
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -42,7 +42,7 @@ const Custom404Page = () => {
         </p>
         <Button
           asChild
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-full transition-colors duration-300"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors duration-300"
         >
           <Link href="/">
             <div className="flex items-center">

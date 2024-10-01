@@ -1,4 +1,4 @@
-import Sidebar from "@/components/SideBar";
+import StickySideBar from "@/components/StickySideBar";
 import TopBar from "@/components/TopBar";
 import { getServerSideProps } from "@/hooks/getServerSideProps";
 import { redirect } from "next/navigation";
@@ -9,7 +9,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSideProps();
-  console.log(session)
+  console.log(session);
   if (!session.sessionStatus) {
     redirect("/auth/signin");
   }
@@ -18,7 +18,7 @@ export default async function RootLayout({
       <div className="flex-1 flex flex-col">
         <TopBar className="w-full" />
         <div className="flex ">
-          <Sidebar className="" />
+          <StickySideBar className="" />
           {children}
         </div>
       </div>
