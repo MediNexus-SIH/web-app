@@ -42,8 +42,6 @@ export default function Component() {
   );
 }
 
-
-
 const PaginationInv = () => {
   return (
     <Pagination className="mb-2">
