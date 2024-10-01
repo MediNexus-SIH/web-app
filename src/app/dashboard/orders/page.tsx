@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { DotIcon, X, Plus, ListOrdered, Filter } from "lucide-react";
+import { DotIcon, Plus, ListOrdered, Filter } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -13,7 +13,6 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-
 import {
   Table,
   TableHeader,
@@ -21,15 +20,13 @@ import {
   TableHead,
   TableBody,
 } from "@/components/ui/table";
-
 import SearchInputField from "@/components/SearchInputField";
-import InventoryLevelsChart from "./graphCharts/InventoryLevelsChart";
+import InventoryLevelsChart from "@/components/Graph Charts/InventoryLevelsChart";
 import OrderTableRow from "./OrderTableRow";
-import OrderStatusChart from "./graphCharts/OrderStatusChart";
-import SupplierPerformanceChart from "./graphCharts/SupplierPerformanceChart";
-import TotalSalesChart from "./graphCharts/TotalSalesChart";
+import OrderStatusChart from "@/components/Graph Charts/OrderStatusChart";
+import SupplierPerformanceChart from "@/components/Graph Charts/SupplierPerformanceChart";
+import TotalSalesChart from "@/components/Graph Charts/TotalSalesChart";
 import BreadCrumb from "@/components/BreadCrumb";
-
 const OrderTable = () => {
   type OrderStatus = "failure" | "pending" | "success";
   type PaymentStatus = "pending" | "done";
