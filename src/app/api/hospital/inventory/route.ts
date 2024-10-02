@@ -122,7 +122,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { id: userId, hospitalName, email: userEmail } = userSession.user!;
+  const { id: userId, hospitalName } = userSession.user!;
 
   if (!userId || !hospitalName) {
     return NextResponse.json(
@@ -134,10 +134,31 @@ export async function GET() {
   try {
     const items = await prisma.medicalInventory.findMany({
       where: {
-        hospital_id: userSession.user.id,
+        hospital_id: userId, // Use userId directly
+      },
+      include: {
+        department: {
+          select: {
+            department: true, // Return department name
+          },
+        },
       },
     });
-    return NextResponse.json(items, { status: 200 });
+
+    // Map the items to flatten the department object
+    const flattenedItems = items.map((item) => ({
+      id: item.id,
+      department_id: item.department_id,
+      hospital_id: item.hospital_id,
+      item_name: item.item_name,
+      batch_number: item.batch_number,
+      expiry_date: item.expiry_date,
+      quantity: item.quantity,
+      unit_price: item.unit_price,
+      department: item.department.department, // Flattening the structure
+    }));
+
+    return NextResponse.json(flattenedItems, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -146,3 +167,4 @@ export async function GET() {
     );
   }
 }
+

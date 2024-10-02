@@ -1,26 +1,27 @@
-"use client";
-
-import React, { useEffect, useMemo } from "react";
+import { IndianRupee, Loader2 } from "lucide-react";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
+} from "../ui/card";
+import { useEffect, useMemo } from "react";
 import useInventory from "@/hooks/useInventory";
 
-const LOW_STOCK_THRESHOLD = 20; // Define the threshold for low stock
-
-const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
+const TotalCostCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
   const { items, loading, error, fetchItems } = useInventory();
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems, refreshTrigger]);
-  const lowStockCount = useMemo(() => {
-    return items.filter((item) => item.quantity <= LOW_STOCK_THRESHOLD).length
+
+  const totalPrice = useMemo(() => {
+    let totalPrice = 0;
+    items.map((value) => {
+      totalPrice += value.quantity * value.unit_price;
+    });
+    return totalPrice;
   }, [items]);
 
   const renderContent = () => {
@@ -33,17 +34,19 @@ const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
     }
 
     return (
-      <div className="text-4xl font-bold text-red-500">{lowStockCount}</div>
+      <div className="text-4xl flex items-center  font-bold text-blue-500">
+        <IndianRupee strokeWidth={2.5} className="mr-2 h-8 w-8 " />
+        <div>{totalPrice.toLocaleString()}</div>
+      </div>
     );
   };
-
+  console.log(items);
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
-        <CardTitle>Low Stock</CardTitle>
+        <CardTitle>Total Items</CardTitle>
         <CardDescription>
-          Items with quantity below {LOW_STOCK_THRESHOLD} that need to be
-          reordered.
+          The total cost of medical supplies in your inventory.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex  items-center h-20">
@@ -53,4 +56,4 @@ const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
   );
 };
 
-export default LowStockCard;
+export default TotalCostCard;

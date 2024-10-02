@@ -53,7 +53,6 @@ export default function InventoryItemsCard({
       </Card>
     );
   }
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -73,10 +72,11 @@ export default function InventoryItemsCard({
             <TableHeader>
               <TableRow>
                 <TableHead>Item</TableHead>
-                <TableHead>Category</TableHead>
+                <TableHead>Department</TableHead>
                 <TableHead>Quantity</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Expiration</TableHead>
+                <TableHead>Batch Number</TableHead>
+                <TableHead>Unit Price</TableHead>
+                <TableHead>Expiry Date</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -85,10 +85,11 @@ export default function InventoryItemsCard({
                 <TableInvRow
                   key={index + 1}
                   item={item.item_name}
-                  itemCategory={item.department}
+                  department={item.department}
                   quantity={item.quantity.toString()}
-                  location="N/A" // Add this field to your Item interface if needed
+                  batchNumber={item.batch_number}
                   expiration={item.expiry_date}
+                  unitPrice={item.unit_price.toString()}
                 />
               ))}
             </TableBody>

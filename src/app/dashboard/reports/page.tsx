@@ -67,9 +67,7 @@ export default function ReportAnalytics() {
     <Button
       disabled={loading}
       onClick={() => {
-        console.log("url is :",url)
         if (url) {
-          console.log("Entered if url statement")
           const link = document.createElement("a");
           link.href = url;
           link.download = "MediNexus_Inventory_Report.pdf";

@@ -5,7 +5,6 @@ import { useShowToast } from "@/hooks/useShowToast";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import BreadCrumb from "@/components/BreadCrumb";
-import ReorderReqCard from "@/components/Inventory Components/ReorderReqCard";
 import ExpiryCard from "@/components/Inventory Components/ExpiryCard";
 import LowStockCard from "@/components/Inventory Components/LowStockCard";
 import TotalItemsCard from "@/components/Inventory Components/TotalItemsCard";
@@ -37,6 +36,7 @@ import { SelectDropdown } from "@/components/SelectDropdown";
 import useDepartments from "@/hooks/useDepartments";
 import useInventory from "@/hooks/useInventory";
 import LoadingComponents from "@/components/LoadingComponents";
+import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -266,10 +266,10 @@ export default function Component() {
           </div>
           <main className="flex-1 flex flex-col items-start gap-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-              <TotalItemsCard />
-              <LowStockCard />
-              <ExpiryCard />
-              <ReorderReqCard />
+              <TotalItemsCard refreshTrigger={refreshTrigger} />
+              <LowStockCard refreshTrigger={refreshTrigger} />
+              <ExpiryCard refreshTrigger={refreshTrigger} />
+              <TotalCostCard refreshTrigger={refreshTrigger} />
             </div>
             <InventoryItemsCard refreshTrigger={refreshTrigger} />
           </main>

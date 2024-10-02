@@ -4,15 +4,17 @@ import EditInvDropdown from "./EditInvDropdown";
 
 const TableInvRow = ({
   item,
-  itemCategory,
+  department,
   quantity,
-  location,
+  batchNumber,
+  unitPrice,
   expiration,
 }: {
   item: string;
-  itemCategory: string;
+  department: string;
   quantity: string;
-  location: string;
+  batchNumber: string;
+  unitPrice: string;
   expiration: string;
 }) => {
   const quantityOfItem = parseInt(quantity);
@@ -28,7 +30,15 @@ const TableInvRow = ({
       : quantityOfItem > 20
       ? "text-yellow-50"
       : "text-red-50";
+
+  // Format expiration date
   const expirationDate = new Date(expiration);
+  const formattedExpiration = expirationDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+
   const currentDate = new Date();
   const daysUntilExpiration =
     (expirationDate.getTime() - currentDate.getTime()) / (1000 * 3600 * 24);
@@ -50,7 +60,9 @@ const TableInvRow = ({
       <TableCell>
         <div className="font-medium">{item}</div>
       </TableCell>
-      <TableCell>{itemCategory}</TableCell>
+      <TableCell>
+        <div className="font-medium">{department}</div>
+      </TableCell>
       <TableCell>
         <Badge
           variant="outline"
@@ -59,13 +71,18 @@ const TableInvRow = ({
           {quantity}
         </Badge>
       </TableCell>
-      <TableCell>{location}</TableCell>
+      <TableCell>
+        <div className="font-medium">{batchNumber}</div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{unitPrice}</div>
+      </TableCell>
       <TableCell>
         <Badge
           variant="outline"
           className={`${expirationColor} ${expirationTextColor}`}
         >
-          {expiration}
+          {formattedExpiration} {/* Display the formatted expiration date */}
         </Badge>
       </TableCell>
       <TableCell>
@@ -75,4 +92,4 @@ const TableInvRow = ({
   );
 };
 
-export default TableInvRow
+export default TableInvRow;
