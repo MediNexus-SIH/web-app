@@ -1,6 +1,3 @@
-"use client";
-
-import React, { useEffect, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -9,23 +6,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import useInventory from "@/hooks/useInventory";
 
-const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
-  const { items, loading, error, fetchItems } = useInventory();
 
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems, refreshTrigger]);
-
-  const totalStockCount = useMemo(() => {
-    let count = 0;
-    items.map((value) => {
-      count += value.quantity;
-    });
-    return count
-  }, [items]);
-
+const TotalItemsCard = ({
+  totalStockCount,
+  loading,
+  error,
+}: {
+  totalStockCount: number;
+  loading: boolean;
+  error: any;
+}) => {
   const renderContent = () => {
     if (loading) {
       return <Loader2 className="h-8 w-8 animate-spin" />;
@@ -35,7 +26,11 @@ const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
       return <p className="text-destructive">Error: {error}</p>;
     }
 
-    return <div className="text-4xl font-bold text-white">{totalStockCount.toLocaleString()}</div>;
+    return (
+      <div className="text-4xl font-bold text-white">
+        {totalStockCount.toLocaleString()}
+      </div>
+    );
   };
   return (
     <Card className="w-full">
@@ -52,4 +47,4 @@ const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
   );
 };
 
-export default LowStockCard;
+export default TotalItemsCard;

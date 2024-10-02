@@ -6,23 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { useEffect, useMemo } from "react";
-import useInventory from "@/hooks/useInventory";
 
-const TotalCostCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
-  const { items, loading, error, fetchItems } = useInventory();
-
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems, refreshTrigger]);
-
-  const totalPrice = useMemo(() => {
-    let totalPrice = 0;
-    items.map((value) => {
-      totalPrice += value.quantity * value.unit_price;
-    });
-    return totalPrice;
-  }, [items]);
+const TotalCostCard = ({
+  totalPrice,
+  loading,
+  error,
+}: {
+  totalPrice: number;
+  loading: boolean;
+  error: any;
+}) => {
+  
 
   const renderContent = () => {
     if (loading) {
@@ -35,12 +29,12 @@ const TotalCostCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
 
     return (
       <div className="text-4xl flex items-center  font-bold text-blue-500">
-        <IndianRupee strokeWidth={2.5} className="mr-2 h-8 w-8 " />
+        <IndianRupee strokeWidth={2.5} className="mr-1 h-8 w-8 " />
         <div>{totalPrice.toLocaleString()}</div>
       </div>
     );
   };
-  console.log(items);
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">

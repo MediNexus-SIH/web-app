@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useShowToast } from "@/hooks/useShowToast";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ import useDepartments from "@/hooks/useDepartments";
 import useInventory from "@/hooks/useInventory";
 import LoadingComponents from "@/components/LoadingComponents";
 import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
+import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
+import {LoadingComponent} from "@/components/Inventory Components/LoadingComponent";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -87,6 +89,10 @@ export default function Component() {
     setSelectedValue(value);
     setCurrentItem((prev) => ({ ...prev, department: value }));
   };
+
+  useEffect(() => {
+    fetchItems();
+  }, [fetchItems, refreshTrigger]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -216,12 +222,45 @@ export default function Component() {
     });
     setSelectedValue("");
   };
-
+  const LOW_STOCK_THRESHOLD = 20;
   const { dropdownDepartments } = useDepartments();
 
   const removeManualItem = (index: number) => {
     setManualItems((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const totalPrice = useMemo(() => {
+    let totalPrice = 0;
+    items.map((value) => {
+      totalPrice += value.quantity * value.unit_price;
+    });
+    return totalPrice;
+  }, [items]);
+
+  const totalStockCount = useMemo(() => {
+    let count = 0;
+    items.map((value) => {
+      count += value.quantity;
+    });
+    return count;
+  }, [items]);
+
+  const lowStockCount = useMemo(() => {
+    return items.filter((item) => item.quantity < LOW_STOCK_THRESHOLD).length;
+  }, [items]);
+
+  const today = useMemo(() => new Date(), []);
+
+  const thresholdDate = useMemo(() => {
+    return new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+  }, [today]);
+
+  const expiringStockCount = useMemo(() => {
+    return items.filter((item) => {
+      const expiryDate = new Date(item.expiry_date);
+      return expiryDate <= thresholdDate;
+    }).length;
+  }, [items, thresholdDate]);
 
   return (
     <React.Fragment>
@@ -264,15 +303,42 @@ export default function Component() {
               </PopoverContent>
             </Popover>
           </div>
-          <main className="flex-1 flex flex-col items-start gap-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-              <TotalItemsCard refreshTrigger={refreshTrigger} />
-              <LowStockCard refreshTrigger={refreshTrigger} />
-              <ExpiryCard refreshTrigger={refreshTrigger} />
-              <TotalCostCard refreshTrigger={refreshTrigger} />
+
+          {loading ? (
+            <LoadingComponent/>
+          ) : items.length > 0 ? (
+            <div className="flex-1 flex flex-col items-start gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
+                <TotalItemsCard
+                  totalStockCount={totalStockCount}
+                  loading={loading}
+                  error={error}
+                />
+                <LowStockCard
+                  lowStockCount={lowStockCount}
+                  loading={loading}
+                  error={error}
+                />
+                <ExpiryCard
+                  expiryStockCount={expiringStockCount}
+                  loading={loading}
+                  error={error}
+                />
+                <TotalCostCard
+                  totalPrice={totalPrice}
+                  loading={loading}
+                  error={error}
+                />
+              </div>
+              <InventoryItemsCard
+                items={items}
+                loading={loading}
+                error={error}
+              />
             </div>
-            <InventoryItemsCard refreshTrigger={refreshTrigger} />
-          </main>
+          ) : (
+            <NoItemComponent />
+          )}
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
