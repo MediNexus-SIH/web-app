@@ -1,8 +1,5 @@
 "use client";
 import RevealAnimation from "@/components/framer-motion/revealAnimation";
-import { SmoothTextReveal } from "@/components/framer-motion/smoothTextReveal";
-import GithubBadge from "@/components/GithubBadge";
-import { Icons } from "@/components/Icons";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,11 +13,6 @@ import {
   TruckIcon,
   Zap,
 } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import TypewriterTitle from "@/components/TypeWriterTitle";
-import LampDemo, { LampContainer } from "@/components/ui/lamp";
 import { SparklesPreview } from "@/components/ui/Home Page/SparklesPreview";
 import { WobbleCard } from "@/components/ui/wobble-card";
 import HeroParallaxHome from "@/components/Home Page/HeroParallaxHome";
@@ -30,8 +22,6 @@ const HomePage = () => {
       <SiteHeader />
       <SparklesPreview />
       <HeroParallaxHome />
-      {/* <LampDemo /> */}
-
       <UtilsSection />
       <FeaturesSection />
       <PumpUpSection />
@@ -43,7 +33,10 @@ export default HomePage;
 
 const UtilsSection = () => {
   return (
-    <section id="utils-section" className="bg-black w-full py-12 md:py-16 lg:py-24 ">
+    <section
+      id="utils-section"
+      className="bg-black w-full py-12 md:py-16 lg:py-24 "
+    >
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <RevealAnimation>
@@ -145,16 +138,6 @@ const FeaturesSection = () => {
               </div>
             </WobbleCard>
           ))}
-
-          <WobbleCard containerClassName="col-span-1 min-h-[300px]">
-            <h2 className="max-w-80  text-left text-balance text-base  md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-              No shirt, no shoes, no weapons.
-            </h2>
-            <p className="mt-4 max-w-[26rem] text-left  text-base/6 text-neutral-200">
-              If someone yells “stop!”, goes limp, or taps out, the fight is
-              over.
-            </p>
-          </WobbleCard>
         </div>
       </div>
     </section>
