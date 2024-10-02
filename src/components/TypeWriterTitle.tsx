@@ -47,7 +47,7 @@ export default function TypewriterTitle() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="p-5 text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#b873339c] via-[#c0c0c0] to-[#c0c0c0] dark:from-[#6e3b0c76] dark:via-[#c0c0c0] dark:to-[#c0c0c0]"
+          className="p-5 text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#b873339c] via-[#c0c0c0] to-[#c0c0c0] dark:from-[#6e3b0c76] dark:via-[#c0c0c0] dark:to-[#c0c0c0]"
         >
           {words[index].substring(0, subIndex)}
           <span className="cursor">{blink ? "|" : " "}</span>
