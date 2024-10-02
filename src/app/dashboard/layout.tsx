@@ -9,7 +9,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSideProps();
-  console.log(session);
   if (!session.sessionStatus) {
     redirect("/auth/signin");
   }

@@ -33,10 +33,7 @@ import {
 } from "@/lib/dropdownOptions";
 import { SelectDropdown } from "@/components/SelectDropdown";
 import useCreateHospital from "@/hooks/useCreateHospital";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
-import { useSession } from "next-auth/react";
-// import { FormData } from "@/lib/zodSchema/formSchema";
-// // Types
+
 type Department = {
   department: string;
   hod_name: string;
@@ -62,6 +59,7 @@ type FormData = {
 
 export default function MainPage() {
   const { createHospital, isFormLoading, formError } = useCreateHospital();
+  const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
@@ -138,7 +136,6 @@ export default function MainPage() {
   const addDepartment = (e: React.MouseEvent) => {
     e.preventDefault();
     let departmentAlreadyAdded = false;
-    console.log(newDepartment);
     if (
       newDepartment.department &&
       newDepartment.hod_name &&
@@ -162,6 +159,7 @@ export default function MainPage() {
         departments: [...prev.departments, newDepartment],
       }));
       setNewDepartment({ department: "", hod_name: "", hod_email: "" });
+      setSelectedDepartment("");
       showToast(
         "Department added succesfully",
         "Department addtion was successfull, if you want to add more feel free to do so, or proceed next",
@@ -212,9 +210,7 @@ export default function MainPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Entered handle submit funciotn");
     setTimeout(() => {
-      console.log("handling some shit");
     }, 2000);
     const otp = otpValues.join("");
     if (otp !== "123456") {
@@ -323,7 +319,9 @@ export default function MainPage() {
             <SelectDropdown
               name="state"
               options={indiaStatesAndUTs}
-              onValueChange={(value: any) => handleSelectChange(value, "state")}
+              onValueChange={(value: any) => {
+                handleSelectChange(value, "state");
+              }}
               placeholder="Select a state or union territory"
             />
           </div>
@@ -372,11 +370,13 @@ export default function MainPage() {
         <Label htmlFor="department">Department Name</Label>
         <SelectDropdown
           name="department"
+          value={selectedDepartment}
           options={departmentOptions}
-          onValueChange={(value) =>
-            handleNewDepartmentChange({ name: "department", value })
-          }
           placeholder="Select department"
+          onValueChange={(value) => {
+            setSelectedDepartment(value);
+            handleNewDepartmentChange({ name: "department", value });
+          }}
         />
       </div>
 

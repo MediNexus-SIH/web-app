@@ -7,7 +7,7 @@ import {
   SelectValue,
 } from "./ui/select";
 
-interface Option {
+export interface Option {
   value: string;
   label: string;
 }
@@ -30,7 +30,7 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
   return (
     <Select value={value} name={name} onValueChange={onValueChange}>
       <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={value === "" ? placeholder : undefined} />{" "}
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (

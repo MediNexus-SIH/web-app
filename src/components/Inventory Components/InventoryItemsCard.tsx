@@ -1,50 +1,59 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "../ui/table";
-import TableInvRow from "./TableInvRow";
+"use client";
 
-const InventoryItemsCard = () => {
-  const inventory = [
-    {
-      id: 1,
-      item: "Surgical Masks",
-      category: "Medical Supplies",
-      quantity: "12",
-      location: "Hospital Storeroom",
-      expiration: "2025-06-30",
-    },
-    {
-      id: 2,
-      item: "Nitrile Gloves",
-      category: "Medical Supplies",
-      quantity: "35",
-      location: "Hospital Stockroom",
-      expiration: "2024-11-15",
-    },
-    {
-      id: 3,
-      item: "Ibuprofen 200mg",
-      category: "Pharmaceuticals",
-      quantity: "35",
-      location: "Pharmacy Stockroom",
-      expiration: "2024-10-15",
-    },
-    {
-      id: 4,
-      item: "Oxygen Tanks",
-      category: "Medical Equipment",
-      quantity: "78",
-      location: "Biomedical Storeroom",
-      expiration: "2025-06-30",
-    },
-    {
-      id: 5,
-      item: "Saline Solution",
-      category: "Pharmaceuticals",
-      quantity: "68",
-      location: "Pharmacy Stockroom",
-      expiration: "2024-09-20",
-    },
-  ];
+import React, { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../ui/table";
+import TableInvRow from "./TableInvRow";
+import { Loader2 } from "lucide-react";
+import useInventory from "@/hooks/useInventory";
+
+export default function InventoryItemsCard({
+  refreshTrigger,
+}: {
+  refreshTrigger: number;
+}) {
+  const { items, loading, error, fetchItems } = useInventory();
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchItems();
+    };
+    fetchData();
+  }, [fetchItems, refreshTrigger]);
+
+
+  if (loading) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="w-full">
+        <CardContent className="flex justify-center items-center h-64">
+          <p className="text-destructive">Error loading inventory: {error}</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -55,35 +64,37 @@ const InventoryItemsCard = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Table className="mb-4">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Item</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Quantity</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Expiration</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {inventory.map((value) => {
-              return (
+        {items.length === 0 ? (
+          <p className="text-center text-muted-foreground py-4">
+            No items in inventory. Add some items to get started.
+          </p>
+        ) : (
+          <Table className="mb-4">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Item</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Expiration</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {items.map((item, index) => (
                 <TableInvRow
-                  key={value.id}
-                  item={value.item}
-                  itemCategory={value.category}
-                  quantity={value.quantity}
-                  location={value.location}
-                  expiration={value.expiration}
+                  key={index + 1}
+                  item={item.item_name}
+                  itemCategory={item.department}
+                  quantity={item.quantity.toString()}
+                  location="N/A" // Add this field to your Item interface if needed
+                  expiration={item.expiry_date}
                 />
-              );
-            })}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </CardContent>
     </Card>
   );
-};
-
-export default InventoryItemsCard
+}
