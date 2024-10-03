@@ -33,6 +33,16 @@ const config = {
         heading: ["var(--font-heading)", ...fontFamily.sans],
         body: ["var(--font-body)", ...fontFamily.sans],
       },
+      backgroundImage: {
+        "hero-bg-dark": "url('/assets/BG-Grid.svg')",
+        "hero-bg-light": "url('/assets/BG-Grid-Light.svg')",
+        "grad-dark":
+          "linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, rgba(2, 8, 23) 0%);",
+        "faq-dark":
+          "linear-gradient(180deg, rgba(2,8,23) 0%, rgba(2, 8, 23)0%)",
+        "grad-light":
+          "linear-gradient(180deg, rgba(241, 245, 249, 0.4) 0%, rgba(255, 255, 255, 0.4) 100%)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

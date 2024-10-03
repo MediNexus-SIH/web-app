@@ -22,6 +22,7 @@ const DashboardOrdersCard = () => {
             <div>
               <h3 className="text-2xl font-bold">45</h3>
               <p className="text-muted-foreground">Pending</p>
+              <div className="text-xs text-gray-500">(Currently Static)</div>
             </div>
             <Truck className="h-8 w-8 text-primary" />
           </div>
@@ -29,6 +30,7 @@ const DashboardOrdersCard = () => {
             <div>
               <h3 className="text-2xl font-bold">125</h3>
               <p className="text-muted-foreground">Delivered</p>
+              <div className="text-xs text-gray-500">(Currently Static)</div>
             </div>
             <CircleCheck className="h-8 w-8 text-primary" />
           </div>
@@ -36,6 +38,7 @@ const DashboardOrdersCard = () => {
             <div>
               <h3 className="text-2xl font-bold">12</h3>
               <p className="text-muted-foreground">Delayed</p>
+              <div className="text-xs text-gray-500">(Currently Static)</div>
             </div>
             <TriangleAlert className="h-8 w-8 text-yellow-500" />
           </div>

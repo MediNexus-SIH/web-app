@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "../ui/card";
 
-const DashboardSupplyChainCard = async () => {
+const DashboardSupplyChainCard = () => {
   return (
     <Card>
       <CardHeader className="pb-4">
@@ -22,6 +22,7 @@ const DashboardSupplyChainCard = async () => {
             <div>
               <h3 className="text-2xl font-bold">95%</h3>
               <p className="text-muted-foreground">On-Time Delivery</p>
+              <div className="text-xs text-gray-500">(Currently Static)</div>
             </div>
             <Truck className="h-8 w-8 text-primary" />
           </div>

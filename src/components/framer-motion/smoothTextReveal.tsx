@@ -1,9 +1,7 @@
 "use client";
-
 import React, { useEffect } from "react";
 import { motion, useAnimation, Transition, Variants } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { boolean } from "zod";
 
 interface SmoothTextRevealProps {
   text: string;
@@ -40,7 +38,7 @@ export function SmoothTextReveal({
     };
 
     controls.start((i) => ({
-      ...variants[animation as keyof Variants], // Type assertion for TypeScript
+      ...variants[animation as keyof Variants],
       transition: { delay: i * 0.1 },
     }));
   }, [controls, animation]);
@@ -54,7 +52,7 @@ export function SmoothTextReveal({
           initial={{ opacity: 0 }}
           animate={controls}
           className={cn(`mr-1 ${className}`, {
-            "bg-clip-text text-transparent bg-gradient-to-r from-[#b873339c] via-[#c0c0c0] to-[#c0c0c0] dark:from-[#6e3b0c76] dark:via-[#c0c0c0] dark:to-[#c0c0c0]":
+            "bg-clip-text text-transparent bg-gradient-to-r from-[#b873339c] via-[#c0c0c0] to-[#c0c0c0] ":
               gradient,
           })}
         >

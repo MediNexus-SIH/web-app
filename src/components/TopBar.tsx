@@ -2,8 +2,6 @@ import Link from "next/link";
 import DropdownMenuProfile from "./DropdrownMenuProfile";
 import NotificationPopup from "./NotificationPopup";
 import { Hospital } from "lucide-react";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
-import { options } from "@/lib/auth";
 
 const TopBar = async ({ className }: { className?: string }) => {
   return (

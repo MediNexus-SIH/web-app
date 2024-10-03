@@ -38,7 +38,10 @@ import useInventory from "@/hooks/useInventory";
 import LoadingComponents from "@/components/LoadingComponents";
 import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
 import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
-import { LoadingComponent } from "@/components/Inventory Components/LoadingComponent";
+import {
+  HeaderLoadingComponent,
+  InvLoadingComponent,
+} from "@/components/Inventory Components/InvLoadingComponent";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -55,7 +58,7 @@ export default function Component() {
       unit_price: number;
     }>
   >([]);
-  // const { items, loading, error, fetchItems, addItems } = useInventory();
+
   const { items, loading, error, addItems, fetchItems } = useInventory();
   const { showToast } = useShowToast();
 
@@ -267,70 +270,62 @@ export default function Component() {
       <Toaster />
       <div className="flex-1 min-h-screen bg-muted/40 p-6 overflow-auto">
         <div className="flex flex-col gap-4">
-          <BreadCrumb
-            paths={[
-              { pageName: "Dashboard", path: "/dashboard" },
-              { pageName: "Inventory", path: "/dashboard/inventory" },
-            ]}
-          />
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Inventory</h1>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" /> Add Item
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48 mx-2">
-                <div className="grid gap-4">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleAddItem("manual")}
-                    className="w-full justify-start"
-                  >
-                    <ClipboardList className="mr-2 h-4 w-4" />
-                    Manual Entry
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleAddItem("qr")}
-                    className="w-full justify-start"
-                  >
-                    <QrCode className="mr-2 h-4 w-4" />
-                    Scan QR Code
-                  </Button>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-
           {loading ? (
-            <LoadingComponent />
+            <InvLoadingComponent />
           ) : items.length > 0 ? (
-            <div className="flex-1 flex flex-col items-start gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
-                <TotalItemsCard
-                  totalStockCount={totalStockCount}
-                  error={error}
-                />
-                <LowStockCard
-                  lowStockCount={lowStockCount}
-                  error={error}
-                />
-                <ExpiryCard
-                  expiryStockCount={expiringStockCount}
-                  error={error}
-                />
-                <TotalCostCard
-                  totalPrice={totalPrice}
-                  error={error}
-                />
-              </div>
-              <InventoryItemsCard
-                items={items}
-                error={error}
+            <React.Fragment>
+              <BreadCrumb
+                paths={[
+                  { pageName: "Dashboard", path: "/dashboard" },
+                  { pageName: "Inventory", path: "/dashboard/inventory" },
+                ]}
               />
-            </div>
+              <div className="flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Inventory</h1>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button>
+                      <Plus className="mr-2 h-4 w-4" /> Add Item
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 mx-2">
+                    <div className="grid gap-4">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleAddItem("manual")}
+                        className="w-full justify-start"
+                      >
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        Manual Entry
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleAddItem("qr")}
+                        className="w-full justify-start"
+                      >
+                        <QrCode className="mr-2 h-4 w-4" />
+                        Scan QR Code
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <div className="flex-1 flex flex-col items-start gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
+                  <TotalItemsCard
+                    totalStockCount={totalStockCount}
+                    error={error}
+                  />
+                  <LowStockCard lowStockCount={lowStockCount} error={error} />
+                  <ExpiryCard
+                    expiryStockCount={expiringStockCount}
+                    error={error}
+                  />
+                  <TotalCostCard totalPrice={totalPrice} error={error} />
+                </div>
+                <InventoryItemsCard items={items} error={error} />
+              </div>
+            </React.Fragment>
           ) : (
             <NoItemComponent />
           )}

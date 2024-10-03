@@ -35,18 +35,18 @@ const HomePage = () => {
             </div>
             <div className="text-center text-foreground">
               <SmoothTextReveal
-                className="text-lg sm:text-xl lg:text-2xl tracking-tight font-semibold"
+                className="text-xl sm:text-2xl lg:text-3xl tracking-tight font-semibold"
                 text="Streamline Your Hospital Supply Chain"
                 direction="right"
                 animation="easeIn"
               />
               <SmoothTextReveal
-                className="mt-2 text-sm sm:text-md lg:text-xl leading-6 text-gray-600 dark:text-gray-200"
+                className="mt-2 text-md sm:text-lg lg:text-2xl leading-6 text-gray-600 dark:text-gray-200"
                 text="Efficient inventory management, seamless supply chain,"
                 direction="left"
               />
               <SmoothTextReveal
-                className="text-sm sm:text-md lg:text-xl leading-6 text-gray-600 dark:text-gray-200"
+                className="text-md sm:text-lg lg:text-2xl leading-6 text-gray-600 dark:text-gray-200"
                 text="and intelligent demand forecasting for modern healthcare facilities."
                 direction="left"
               />

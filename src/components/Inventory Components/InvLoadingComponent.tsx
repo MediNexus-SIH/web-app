@@ -51,9 +51,21 @@ function InventoryItemSkeleton() {
     </>
   );
 }
-export const LoadingComponent = () => {
+export const HeaderLoadingComponent = () => {
   return (
     <>
+      <div className="h-4 bg-muted-foreground/10 rounded w-40 animate-pulse px-4 py-2 mr-2"></div>
+      <div className="flex justify-between items-center">
+        <div className="h-10 bg-muted-foreground/10 rounded w-32 animate-pulse px-4 py-2"></div>
+        <div className="h-9 bg-muted-foreground/10 rounded w-28 animate-pulse px-4 py-2"></div>
+      </div>
+    </>
+  );
+};
+export const InvLoadingComponent = () => {
+  return (
+    <>
+      <HeaderLoadingComponent />
       <DashboardCardsSkeleton />
       <InventoryItemSkeleton />
     </>
