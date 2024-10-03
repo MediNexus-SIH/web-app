@@ -311,28 +311,23 @@ export default function Component() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
                 <TotalItemsCard
                   totalStockCount={totalStockCount}
-                  loading={loading}
                   error={error}
                 />
                 <LowStockCard
                   lowStockCount={lowStockCount}
-                  loading={loading}
                   error={error}
                 />
                 <ExpiryCard
                   expiryStockCount={expiringStockCount}
-                  loading={loading}
                   error={error}
                 />
                 <TotalCostCard
                   totalPrice={totalPrice}
-                  loading={loading}
                   error={error}
                 />
               </div>
               <InventoryItemsCard
                 items={items}
-                loading={loading}
                 error={error}
               />
             </div>

@@ -12,18 +12,13 @@ import { Loader2 } from "lucide-react";
 
 export default function ExpiringItemsCard({
   expiryStockCount,
-  loading,
   error,
 }: {
   expiryStockCount: number;
-  loading: boolean;
+
   error: any;
 }) {
   const renderContent = () => {
-    if (loading) {
-      return <Loader2 className="h-8 w-8 animate-spin" aria-label="Loading" />;
-    }
-
     if (error) {
       return (
         <p className="text-destructive" role="alert">

@@ -9,18 +9,12 @@ import {
 
 const TotalCostCard = ({
   totalPrice,
-  loading,
   error,
 }: {
   totalPrice: number;
-  loading: boolean;
   error: any;
 }) => {
   const renderContent = () => {
-    if (loading) {
-      return <Loader2 className="h-8 w-8 animate-spin" />;
-    }
-
     if (error) {
       return <p className="text-destructive">Error: {error}</p>;
     }

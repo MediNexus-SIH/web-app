@@ -10,18 +10,14 @@ import { Loader2 } from "lucide-react";
 const LOW_STOCK_THRESHOLD = 20;
 const LowStockCard = ({
   lowStockCount,
-  loading,
+
   error,
 }: {
   lowStockCount: number;
-  loading: boolean;
+
   error: any;
 }) => {
   const renderContent = () => {
-    if (loading) {
-      return <Loader2 className="h-8 w-8 animate-spin" />;
-    }
-
     if (error) {
       return <p className="text-destructive">Error: {error}</p>;
     }
