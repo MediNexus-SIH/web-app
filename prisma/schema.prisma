@@ -61,7 +61,21 @@ model StockReplenishmentLog {
   replenishment_date          DateTime                    @default(now())
   quantity_replenished        Int
   order_placed                OrderStatus
+  supplier                    String
+  amount                      Float
+  payment_status              Boolean
+  
   medicalInventory            MedicalInventory            @relation("InventoryStockReplenishmentLog", fields: [inventory_id], references: [id])
+}
+
+model Item {
+  item_id                     String           @id @default(uuid())
+  item_name                   String
+  description                 String?
+  quantity_in_stock           Int
+  unit_price                  Float
+  supplier                    String
+  category                    String
 }
 
 model ResourceSharing {
@@ -135,9 +149,7 @@ model UnifiedInventorySupplyDemand {
 }
 
 enum OrderStatus {
-  Yes
-  No
   Pending
-  Delivered
+  Success
   Cancelled
 }
