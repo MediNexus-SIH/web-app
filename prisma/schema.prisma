@@ -64,12 +64,12 @@ model StockReplenishmentLog {
   supplier                    String
   amount                      Float
   payment_status              Boolean
-  
+
   medicalInventory            MedicalInventory            @relation("InventoryStockReplenishmentLog", fields: [inventory_id], references: [id])
 }
 
 model Item {
-  item_id                     String           @id @default(uuid())
+  item_id                     String                      @id @default(uuid())
   item_name                   String
   description                 String?
   quantity_in_stock           Int

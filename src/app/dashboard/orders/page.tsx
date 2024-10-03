@@ -22,13 +22,29 @@ import {
   TableBody,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import BreadCrumb from "@/components/BreadCrumb";
 import TotalSalesChart from "@/components/Graph Charts/TotalSalesChart";
 import InventoryLevelsChart from "@/components/Graph Charts/InventoryLevelsChart";
 import OrderStatusChart from "@/components/Graph Charts/OrderStatusChart";
 import OrderTableRow from "./OrderTableRow";
 import SupplierPerformanceChart from "@/components/Graph Charts/SupplierPerformanceChart";
-import SearchInputField from "@/components/SearchInputField";
+import SearchInputField from "@/components/SearchInputField"
+
 type OrderStatus = "failure" | "pending" | "success";
 type PaymentStatus = "pending" | "done";
 
@@ -184,6 +200,108 @@ const OrderSorting: React.FC<{
   );
 };
 
+const NewOrderDialog: React.FC = () => {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    item_id: "",
+    quantity_replenished: "",
+    supplier: "",
+    amount: "",
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    // Here you would typically send the data to your backend
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm">
+          <Plus className="h-4 w-4 mr-2" />
+          New Order
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Create New Order</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="item_id" className="text-right">
+              Item
+            </Label>
+            <Select
+              name="item_id"
+              onValueChange={(value) =>
+                setFormData((prev) => ({ ...prev, item_id: value }))
+              }
+            >
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select an item" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="item1">Item 1</SelectItem>
+                <SelectItem value="item2">Item 2</SelectItem>
+                <SelectItem value="item3">Item 3</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="quantity_replenished" className="text-right">
+              Quantity
+            </Label>
+            <Input
+              id="quantity_replenished"
+              name="quantity_replenished"
+              type="number"
+              className="col-span-3"
+              value={formData.quantity_replenished}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="supplier" className="text-right">
+              Supplier
+            </Label>
+            <Input
+              id="supplier"
+              name="supplier"
+              className="col-span-3"
+              value={formData.supplier}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="amount" className="text-right">
+              Amount
+            </Label>
+            <Input
+              id="amount"
+              name="amount"
+              type="number"
+              step="0.01"
+              className="col-span-3"
+              value={formData.amount}
+              onChange={handleInputChange}
+            />
+          </div>
+          <Button type="submit" className="ml-auto">
+            Create Order
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [searchQuery, setSearchQuery] = useState("");
@@ -237,10 +355,7 @@ export default function OrdersPage() {
       />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Orders</h1>
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          New Order
-        </Button>
+        <NewOrderDialog />
       </div>
       <div className="bg-background border rounded-lg overflow-hidden w-full">
         <div className="px-6 py-4 border-b flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
