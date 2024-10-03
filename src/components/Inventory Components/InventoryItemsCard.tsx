@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -14,26 +17,23 @@ import {
 } from "../ui/table";
 import TableInvRow from "./TableInvRow";
 import { Loader2 } from "lucide-react";
+import useInventory from "@/hooks/useInventory";
 
-import NoItemComponent from "./NoItemComponent";
-
-interface Item {
-  item_name: string;
-  department: string;
-  quantity: number;
-  batch_number: string;
-  expiry_date: string;
-  unit_price: number;
-}
 export default function InventoryItemsCard({
-  items,
-  loading,
-  error,
+  refreshTrigger,
 }: {
-  items: Item[];
-  loading: boolean;
-  error: any;
+  refreshTrigger: number;
 }) {
+  const { items, loading, error, fetchItems } = useInventory();
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      await fetchItems();
+    };
+    fetchData();
+  }, [fetchItems, refreshTrigger]);
+
+
   if (loading) {
     return (
       <Card className="w-full">
@@ -53,7 +53,6 @@ export default function InventoryItemsCard({
       </Card>
     );
   }
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -65,7 +64,9 @@ export default function InventoryItemsCard({
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <NoItemComponent />
+          <p className="text-center text-muted-foreground py-4">
+            No items in inventory. Add some items to get started.
+          </p>
         ) : (
           <Table className="mb-4">
             <TableHeader>
