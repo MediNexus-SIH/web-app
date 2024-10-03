@@ -1,6 +1,3 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -17,23 +14,24 @@ import {
 } from "../ui/table";
 import TableInvRow from "./TableInvRow";
 import { Loader2 } from "lucide-react";
-import useInventory from "@/hooks/useInventory";
 
+interface Item {
+  item_name: string;
+  department: string;
+  quantity: number;
+  batch_number: string;
+  expiry_date: string;
+  unit_price: number;
+}
 export default function InventoryItemsCard({
-  refreshTrigger,
+  items,
+  loading,
+  error,
 }: {
-  refreshTrigger: number;
+  items: Item[];
+  loading: boolean;
+  error: any;
 }) {
-  const { items, loading, error, fetchItems } = useInventory();
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      await fetchItems();
-    };
-    fetchData();
-  }, [fetchItems, refreshTrigger]);
-
-
   if (loading) {
     return (
       <Card className="w-full">
@@ -53,6 +51,7 @@ export default function InventoryItemsCard({
       </Card>
     );
   }
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -63,38 +62,32 @@ export default function InventoryItemsCard({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {items.length === 0 ? (
-          <p className="text-center text-muted-foreground py-4">
-            No items in inventory. Add some items to get started.
-          </p>
-        ) : (
-          <Table className="mb-4">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Item</TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Quantity</TableHead>
-                <TableHead>Batch Number</TableHead>
-                <TableHead>Unit Price</TableHead>
-                <TableHead>Expiry Date</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {items.map((item, index) => (
-                <TableInvRow
-                  key={index + 1}
-                  item={item.item_name}
-                  department={item.department}
-                  quantity={item.quantity.toString()}
-                  batchNumber={item.batch_number}
-                  expiration={item.expiry_date}
-                  unitPrice={item.unit_price.toString()}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        )}
+        <Table className="mb-4">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Item</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead>Batch Number</TableHead>
+              <TableHead>Unit Price</TableHead>
+              <TableHead>Expiry Date</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {items.map((item, index) => (
+              <TableInvRow
+                key={index + 1}
+                item={item.item_name}
+                department={item.department}
+                quantity={item.quantity.toString()}
+                batchNumber={item.batch_number}
+                expiration={item.expiry_date}
+                unitPrice={item.unit_price.toString()}
+              />
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

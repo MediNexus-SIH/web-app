@@ -1,6 +1,3 @@
-"use client";
-
-import React, { useEffect, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -9,20 +6,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import useInventory from "@/hooks/useInventory";
 
-const LOW_STOCK_THRESHOLD = 20; // Define the threshold for low stock
-
-const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
-  const { items, loading, error, fetchItems } = useInventory();
-
-  useEffect(() => {
-    fetchItems();
-  }, [fetchItems, refreshTrigger]);
-  const lowStockCount = useMemo(() => {
-    return items.filter((item) => item.quantity <= LOW_STOCK_THRESHOLD).length
-  }, [items]);
-
+const LOW_STOCK_THRESHOLD = 20;
+const LowStockCard = ({
+  lowStockCount,
+  loading,
+  error,
+}: {
+  lowStockCount: number;
+  loading: boolean;
+  error: any;
+}) => {
   const renderContent = () => {
     if (loading) {
       return <Loader2 className="h-8 w-8 animate-spin" />;
@@ -46,7 +40,7 @@ const LowStockCard = ({ refreshTrigger }: { refreshTrigger: any }) => {
           reordered.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex  items-center h-20">
+      <CardContent className="flex r items-center h-20">
         {renderContent()}
       </CardContent>
     </Card>
