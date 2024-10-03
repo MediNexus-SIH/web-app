@@ -1,5 +1,8 @@
 "use client";
 import RevealAnimation from "@/components/framer-motion/revealAnimation";
+import { SmoothTextReveal } from "@/components/framer-motion/smoothTextReveal";
+import GithubBadge from "@/components/GithubBadge";
+import { Icons } from "@/components/Icons";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,15 +16,62 @@ import {
   TruckIcon,
   Zap,
 } from "lucide-react";
-import { SparklesPreview } from "@/components/ui/Home Page/SparklesPreview";
-import { WobbleCard } from "@/components/ui/wobble-card";
-import HeroParallaxHome from "@/components/Home Page/HeroParallaxHome";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import TypewriterTitle from "@/components/TypeWriterTitle";
 const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <SiteHeader />
-      <SparklesPreview />
-      <HeroParallaxHome />
+      <div className="flex-grow bg-background items-center p-8 lg:p-12 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
+        <div className="max-w-6xl mx-auto flex flex-col items-center gap-12 lg:gap-16">
+          <div className="flex flex-col justify-center items-center">
+            <RevealAnimation className="my-5">
+              <GithubBadge />
+            </RevealAnimation>
+            <div className="text-center text-4xl sm:text-6xl font-bold">
+              <TypewriterTitle />
+            </div>
+            <div className="text-center text-foreground">
+              <SmoothTextReveal
+                className="text-lg sm:text-xl lg:text-2xl tracking-tight font-semibold"
+                text="Streamline Your Hospital Supply Chain"
+                direction="right"
+                animation="easeIn"
+              />
+              <SmoothTextReveal
+                className="mt-2 text-sm sm:text-md lg:text-xl leading-6 text-gray-600 dark:text-gray-200"
+                text="Efficient inventory management, seamless supply chain,"
+                direction="left"
+              />
+              <SmoothTextReveal
+                className="text-sm sm:text-md lg:text-xl leading-6 text-gray-600 dark:text-gray-200"
+                text="and intelligent demand forecasting for modern healthcare facilities."
+                direction="left"
+              />
+            </div>
+            <div className="flex flex-col space-y-10">
+              <div className="mt-8 flex gap-4">
+                <RevealAnimation className="flex justify-center items-center gap-4">
+                  <Link
+                    href="https://github.com/MediNexus-SIH/web-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center"
+                  >
+                    <Button>
+                      Go to GitHub{" "}
+                      <Icons.arrowRight className="pl-0.5" size={16} />
+                    </Button>
+                  </Link>
+                  <Button variant="secondary">Contact Us</Button>
+                </RevealAnimation>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <UtilsSection />
       <FeaturesSection />
       <PumpUpSection />
@@ -35,7 +85,7 @@ const UtilsSection = () => {
   return (
     <section
       id="utils-section"
-      className="bg-black w-full py-12 md:py-16 lg:py-24 "
+      className="w-full py-12 md:py-16 lg:py-24 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"
     >
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -79,64 +129,63 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: Clipboard,
-      bgColor: "pink-800",
       title: "Inventory Management",
       description: "Real-time tracking and optimization of medical supplies",
     },
     {
       icon: TruckIcon,
       title: "Supply Chain Visibility",
-      bgColor: "indigo-800",
       description:
         "End-to-end visibility and control over your healthcare supply chain",
     },
     {
       icon: BarChart2Icon,
       title: "Demand Forecasting",
-      bgColor: "blue-600",
       description: "AI-powered prediction for optimal stock levels",
     },
     {
       icon: Search,
       title: "Order Tracking",
-      bgColor: "red-500",
       description: "Real-time updates on order status and location",
     },
     {
       icon: ShieldCheck,
       title: "Compliance Management",
-      bgColor: "green-600",
       description: "Ensure adherence to healthcare regulations and standards",
     },
     {
       icon: Zap,
       title: "Automated Reordering",
-      bgColor: "orange-500",
       description: "Smart reordering based on usage patterns and forecasts",
     },
   ];
-
   return (
-    <section id="features-section" className="py-20 bg-black">
+    <section
+      id="features-section"
+      className="py-20 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"
+    >
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-primary">
           Our Powerful Features
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <WobbleCard
+            <motion.div
               key={feature.title}
-              containerClassName={`col-span-1 h-full transform  bg-${feature.bgColor} transition-transform duration-300 hover:scale-105 hover:shadow-lg`}
-              className="p-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="max-w-xs">
-                <feature.icon className="h-12 w-12 mb-4 text-primary" />
-                <h3 className="text-xl font-semibold mb-2 text-primary">
-                  {feature.title}
-                </h3>
-                <p className="text-primary">{feature.description}</p>
-              </div>
-            </WobbleCard>
+              <Card className="h-full transform transition-transform duration-300 hover:scale-105 hover:shadow-lg">
+                <CardContent className="p-6">
+                  <feature.icon className="h-12 w-12 mb-4" />
+                  <h3 className="text-xl font-semibold mb-2 text-primary">
+                    {feature.title}
+                  </h3>
+                  <p className="text-primary">{feature.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -146,8 +195,8 @@ const FeaturesSection = () => {
 
 const PumpUpSection = () => {
   return (
-    <section className="py-20 bg-black">
-      <div className="container mx-auto px-4 text-center ">
+    <section className="py-20 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]">
+      <div className="container mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">
           Ready to Transform Your Hospital Operations?
         </h2>
