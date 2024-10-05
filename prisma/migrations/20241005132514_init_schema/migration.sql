@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "OrderStatus" AS ENUM ('Yes', 'No', 'Pending', 'Delivered', 'Cancelled');
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'SUCCESS', 'CANCELLED');
 
 -- CreateTable
 CREATE TABLE "Hospital" (
@@ -36,24 +36,60 @@ CREATE TABLE "MedicalInventory" (
     "id" TEXT NOT NULL,
     "department_id" TEXT NOT NULL,
     "hospital_id" TEXT NOT NULL,
-    "item_name" TEXT NOT NULL,
+    "item_id" TEXT NOT NULL,
     "batch_number" TEXT NOT NULL,
     "expiry_date" TIMESTAMP(3) NOT NULL,
     "quantity" INTEGER NOT NULL,
-    "unit_price" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "MedicalInventory_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "Order" (
+    "id" TEXT NOT NULL,
+    "hospital_id" TEXT NOT NULL,
+    "order_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "expected_delivery_date" TIMESTAMP(3),
+    "status" "OrderStatus" NOT NULL DEFAULT 'PENDING',
+    "total_amount" DOUBLE PRECISION NOT NULL,
+
+    CONSTRAINT "Order_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrderItem" (
+    "id" TEXT NOT NULL,
+    "order_id" TEXT NOT NULL,
+    "item_id" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "unit_price" DOUBLE PRECISION NOT NULL,
+    "medical_inventory_id" TEXT,
+
+    CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "StockReplenishmentLog" (
     "replenishment_id" TEXT NOT NULL,
-    "inventory_id" TEXT NOT NULL,
+    "medical_inventory_id" TEXT NOT NULL,
     "replenishment_date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "quantity_replenished" INTEGER NOT NULL,
-    "order_placed" "OrderStatus" NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "payment_status" BOOLEAN NOT NULL,
 
     CONSTRAINT "StockReplenishmentLog_pkey" PRIMARY KEY ("replenishment_id")
+);
+
+-- CreateTable
+CREATE TABLE "Item" (
+    "item_id" TEXT NOT NULL,
+    "item_name" TEXT NOT NULL,
+    "description" TEXT,
+    "unit_price" DOUBLE PRECISION NOT NULL,
+    "supplier" TEXT NOT NULL,
+    "category" TEXT NOT NULL,
+
+    CONSTRAINT "Item_pkey" PRIMARY KEY ("item_id")
 );
 
 -- CreateTable
@@ -155,7 +191,22 @@ ALTER TABLE "MedicalInventory" ADD CONSTRAINT "MedicalInventory_department_id_fk
 ALTER TABLE "MedicalInventory" ADD CONSTRAINT "MedicalInventory_hospital_id_fkey" FOREIGN KEY ("hospital_id") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "StockReplenishmentLog" ADD CONSTRAINT "StockReplenishmentLog_inventory_id_fkey" FOREIGN KEY ("inventory_id") REFERENCES "MedicalInventory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "MedicalInventory" ADD CONSTRAINT "MedicalInventory_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "Item"("item_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Order" ADD CONSTRAINT "Order_hospital_id_fkey" FOREIGN KEY ("hospital_id") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "Order"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_item_id_fkey" FOREIGN KEY ("item_id") REFERENCES "Item"("item_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderItem" ADD CONSTRAINT "OrderItem_medical_inventory_id_fkey" FOREIGN KEY ("medical_inventory_id") REFERENCES "MedicalInventory"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "StockReplenishmentLog" ADD CONSTRAINT "StockReplenishmentLog_medical_inventory_id_fkey" FOREIGN KEY ("medical_inventory_id") REFERENCES "MedicalInventory"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ResourceSharing" ADD CONSTRAINT "ResourceSharing_donor_hospital_id_fkey" FOREIGN KEY ("donor_hospital_id") REFERENCES "Hospital"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -327,7 +327,39 @@ export default function Component() {
               </div>
             </React.Fragment>
           ) : (
-            <NoItemComponent />
+            <React.Fragment>
+              <Popover>
+                <PopoverTrigger asChild >
+                  <div className="flex items-center justify-end ml-auto space-x-2">
+                    <Button className="flex space-x-2">
+                      <Plus className="flex h-4 w-4 space-x-2" />
+                      <span>Add Item</span>
+                    </Button>
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-48 mx-2 right-0">
+                  <div className="grid gap-4">
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleAddItem("manual")}
+                      className="w-full justify-start"
+                    >
+                      <ClipboardList className="mr-2 h-4 w-4" />
+                      Manual Entry
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => handleAddItem("qr")}
+                      className="w-full justify-start"
+                    >
+                      <QrCode className="mr-2 h-4 w-4" />
+                      Scan QR Code
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              <NoItemComponent />
+            </React.Fragment>
           )}
         </div>
 

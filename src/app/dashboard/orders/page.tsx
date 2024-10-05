@@ -43,7 +43,9 @@ import InventoryLevelsChart from "@/components/Graph Charts/InventoryLevelsChart
 import OrderStatusChart from "@/components/Graph Charts/OrderStatusChart";
 import OrderTableRow from "./OrderTableRow";
 import SupplierPerformanceChart from "@/components/Graph Charts/SupplierPerformanceChart";
-import SearchInputField from "@/components/SearchInputField"
+import SearchInputField from "@/components/SearchInputField";
+import { useItems } from "@/hooks/use-items";
+import { Option, SelectDropdown } from "@/components/SelectDropdown";
 
 type OrderStatus = "failure" | "pending" | "success";
 type PaymentStatus = "pending" | "done";
@@ -91,7 +93,6 @@ const initialOrders: Order[] = [
     amount: "$1,000.00",
   },
 ];
-
 
 const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
   return (
@@ -201,23 +202,46 @@ const OrderSorting: React.FC<{
 };
 
 const NewOrderDialog: React.FC = () => {
+  const { items, loading, error } = useItems();
+
+  const itemOptions: Option[] = items.map((item) => ({
+    value: item.item_name.toLowerCase().replace(/\s+/g, ""),
+    label: item.item_name,
+  }));
+  const supplierOptions: Option[] = items.map((supplier) => ({
+    value: supplier.supplier.toLowerCase().replace(/\s+/g, ""),
+    label: supplier.supplier,
+  }));
+
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    item_id: "",
+    inventory_id: "",
     quantity_replenished: "",
     supplier: "",
-    amount: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === "quantity_replenished") {
+      if (/^\d*$/.test(value)) {
+        setFormData((prev) => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Here you would typically send the data to your backend
+    const submissionData = {
+      ...formData,
+      payment_status: false,
+    };
+    console.log("Form submitted:", submissionData);
     setOpen(false);
   };
 
@@ -235,24 +259,20 @@ const NewOrderDialog: React.FC = () => {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="item_id" className="text-right">
+            <Label htmlFor="inventory_id" className="text-right">
               Item
             </Label>
-            <Select
-              name="item_id"
-              onValueChange={(value) =>
-                setFormData((prev) => ({ ...prev, item_id: value }))
-              }
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select an item" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="item1">Item 1</SelectItem>
-                <SelectItem value="item2">Item 2</SelectItem>
-                <SelectItem value="item3">Item 3</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="col-span-3">
+              <SelectDropdown
+                name="inventory_id"
+                value={formData.inventory_id}
+                options={itemOptions}
+                onValueChange={(value) =>
+                  handleSelectChange("inventory_id", value)
+                }
+                placeholder="Select an item"
+              />
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="quantity_replenished" className="text-right">
@@ -261,39 +281,31 @@ const NewOrderDialog: React.FC = () => {
             <Input
               id="quantity_replenished"
               name="quantity_replenished"
-              type="number"
+              type="text"
+              pattern="\d*"
+              inputMode="numeric"
               className="col-span-3"
               value={formData.quantity_replenished}
               onChange={handleInputChange}
+              placeholder="Enter quantity"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="supplier" className="text-right">
               Supplier
             </Label>
-            <Input
-              id="supplier"
-              name="supplier"
-              className="col-span-3"
-              value={formData.supplier}
-              onChange={handleInputChange}
-            />
+            <div className="col-span-3">
+              <SelectDropdown
+                name="supplier"
+                value={formData.supplier}
+                options={supplierOptions}
+                onValueChange={(value) => handleSelectChange("supplier", value)}
+                placeholder="Select a supplier"
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="amount" className="text-right">
-              Amount
-            </Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              step="0.01"
-              className="col-span-3"
-              value={formData.amount}
-              onChange={handleInputChange}
-            />
-          </div>
-          <Button type="submit" className="ml-auto">
+
+          <Button type="submit" onClick={handleSubmit} className="ml-auto">
             Create Order
           </Button>
         </form>

@@ -27,7 +27,8 @@ model Hospital {
   resourceSharingReceiver     ResourceSharing[]           @relation("ReceiverHospitalResourceSharing")
   vendorOrders                VendorOrders[]              @relation("HospitalVendorOrders")
   unifiedInventorySupplyDemand UnifiedInventorySupplyDemand[] @relation("HospitalUnifiedInventorySupplyDemand")
-  medicalInventories          MedicalInventory[]          @relation("HospitalMedicalInventory") // Added this line
+  medicalInventories          MedicalInventory[]          @relation("HospitalMedicalInventory")
+  orders                      Order[]                     @relation("HospitalOrders")
 }
 
 model Departments {
@@ -44,38 +45,66 @@ model MedicalInventory {
   id                          String                      @id @default(uuid())
   department_id               String
   hospital_id                 String
-  item_name                   String
+  item_id                     String
   batch_number                String
   expiry_date                 DateTime
   quantity                    Int
-  unit_price                  Float
 
   department                  Departments                 @relation("DepartmentMedicalInventory", fields: [department_id], references: [id])
   hospital                    Hospital                    @relation("HospitalMedicalInventory", fields: [hospital_id], references: [id])
-  stockReplenishmentLog       StockReplenishmentLog[]     @relation("InventoryStockReplenishmentLog")
+  item                        Item                        @relation(fields: [item_id], references: [item_id])
+  stockReplenishmentLogs      StockReplenishmentLog[]     @relation("MedicalInventoryStockReplenishmentLogs")
+  orderItems                  OrderItem[]                 @relation("OrderItemInventory")
+}
+
+model Order {
+  id                          String                      @id @default(uuid())
+  hospital_id                 String
+  order_date                  DateTime                    @default(now())
+  expected_delivery_date      DateTime?
+  status                      OrderStatus                 @default(PENDING)
+  payment_status              Boolean                     @default(false)
+  total_amount                Float
+
+  hospital                    Hospital                    @relation("HospitalOrders", fields: [hospital_id], references: [id])
+  orderItems                  OrderItem[]                 @relation("OrderItems")
+}
+
+model OrderItem {
+  id                          String                      @id @default(uuid())
+  order_id                    String
+  item_id                     String
+  quantity                    Int
+  unit_price                  Float
+  medical_inventory_id        String?
+
+  order                       Order                       @relation("OrderItems", fields: [order_id], references: [id])
+  item                        Item                        @relation(fields: [item_id], references: [item_id])
+  medicalInventory            MedicalInventory?           @relation("OrderItemInventory", fields: [medical_inventory_id], references: [id])
 }
 
 model StockReplenishmentLog {
   replenishment_id            String                      @id @default(uuid())
-  inventory_id                String
+  medical_inventory_id        String
   replenishment_date          DateTime                    @default(now())
   quantity_replenished        Int
-  order_placed                OrderStatus
-  supplier                    String
   amount                      Float
   payment_status              Boolean
 
-  medicalInventory            MedicalInventory            @relation("InventoryStockReplenishmentLog", fields: [inventory_id], references: [id])
+  medicalInventory            MedicalInventory            @relation("MedicalInventoryStockReplenishmentLogs", fields: [medical_inventory_id], references: [id])
 }
 
 model Item {
   item_id                     String                      @id @default(uuid())
   item_name                   String
   description                 String?
-  quantity_in_stock           Int
   unit_price                  Float
   supplier                    String
   category                    String
+
+  medicalInventories          MedicalInventory[]
+  orderItems                  OrderItem[]
+  @@unique([item_name, supplier], name: "item_name_supplier")
 }
 
 model ResourceSharing {
@@ -149,7 +178,7 @@ model UnifiedInventorySupplyDemand {
 }
 
 enum OrderStatus {
-  Pending
-  Success
-  Cancelled
+  PENDING
+  SUCCESS
+  CANCELLED
 }
