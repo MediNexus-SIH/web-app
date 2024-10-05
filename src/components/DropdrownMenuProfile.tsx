@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Avatar from "@/components/Avatar"; // Assuming Avatar is in this directory
 import { LogOutButton } from "./LogOutButton";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
+import { getServerSideProps } from "@/lib/getServerSideProps";
 
 const DropdownMenuProfile = async () => {
   const getInitials = (name: string) => {

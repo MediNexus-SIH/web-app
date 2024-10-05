@@ -1,4 +1,4 @@
-import { getServerSideProps } from "../hooks/getServerSideProps";
+import { getServerSideProps } from "./getServerSideProps";
 
 export default async function validateSession() {
   const session = await getServerSideProps();

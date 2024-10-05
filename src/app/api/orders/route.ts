@@ -1,19 +1,18 @@
 import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
 import prisma from "@/config/prisma.config";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
 import validateSession from "@/lib/validateSession";
 
 export async function POST(request: Request) {
   const { userId, hospitalName, email } = await validateSession();
+
   try {
     const body = await request.json();
-    const { expected_delivery_date, total_amount, orderItems } = body;
+    const { expected_delivery_date, orderItems } = body;
 
     // Input validation
     if (
       !expected_delivery_date ||
-      !total_amount ||
       !orderItems ||
       !Array.isArray(orderItems) ||
       orderItems.length === 0
@@ -24,33 +23,56 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate each order item
+    // Initialize total_amount
+    let total_amount = 0;
+
+    // Validate each order item and fetch details from Item table
+    const validatedOrderItems = [];
     for (const item of orderItems) {
-      if (!item.item_id || !item.quantity || !item.unit_price) {
+      if (!item.item_id || !item.quantity) {
         return NextResponse.json(
           { error: "Invalid order item data" },
           { status: 400 }
         );
       }
+
+      // Fetch item details from Item table using the item_id
+      const fetchedItem = await prisma.item.findUnique({
+        where: { item_id: item.item_id },
+      });
+
+      if (!fetchedItem) {
+        return NextResponse.json(
+          { error: `Item with ID ${item.item_id} not found` },
+          { status: 404 }
+        );
+      }
+
+      // Calculate total amount based on quantity and unit_price
+      total_amount += fetchedItem.unit_price * item.quantity;
+
+      // Construct validated order item with details fetched from the database
+      validatedOrderItems.push({
+        item: {
+          connect: { item_id: fetchedItem.item_id },
+        },
+        quantity: item.quantity,
+        unit_price: fetchedItem.unit_price, // Fetch the price from the database
+      });
     }
 
+    // Create order
     const order = await prisma.order.create({
       data: {
         hospital: {
-          connect: { id: userId }
+          connect: { id: userId },
         },
         expected_delivery_date: new Date(expected_delivery_date),
-        total_amount,
+        total_amount, // Use calculated total amount
         payment_status: false,
-        status: 'PENDING', // Set initial status as per the schema
+        status: "PENDING", // Set initial status as per the schema
         orderItems: {
-          create: orderItems.map((item: any) => ({
-            item: {
-              connect: { item_id: item.item_id },
-            },
-            quantity: item.quantity,
-            unit_price: item.unit_price,
-          })),
+          create: validatedOrderItems, // Use validated order items
         },
       },
       include: {
@@ -84,6 +106,8 @@ export async function POST(request: Request) {
     await prisma.$disconnect();
   }
 }
+
+
 
 // GET: Fetch all stock replenishment orders
 export async function GET() {

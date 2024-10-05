@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/config/prisma.config";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
-
+import { getServerSideProps } from "@/lib/getServerSideProps";
 
 type Item = {
   item_name: string;

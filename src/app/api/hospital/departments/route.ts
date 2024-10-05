@@ -1,25 +1,10 @@
 import prisma from "@/config/prisma.config";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
+import validateSession from "@/lib/validateSession";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req:NextRequest) {
-  const session = await getServerSideProps();
+export async function GET(req: NextRequest) {
+  const { userId, hospitalName, email } = await validateSession();
 
-  const userSession = session.user;
-  if (!session.sessionStatus || !userSession) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { id: userId, hospitalName, email: userEmail } = userSession.user!;
-
-  if (!userId || !hospitalName) {
-    return NextResponse.json(
-      { error: "Invalid session data" },
-      { status: 401 }
-    );
-  }
-  const hospitalId = session.user.user.id
-  
   try {
     const hospital = await prisma.hospital.findFirst({
       where: { hospitalName: hospitalName },
@@ -33,7 +18,7 @@ export async function GET(req:NextRequest) {
     }
     const departments = await prisma.departments.findMany({
       where: {
-        hospital_id: String(hospitalId),
+        hospital_id: String(userId),
       },
     });
 

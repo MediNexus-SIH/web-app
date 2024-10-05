@@ -1,6 +1,6 @@
 import StickySideBar from "@/components/StickySideBar";
 import TopBar from "@/components/TopBar";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
+import { getServerSideProps } from "@/lib/getServerSideProps";
 import { redirect } from "next/navigation";
 
 export default async function RootLayout({
