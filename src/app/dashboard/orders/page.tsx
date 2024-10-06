@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { DotIcon, Plus, ListOrdered, Filter } from "lucide-react";
 import {
   DropdownMenu,
@@ -8,7 +8,6 @@ import {
   DropdownMenuContent,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuItem,
   DropdownMenuCheckboxItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -30,13 +29,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import BreadCrumb from "@/components/BreadCrumb";
 import TotalSalesChart from "@/components/Graph Charts/TotalSalesChart";
 import InventoryLevelsChart from "@/components/Graph Charts/InventoryLevelsChart";
@@ -46,64 +38,19 @@ import SupplierPerformanceChart from "@/components/Graph Charts/SupplierPerforma
 import SearchInputField from "@/components/SearchInputField";
 import { useItems } from "@/hooks/use-items";
 import { Option, SelectDropdown } from "@/components/SelectDropdown";
-
-type OrderStatus = "failure" | "pending" | "success";
-type PaymentStatus = "pending" | "done";
-
-interface Order {
-  orderId: string;
-  date: string;
-  status: OrderStatus;
-  paymentStatus: PaymentStatus;
-  supplier: string;
-  amount: string;
-}
-
-const initialOrders: Order[] = [
-  {
-    orderId: "#123",
-    date: "2023-04-15",
-    status: "pending",
-    paymentStatus: "done",
-    supplier: "Acme Pharmaceuticals",
-    amount: "$1,250.00",
-  },
-  {
-    orderId: "#456",
-    date: "2023-04-10",
-    status: "success",
-    paymentStatus: "pending",
-    supplier: "Medica Supplies",
-    amount: "$750.00",
-  },
-  {
-    orderId: "#789",
-    date: "2023-04-05",
-    status: "failure",
-    paymentStatus: "done",
-    supplier: "Pharma Distributors",
-    amount: "$500.00",
-  },
-  {
-    orderId: "#321",
-    date: "2023-04-01",
-    status: "success",
-    paymentStatus: "done",
-    supplier: "Medica Supplies",
-    amount: "$1,000.00",
-  },
-];
+import { useOrder } from "@/hooks/use-order";
+import { Order, OrderItem } from "@/lib/interfaces";
 
 const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
   return (
-    <Table>
+    <Table className="w-full">
       <TableHeader>
         <TableRow>
           <TableHead>Order ID</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Payment Status</TableHead>
-          <TableHead>Supplier</TableHead>
+          <TableHead>Hospital</TableHead>
           <TableHead>Amount</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
@@ -111,36 +58,40 @@ const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
       <TableBody>
         {orders.map((order) => (
           <OrderTableRow
-            key={order.orderId}
-            orderId={order.orderId}
-            date={order.date}
+            key={order.id}
+            orderId={order.id}
+            order_date={new Date(order.order_date).toLocaleDateString()}
             status={order.status}
-            paymentStatus={order.paymentStatus}
-            supplier={order.supplier}
-            amount={order.amount}
+            paymentStatus={order.paymentStatus ? "Paid" : "Unpaid"}
+            hospital={order.hospital.hospitalName}
+            // amount={`$${order.totalAmount.toFixed(2)}`}
+            amount={`$${order.total_amount}`}
             actions={
               <Button variant="outline" size="icon" className="h-8 w-8">
                 <DotIcon className="h-4 w-4" />
               </Button>
             }
+            orderItems={order.orderItems}
           />
         ))}
       </TableBody>
     </Table>
   );
 };
-
 const OrderFilters: React.FC<{
   selectedFilters: string[];
   setSelectedFilters: React.Dispatch<React.SetStateAction<string[]>>;
 }> = ({ selectedFilters, setSelectedFilters }) => {
-  const toggleFilter = (filter: string) => {
-    setSelectedFilters((prev) =>
-      prev.includes(filter)
-        ? prev.filter((f) => f !== filter)
-        : [...prev, filter]
-    );
-  };
+  const toggleFilter = useCallback(
+    (filter: string) => {
+      setSelectedFilters((prev) =>
+        prev.includes(filter)
+          ? prev.filter((f) => f !== filter)
+          : [...prev, filter]
+      );
+    },
+    [setSelectedFilters]
+  );
 
   return (
     <DropdownMenu>
@@ -200,50 +151,95 @@ const OrderSorting: React.FC<{
     </DropdownMenu>
   );
 };
-
-const NewOrderDialog: React.FC = () => {
-  const { items, loading, error } = useItems();
+interface NewOrderDialogProps {
+  loading: boolean;
+}
+const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
+  const { items } = useItems();
+  const { createOrder } = useOrder();
 
   const itemOptions: Option[] = items.map((item) => ({
     value: item.item_name.toLowerCase().replace(/\s+/g, ""),
     label: item.item_name,
   }));
-  const supplierOptions: Option[] = items.map((supplier) => ({
-    value: supplier.supplier.toLowerCase().replace(/\s+/g, ""),
-    label: supplier.supplier,
-  }));
 
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
-    inventory_id: "",
-    quantity_replenished: "",
-    supplier: "",
+    item_name: "",
+    quantity: "",
+    expected_delivery_date: "",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "quantity_replenished") {
-      if (/^\d*$/.test(value)) {
-        setFormData((prev) => ({ ...prev, [name]: value }));
-      }
-    } else {
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
+    },
+    []
+  );
 
-  const handleSelectChange = (name: string, value: string) => {
+  const handleSelectChange = useCallback((name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const submissionData = {
-      ...formData,
-      payment_status: false,
-    };
-    console.log("Form submitted:", submissionData);
-    setOpen(false);
-  };
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const currentDate = new Date();
+      const randomDays = Math.floor(Math.random() * 3) + 3;
+
+      // Find the selected item based on formData.item_id
+      const selectedItem = items.find(
+        (item) => item.item_name === formData.item_name
+      );
+
+      if (!selectedItem) {
+        console.error("Item not found");
+        return;
+      }
+
+      console.log("hulel form data", formData);
+      // Construct submissionData with all necessary fields
+      const submissionData = {
+        id: "generated-id", // Generate or assign an ID
+        order_id: "generated-order-id", // Generate or assign an Order ID
+        order_date: currentDate.toISOString(),
+        expected_delivery_date: new Date(
+          currentDate.setDate(currentDate.getDate() + randomDays)
+        ).toISOString(),
+        orderItems: [
+          {
+            item: {
+              item_id: selectedItem.item_id,
+              item_name: selectedItem.item_name,
+              unit_price: selectedItem.unit_price,
+              category: selectedItem.category || "default category", // Provide a default value if undefined
+              description: selectedItem.description, // This can be undefined
+              supplier: selectedItem.supplier || "default supplier", // Provide a default value if undefined
+            },
+            quantity: parseInt(formData.quantity, 10),
+            unit_price: selectedItem.unit_price,
+          },
+        ],
+        status: "pending",
+        paymentStatus: false,
+        total_amount: selectedItem.unit_price * parseInt(formData.quantity, 10),
+        hospital: {
+          hospitalName: "Sample Hospital", // Replace with actual hospital info
+        },
+      };
+      console.log("Submission data:", submissionData);
+      try {
+        await createOrder(submissionData);
+
+        setOpen(false);
+      } catch (error) {
+        console.error("Failed to create order:", error);
+      }
+    },
+    [formData, items, createOrder]
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -254,108 +250,126 @@ const NewOrderDialog: React.FC = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Create New Order</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="inventory_id" className="text-right">
-              Item
-            </Label>
-            <div className="col-span-3">
-              <SelectDropdown
-                name="inventory_id"
-                value={formData.inventory_id}
-                options={itemOptions}
-                onValueChange={(value) =>
-                  handleSelectChange("inventory_id", value)
-                }
-                placeholder="Select an item"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="quantity_replenished" className="text-right">
-              Quantity
-            </Label>
-            <Input
-              id="quantity_replenished"
-              name="quantity_replenished"
-              type="text"
-              pattern="\d*"
-              inputMode="numeric"
-              className="col-span-3"
-              value={formData.quantity_replenished}
-              onChange={handleInputChange}
-              placeholder="Enter quantity"
-            />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="supplier" className="text-right">
-              Supplier
-            </Label>
-            <div className="col-span-3">
-              <SelectDropdown
-                name="supplier"
-                value={formData.supplier}
-                options={supplierOptions}
-                onValueChange={(value) => handleSelectChange("supplier", value)}
-                placeholder="Select a supplier"
-              />
-            </div>
-          </div>
-
-          <Button type="submit" onClick={handleSubmit} className="ml-auto">
-            Create Order
-          </Button>
-        </form>
+        {loading ? (
+          <div>Loading....</div>
+        ) : (
+          <React.Fragment>
+            <DialogHeader>
+              <DialogTitle>Create New Order</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="item_id" className="text-right">
+                  Item
+                </Label>
+                <div className="col-span-3">
+                  <SelectDropdown
+                    name="item_name"
+                    value={formData.item_name}
+                    options={itemOptions}
+                    onValueChange={(value) =>
+                      handleSelectChange("item_name", value)
+                    }
+                    placeholder="Select an item"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="quantity" className="text-right">
+                  Quantity
+                </Label>
+                <Input
+                  className="col-span-3"
+                  id="item-quantity"
+                  name="quantity"
+                  type="text"
+                  placeholder="Enter Quantity"
+                  value={formData.quantity}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Regex allows only positive integers (no leading zeros unless it's "0")
+                    if (/^(0|[1-9]\d*)$/.test(value) || value === "") {
+                      handleInputChange(e);
+                    }
+                  }}
+                />
+              </div>
+              <Button type="submit" className="ml-auto">
+                Create Order
+              </Button>
+            </form>
+          </React.Fragment>
+        )}
       </DialogContent>
     </Dialog>
   );
 };
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("date");
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const { loading, error, orders, fetchOrders } = useOrder();
 
   useEffect(() => {
-    let filteredOrders = initialOrders;
+    fetchOrders();
+  }, [fetchOrders]);
 
-    // Apply search
-    if (searchQuery) {
-      filteredOrders = filteredOrders.filter(
-        (order) =>
-          order.orderId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          order.supplier.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  useEffect(() => {
+    if (orders) {
+      let result = [...orders];
 
-    // Apply filters
-    if (selectedFilters.length > 0) {
-      filteredOrders = filteredOrders.filter((order) =>
-        selectedFilters.includes(order.status)
-      );
-    }
-
-    // Apply sorting
-    filteredOrders.sort((a, b) => {
-      if (sortBy === "date") {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      } else if (sortBy === "status") {
-        return a.status.localeCompare(b.status);
-      } else if (sortBy === "amount") {
-        return (
-          parseFloat(b.amount.replace("$", "").replace(",", "")) -
-          parseFloat(a.amount.replace("$", "").replace(",", ""))
+      // Apply search
+      if (searchQuery) {
+        result = result.filter(
+          (order) =>
+            order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            order.hospital.hospitalName
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
         );
       }
-      return 0;
-    });
 
-    setOrders(filteredOrders);
-  }, [searchQuery, selectedFilters, sortBy]);
+      // Apply filters
+      if (selectedFilters.length > 0) {
+        result = result.filter((order) =>
+          selectedFilters.includes(order.status.toLowerCase())
+        );
+      }
+
+      // Apply sorting
+      result.sort((a, b) => {
+        if (sortBy === "date") {
+          return (
+            new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
+          );
+        } else if (sortBy === "status") {
+          return a.status.localeCompare(b.status);
+        } else if (sortBy === "amount") {
+          return b.total_amount - a.total_amount;
+        }
+        return 0;
+      });
+
+      setFilteredOrders(result);
+    }
+  }, [orders, searchQuery, selectedFilters, sortBy]);
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    []
+  );
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="flex-1 w-full overflow-y-auto p-4 md:p-6 bg-muted/40 space-y-4">
@@ -367,15 +381,15 @@ export default function OrdersPage() {
       />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Orders</h1>
-        <NewOrderDialog />
+        <NewOrderDialog loading={loading} />
       </div>
       <div className="bg-background border rounded-lg overflow-hidden w-full">
-        <div className="px-6 py-4 border-b flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="px-6 py-4 border-b flex flex-row items-start md:items-center justify-between gap-4">
           <SearchInputField
             className="w-full md:w-1/2"
             placeholder="Search Orders..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
           <div className="flex items-center gap-4 w-full md:w-auto">
             <OrderFilters
@@ -386,7 +400,7 @@ export default function OrdersPage() {
           </div>
         </div>
         <div className="p-2 md:p-5">
-          <OrderTable orders={orders} />
+          <OrderTable orders={filteredOrders} />
         </div>
       </div>
       <div className="grid gap-8 mt-8">

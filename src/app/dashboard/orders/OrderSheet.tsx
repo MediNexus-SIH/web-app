@@ -1,7 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, Package, CreditCard, Truck, MapPin } from "lucide-react";
+import {
+  Calendar,
+  Package,
+  CreditCard,
+  Truck,
+  MapPin,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -16,18 +24,23 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
 import dynamic from "next/dynamic";
+import { OrderItem } from "@/lib/interfaces";
 
-type OrderStatus = "failure" | "pending" | "success";
-type PaymentStatus = "pending" | "done";
-
-interface OrderDetailsSheetProps {
+interface OrderSheetProps {
   orderId: string;
   date: string;
-  status: OrderStatus;
-  paymentStatus: PaymentStatus;
-  supplier: string;
+  status: string;
+  paymentStatus: string;
+  hospital: string;
   amount: string;
+  orderItems: OrderItem[];
 }
 
 const LocationTracker = dynamic(() => import("./LocationTracker"), {
@@ -40,15 +53,18 @@ export function OrderSheet({
   date,
   status,
   paymentStatus,
-  supplier,
+  hospital,
   amount,
-}: OrderDetailsSheetProps) {
+  orderItems,
+}: OrderSheetProps) {
   const [isTracking, setIsTracking] = useState(false);
   const [trackingProgress, setTrackingProgress] = useState(0);
+  const [expandedItems, setExpandedItems] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   const handleStartTracking = () => {
     setIsTracking(true);
-    // Simulate real-time updates
     const interval = setInterval(() => {
       setTrackingProgress((prev) => {
         if (prev >= 100) {
@@ -61,22 +77,36 @@ export function OrderSheet({
   };
 
   const handlePayment = () => {
-    // Implement payment logic here
     alert(
       "Payment processing... This is where you'd integrate a payment gateway."
     );
   };
 
+  const handlePopoverOpenChange = (open: boolean, index: number) => {
+    setExpandedItems((prev) => ({
+      ...prev,
+      [index]: open,
+    }));
+  };
+  const displayId = orderId.length > 10 ? `${orderId.slice(0, 7)}...` : orderId;
+
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost">{orderId}</Button>
+        <Button
+          variant="ghost"
+          className="px-2 py-1 h-auto text-left truncate max-w-[120px]"
+          title={orderId}
+        >
+          {displayId}
+        </Button>
       </SheetTrigger>
-      <SheetContent className="flex flex-col h-full p-0 sm:max-w-[425px]">
+      <SheetContent className="flex flex-col h-full p-0 max-w-[425px]">
         <SheetHeader className="px-6 py-4">
           <SheetTitle className="text-2xl font-bold">Order Details</SheetTitle>
           <SheetDescription>
-            View and manage details for order {orderId}
+            View and manage details for order <br />
+            {orderId}
           </SheetDescription>
         </SheetHeader>
         <div className="flex-grow overflow-y-auto px-6">
@@ -108,15 +138,15 @@ export function OrderSheet({
               <div className="flex items-center space-x-4">
                 <Package className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm font-medium">Supplier</p>
-                  <p className="text-sm text-muted-foreground">{supplier}</p>
+                  <p className="text-sm font-medium">Hospital</p>
+                  <p className="text-sm text-muted-foreground">{hospital}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center w-full space-x-4">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm font-medium">Payment</p>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center w-full justify-between">
                     <p className="text-sm text-muted-foreground">{amount}</p>
                     <Badge
                       variant={
@@ -138,6 +168,55 @@ export function OrderSheet({
                   </p>
                 </div>
               </div>
+            </div>
+            <Separator />
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Order Items</h3>
+              {orderItems.map((item, index) => (
+                <div key={index} className="space-y-2">
+                  <Popover
+                    onOpenChange={(open) =>
+                      handlePopoverOpenChange(open, index)
+                    }
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-between text-left font-normal"
+                      >
+                        <span>{item.item.item_name}</span>
+                        <span className="flex items-center">
+                          {item.quantity} x ${item.unit_price.toFixed(2)}
+                          {expandedItems[index] ? (
+                            <ChevronUp className="ml-2 h-4 w-4" />
+                          ) : (
+                            <ChevronDown className="ml-2 h-4 w-4" />
+                          )}
+                        </span>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <h4 className="font-medium leading-none">Details</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Category: {item.item.category}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Description: {item.item.description}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Supplier: {item.item.supplier}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Unit Price: ${item.item.unit_price}
+                          </p>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              ))}
             </div>
             <Separator />
             <div className="space-y-4">
@@ -184,11 +263,6 @@ export function OrderSheet({
             )}
           </div>
         </div>
-        <SheetFooter className="flex-shrink-0 px-6 py-4">
-          <SheetClose asChild>
-            <Button type="submit">Close</Button>
-          </SheetClose>
-        </SheetFooter>
       </SheetContent>
     </Sheet>
   );

@@ -18,7 +18,7 @@ export function useItems() {
   useEffect(() => {
     async function fetchItems() {
       try {
-        const response = await fetch("/api/items"); 
+        const response = await fetch("/api/items");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

@@ -1,51 +1,69 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import OrdersSheet from "./OrderSheet";
+import OrderSheet from "./OrderSheet";
+import { OrderItem } from "@/lib/interfaces";
 
 interface TableRowProps {
   orderId: string;
-  date: string;
-  status: "pending" | "success" | "failure";
-  paymentStatus: "pending" | "done"
-  supplier: string;
+  order_date: string;
+  status: string;
+  paymentStatus: string;
+  hospital: string;
   amount: string;
   actions: React.ReactNode;
+  orderItems: OrderItem[];
 }
 
 const OrderTableRow: React.FC<TableRowProps> = ({
   orderId,
-  date,
+  order_date,
   status,
   paymentStatus,
-  supplier,
+  hospital,
   amount,
   actions,
+  orderItems,
 }) => {
+  
   return (
     <TableRow>
       <TableCell>
-        <OrdersSheet
+        <OrderSheet
           orderId={orderId}
-          date={date}
+          date={order_date}
           status={status}
           paymentStatus={paymentStatus}
-          supplier={supplier}
+          hospital={hospital}
           amount={amount}
+          orderItems={orderItems}
         />
       </TableCell>
-      <TableCell>{date}</TableCell>
+      <TableCell>{order_date}</TableCell>
       <TableCell>
-        <Badge variant={status} className="text-xs ">
-          {status.charAt(0).toUpperCase() + status.slice(1)}
+        <Badge
+          variant={
+            status.toLowerCase() as "default" | "secondary" | "destructive"
+          }
+          className="text-xs"
+        >
+          {status}
         </Badge>
       </TableCell>
       <TableCell>
-        <Badge variant={paymentStatus} className="text-xs ">
-          {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+        <Badge
+          variant={
+            paymentStatus.toLowerCase() as
+              | "default"
+              | "secondary"
+              | "destructive"
+          }
+          className="text-xs"
+        >
+          {paymentStatus}
         </Badge>
       </TableCell>
-      <TableCell>{supplier}</TableCell>
+      <TableCell>{hospital}</TableCell>
       <TableCell>{amount}</TableCell>
       <TableCell>{actions}</TableCell>
     </TableRow>

@@ -85,7 +85,7 @@ const SheetHeader = ({
     )}
     {...props}
   />
-)
+);
 SheetHeader.displayName = "SheetHeader"
 
 const SheetFooter = ({

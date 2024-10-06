@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import { OrderStatus } from "@prisma/client";
 import prisma from "@/config/prisma.config";
 import validateSession from "@/lib/validateSession";
+import { OrderItem } from "@/lib/interfaces";
 
 export async function POST(request: Request) {
   const { userId, hospitalName, email } = await validateSession();
 
   try {
     const body = await request.json();
-    const { expected_delivery_date, orderItems } = body;
+    const {
+      expected_delivery_date,
+      orderItems,
+    }: { expected_delivery_date: Date; orderItems: OrderItem[] } = body;
 
     // Input validation
     if (
@@ -18,7 +22,9 @@ export async function POST(request: Request) {
       orderItems.length === 0
     ) {
       return NextResponse.json(
-        { error: "Invalid input data" },
+        {
+          error: "Invalid input data",
+        },
         { status: 400 }
       );
     }
@@ -29,21 +35,23 @@ export async function POST(request: Request) {
     // Validate each order item and fetch details from Item table
     const validatedOrderItems = [];
     for (const item of orderItems) {
-      if (!item.item_id || !item.quantity) {
+      if (!item.item.item_id || !item.quantity) {
         return NextResponse.json(
-          { error: "Invalid order item data" },
+          {
+            error: "Invalid Order Input Data"
+          },
           { status: 400 }
         );
       }
 
       // Fetch item details from Item table using the item_id
       const fetchedItem = await prisma.item.findUnique({
-        where: { item_id: item.item_id },
+        where: { item_id: item.item.item_id },
       });
 
       if (!fetchedItem) {
         return NextResponse.json(
-          { error: `Item with ID ${item.item_id} not found` },
+          { error: `Item with ID ${item.item.item_id} not found` },
           { status: 404 }
         );
       }
@@ -106,8 +114,6 @@ export async function POST(request: Request) {
     await prisma.$disconnect();
   }
 }
-
-
 
 // GET: Fetch all stock replenishment orders
 export async function GET() {
@@ -207,7 +213,6 @@ export async function PUT(
     );
   }
 }
-
 
 // DELETE: Delete an existing stock replenishment order
 export async function DELETE(

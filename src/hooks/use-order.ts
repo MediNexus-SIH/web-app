@@ -1,28 +1,12 @@
-import { useState } from "react";
-
-interface OrderItem {
-  item_id: string;
-  quantity: number;
-  unit_price?: number;
-  id?: string; // For updating existing order items
-}
-
-interface Order {
-  expected_delivery_date: string;
-  orderItems: OrderItem[];
-  total_amount?: number;
-  status?: string;
-  payment_status?: boolean;
-  id?: string; // For updating or deleting orders
-}
+import { Order } from "@/lib/interfaces";
+import { useState, useCallback } from "react";
 
 export const useOrder = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orders, setOrders] = useState<Order[] | null>(null);
 
-  // POST: Create a new order
-  const createOrder = async (order: Order) => {
+  const createOrder = useCallback(async (order: Order) => {
     setLoading(true);
     setError(null);
 
@@ -46,10 +30,9 @@ export const useOrder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // GET: Fetch all orders for the hospital
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -70,10 +53,9 @@ export const useOrder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // PUT: Update an existing order
-  const updateOrder = async (id: string, updatedOrder: Order) => {
+  const updateOrder = useCallback(async (id: string, updatedOrder: Order) => {
     setLoading(true);
     setError(null);
 
@@ -97,10 +79,9 @@ export const useOrder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // DELETE: Remove an existing order
-  const deleteOrder = async (id: string) => {
+  const deleteOrder = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
 
@@ -120,7 +101,7 @@ export const useOrder = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     loading,
