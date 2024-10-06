@@ -28,8 +28,6 @@ import { redirect, useRouter } from "next/navigation";
 import LoadingComponents from "@/components/LoadingComponents";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { getServerSideProps } from "@/hooks/getServerSideProps";
-
 export default function Component() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");

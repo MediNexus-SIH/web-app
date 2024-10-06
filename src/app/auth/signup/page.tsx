@@ -1,4 +1,4 @@
-import { getServerSideProps } from "@/hooks/getServerSideProps";
+import { getServerSideProps } from "@/lib/getServerSideProps";
 import MainPage from "./MainPage";
 import { redirect } from "next/navigation";
 
