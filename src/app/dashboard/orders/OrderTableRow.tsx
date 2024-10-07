@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import OrderSheet from "./OrderSheet";
 import { OrderItem } from "@/lib/interfaces";
+import toSentenceCase from "@/lib/toSentenceCase";
 
 interface TableRowProps {
   orderId: string;
@@ -25,7 +26,6 @@ const OrderTableRow: React.FC<TableRowProps> = ({
   actions,
   orderItems,
 }) => {
-  
   return (
     <TableRow>
       <TableCell>
@@ -43,11 +43,16 @@ const OrderTableRow: React.FC<TableRowProps> = ({
       <TableCell>
         <Badge
           variant={
-            status.toLowerCase() as "default" | "secondary" | "destructive"
+            status.toLowerCase() as
+              | "default"
+              | "pending"
+              | "success"
+              | "done"
+              | "destructive"
           }
           className="text-xs"
         >
-          {status}
+          {toSentenceCase(status)}
         </Badge>
       </TableCell>
       <TableCell>
@@ -55,8 +60,10 @@ const OrderTableRow: React.FC<TableRowProps> = ({
           variant={
             paymentStatus.toLowerCase() as
               | "default"
-              | "secondary"
+              | "pending"
+              | "success"
               | "destructive"
+              | "done"
           }
           className="text-xs"
         >

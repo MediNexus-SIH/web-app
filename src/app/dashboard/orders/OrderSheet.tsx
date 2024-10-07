@@ -32,6 +32,7 @@ import {
 
 import dynamic from "next/dynamic";
 import { OrderItem } from "@/lib/interfaces";
+import toSentenceCase from "@/lib/toSentenceCase";
 
 interface OrderSheetProps {
   orderId: string;
@@ -117,13 +118,13 @@ export function OrderSheet({
                 variant={
                   status === "success"
                     ? "default"
-                    : status === "pending"
-                    ? "secondary"
+                    : status.toLowerCase() === "pending"
+                    ? "pending"
                     : "destructive"
                 }
                 className="capitalize"
               >
-                {status}
+                {toSentenceCase(status)}
               </Badge>
             </div>
             <Separator />
@@ -142,15 +143,18 @@ export function OrderSheet({
                   <p className="text-sm text-muted-foreground">{hospital}</p>
                 </div>
               </div>
+
               <div className="flex items-center w-full space-x-4">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Payment</p>
-                  <div className="flex items-center w-full justify-between">
-                    <p className="text-sm text-muted-foreground">{amount}</p>
+                <div className="flex-1">
+                  <div className="text-sm font-medium">Payment</div>
+                  <div className="flex justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      {amount}
+                    </div>
                     <Badge
                       variant={
-                        paymentStatus === "done" ? "default" : "secondary"
+                        paymentStatus === "done" ? "success" : "pending"
                       }
                       className="capitalize"
                     >
