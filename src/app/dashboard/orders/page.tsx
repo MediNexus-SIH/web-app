@@ -364,14 +364,13 @@ export default function OrdersPage() {
     []
   );
 
-  if (loading) {
+  if (!loading) {
     return (
-      <div className="w-full bg-muted/40">
+      <div>
         <OrderLoadingComponent />
       </div>
     );
   }
-
   if (error) {
     return <div>Error: {error}</div>;
   }
