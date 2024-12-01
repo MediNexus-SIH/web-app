@@ -252,7 +252,8 @@ const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         {loading ? (
-          <div>Loading....</div>
+          <div>
+            {loading}....</div>
         ) : (
           <React.Fragment>
             <DialogHeader>

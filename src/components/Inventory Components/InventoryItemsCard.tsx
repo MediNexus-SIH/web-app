@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "../ui/table";
 import TableInvRow from "./TableInvRow";
-import { Loader2 } from "lucide-react";
 
 interface Item {
   item_name: string;

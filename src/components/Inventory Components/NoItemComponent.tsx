@@ -12,7 +12,6 @@ export default function NoItemComponent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Animated gradient background */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"
           animate={{
