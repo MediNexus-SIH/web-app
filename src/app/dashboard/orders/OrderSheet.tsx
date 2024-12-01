@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Calendar,
   Package,
@@ -32,7 +30,7 @@ import {
 
 import dynamic from "next/dynamic";
 import { OrderItem } from "@/lib/interfaces";
-import toSentenceCase from "@/lib/toSentenceCase";
+import toSentenceCase from "@/hooks/toSentenceCase";
 
 interface OrderSheetProps {
   orderId: string;
@@ -53,16 +51,25 @@ export function OrderSheet({
   orderId,
   date,
   status,
-  paymentStatus,
+  paymentStatus: initialPaymentStatus,
   hospital,
   amount,
   orderItems,
 }: OrderSheetProps) {
+  const [paymentStatus, setPaymentStatus] = useState(initialPaymentStatus);
   const [isTracking, setIsTracking] = useState(false);
   const [trackingProgress, setTrackingProgress] = useState(0);
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
   }>({});
+
+  // Refresh effect to simulate state updates after payment
+  useEffect(() => {
+    if (paymentStatus === "Paid") {
+      // Logic for refreshing or re-fetching the component state if needed
+      console.log("Payment completed. State refreshed.");
+    }
+  }, [paymentStatus]);
 
   const handleStartTracking = () => {
     setIsTracking(true);
@@ -81,6 +88,7 @@ export function OrderSheet({
     alert(
       "Payment processing... This is where you'd integrate a payment gateway."
     );
+    setPaymentStatus("Paid"); // Update the payment status state
   };
 
   const handlePopoverOpenChange = (open: boolean, index: number) => {
@@ -89,6 +97,7 @@ export function OrderSheet({
       [index]: open,
     }));
   };
+
   const displayId = orderId.length > 10 ? `${orderId.slice(0, 7)}...` : orderId;
 
   return (
@@ -114,13 +123,13 @@ export function OrderSheet({
           <div className="py-6 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Order Status</h3>
+
               <Badge
                 variant={
-                  status === "success"
-                    ? "default"
-                    : status.toLowerCase() === "pending"
-                    ? "pending"
-                    : "destructive"
+                  status.toLowerCase() as
+                    | "default"
+                    | "secondary"
+                    | "destructive"
                 }
                 className="capitalize"
               >
@@ -146,23 +155,26 @@ export function OrderSheet({
 
               <div className="flex items-center w-full space-x-4">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
-                <div className="flex-1">
+                <div className="flex flex-col w-full">
                   <div className="text-sm font-medium">Payment</div>
-                  <div className="flex justify-between">
+                  <div className="flex items-center justify-between w-full">
                     <div className="text-sm text-muted-foreground">
                       {amount}
                     </div>
-                    <Badge
-                      variant={
-                        paymentStatus === "done" ? "success" : "pending"
-                      }
-                      className="capitalize"
-                    >
-                      {paymentStatus}
-                    </Badge>
+                    <div>
+                      <Badge
+                        variant={
+                          paymentStatus === "Paid" ? "success" : "failure"
+                        }
+                        className="capitalize"
+                      >
+                        {paymentStatus}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
+
               <div className="flex items-center space-x-4">
                 <Truck className="h-5 w-5 text-muted-foreground" />
                 <div>
@@ -254,7 +266,7 @@ export function OrderSheet({
                 </div>
               )}
             </div>
-            {paymentStatus === "pending" && (
+            {paymentStatus === "Unpaid" && (
               <>
                 <Separator />
                 <div className="space-y-4">

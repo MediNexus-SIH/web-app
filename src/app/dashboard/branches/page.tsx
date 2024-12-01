@@ -391,6 +391,7 @@ export default function BranchesPage() {
                       <Progress
                         value={stockPercentage}
                         className={`h-2 ${stockLevelColor}`}
+                        indicatorColor="#D0D0D0"
                       />
                     </div>
                     <div className="flex justify-between items-center">

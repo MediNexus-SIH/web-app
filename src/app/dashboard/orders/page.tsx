@@ -40,7 +40,7 @@ import { useItems } from "@/hooks/use-items";
 import { Option, SelectDropdown } from "@/components/SelectDropdown";
 import { useOrder } from "@/hooks/use-order";
 import { Order, OrderItem } from "@/lib/interfaces";
-import { OrderLoadingComponent } from "@/components/Order Components/OrderLoadingComponent";
+import OrderLoadingComponent from "@/components/Order Components/OrderLoadingComponent";
 
 const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
   return (
@@ -364,9 +364,9 @@ export default function OrdersPage() {
     []
   );
 
-  if (!loading) {
+  if (loading) {
     return (
-      <div>
+      <div className="w-full bg-muted/40">
         <OrderLoadingComponent />
       </div>
     );
@@ -387,7 +387,6 @@ export default function OrdersPage() {
         <h1 className="text-2xl font-bold">Orders</h1>
         <NewOrderDialog loading={loading} />
       </div>
-      <div className="text-sm text-gray-500">(Click on the order id) </div>
       <div className="bg-background border rounded-lg overflow-hidden w-full">
         <div className="px-6 py-4 border-b flex flex-row items-start md:items-center justify-between gap-4">
           <SearchInputField

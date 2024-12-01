@@ -130,6 +130,7 @@ export default function Component() {
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Dharmeshwar and Kallu")
     if (
       !currentItem.item_name ||
       !currentItem.quantity ||
@@ -191,6 +192,8 @@ export default function Component() {
   };
 
   const addManualItem = () => {
+    console.log("hulalla")
+    console.log("current item ",currentItem)
     if (
       currentItem.item_name &&
       currentItem.quantity &&
@@ -199,6 +202,7 @@ export default function Component() {
       currentItem.unit_price &&
       currentItem.department
     ) {
+      console.log("Enteredfghnhnjhn")
       setManualItems((prev) => [...prev, currentItem]);
       setCurrentItem({
         item_name: "",
