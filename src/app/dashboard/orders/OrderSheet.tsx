@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect } from "react";
 import {
   Calendar,
@@ -235,37 +236,40 @@ export function OrderSheet({
               ))}
             </div>
             <Separator />
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Real-time Tracking</h3>
-              {!isTracking ? (
-                <Button onClick={handleStartTracking}>Start Tracking</Button>
-              ) : (
-                <div className="space-y-4">
-                  <Progress value={trackingProgress} className="w-full" />
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>Order Placed</span>
-                    <span>In Transit</span>
-                    <span>Delivered</span>
-                  </div>
-                  <div className="flex items-center space-x-2 mt-4">
-                    <MapPin className="h-5 w-5 text-muted-foreground" />
-                    <p className="text-sm">
-                      {trackingProgress < 50
-                        ? "Order is being prepared"
-                        : trackingProgress < 100
-                        ? "Order is in transit"
-                        : "Order has been delivered"}
-                    </p>
-                  </div>
-                  <div className="relative w-full h-[400px] bg-muted rounded-lg overflow-hidden">
-                    <LocationTracker />
-                    <div className="absolute top-1/2 left-1/2 z-10 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                      <MapPin className="h-8 w-8 text-primary" />
+            {paymentStatus == "Paid" ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Real-time Tracking</h3>
+                {!isTracking ? (
+                  <Button onClick={handleStartTracking}>Start Tracking</Button>
+                ) : (
+                  <div className="space-y-4">
+                    <Progress value={trackingProgress} className="w-full" />
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Order Placed</span>
+                      <span>In Transit</span>
+                      <span>Delivered</span>
+                    </div>
+                    <div className="flex items-center space-x-2 mt-4">
+                      <MapPin className="h-5 w-5 text-muted-foreground" />
+                      <p className="text-sm">
+                        {trackingProgress < 50
+                          ? "Order is being prepared"
+                          : trackingProgress < 100
+                          ? "Order is in transit"
+                          : "Order has been delivered"}
+                      </p>
+                    </div>
+                    <div className="relative w-full h-[400px] bg-muted rounded-lg overflow-hidden">
+                      <LocationTracker />
+                      <div className="absolute top-1/2 left-1/2 z-10 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                        <MapPin className="h-8 w-8 text-primary" />
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : null}
+
             {paymentStatus === "Unpaid" && (
               <>
                 <Separator />
