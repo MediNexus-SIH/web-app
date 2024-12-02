@@ -45,38 +45,39 @@ export async function POST(req: Request) {
     const sessionResult = await validateSession();
     const hospitalName = sessionResult.hospitalName;
 
-    try {
-      const { type, message, status } = body;
-      const hospital = await prisma.hospital.findFirst({
-        where: { hospitalName },
-      });
+    const { type, message, status } = body;
 
-      if (!hospital) {
-        return NextResponse.json(
-          { error: "Hospital not found" },
-          { status: 404 }
-        );
-      }
+    const hospital = await prisma.hospital.findFirst({
+      where: { hospitalName },
+    });
 
-      // Validate required fields
-      if (!type || !message) {
-        return new Response(
-          JSON.stringify({ error: "Type and message are required." }),
-          { status: 400, headers: { "Content-Type": "application/json" } }
-        );
-      }
-      const newNotification = await prisma.notification.create({
-        data: {
-          hospital_id: hospital.id,
-          type,
-          message,
-          status: status || "UNREAD", // Default to UNREAD if not provided
-        },
-      });
-      return NextResponse.json(newNotification, { status: 201 });
-    } catch (err) {}
+    if (!hospital) {
+      return NextResponse.json(
+        { error: "Hospital not found" },
+        { status: 404 }
+      );
+    }
+
+    // Validate required fields
+    if (!type || !message) {
+      return new Response(
+        JSON.stringify({ error: "Type and message are required." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     // Create a new notification
+    const newNotification = await prisma.notification.create({
+      data: {
+        hospital_id: hospital.id,
+        type,
+        message,
+        status: status || "UNREAD", // Default to UNREAD if not provided
+      },
+    });
+
+    // Return the newly created notification
+    return NextResponse.json(newNotification, { status: 201 });
   } catch (error: any) {
     console.error(error);
     return new Response(
