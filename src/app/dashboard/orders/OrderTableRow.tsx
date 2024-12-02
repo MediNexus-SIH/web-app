@@ -51,15 +51,10 @@ const OrderTableRow: React.FC<TableRowProps> = ({
       </TableCell>
       <TableCell>
         <Badge
-          variant={
-            paymentStatus.toLowerCase() as
-              | "default"
-              | "secondary"
-              | "destructive"
-          }
-          className="text-xs"
+          variant={paymentStatus === "Paid" ? "success" : "failure"}
+          className="capitalize"
         >
-          {toSentenceCase(paymentStatus)}
+          {paymentStatus}
         </Badge>
       </TableCell>
       <TableCell>{hospital}</TableCell>

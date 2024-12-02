@@ -67,7 +67,6 @@ export function OrderSheet({
   // Refresh effect to simulate state updates after payment
   useEffect(() => {
     if (paymentStatus === "Paid") {
-      // Logic for refreshing or re-fetching the component state if needed
       console.log("Payment completed. State refreshed.");
     }
   }, [paymentStatus]);
@@ -89,7 +88,7 @@ export function OrderSheet({
     alert(
       "Payment processing... This is where you'd integrate a payment gateway."
     );
-    setPaymentStatus("Paid"); // Update the payment status state
+    setPaymentStatus("Paid"); 
   };
 
   const handlePopoverOpenChange = (open: boolean, index: number) => {

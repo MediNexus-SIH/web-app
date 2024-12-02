@@ -1,12 +1,7 @@
 import * as React from "react"
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DotsHorizontalIcon,
-} from "@radix-ui/react-icons"
-
 import { cn } from "@/lib/utils"
 import { ButtonProps, buttonVariants } from "@/components/ui/button"
+import { ChevronLeftIcon, ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 
 const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
   <nav
@@ -65,34 +60,63 @@ PaginationLink.displayName = "PaginationLink"
 
 const PaginationPrevious = ({
   className,
+  disabled = false,
+  onClick,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}: React.ComponentProps<typeof PaginationLink> & {
+  disabled?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+}) => (
   <PaginationLink
     aria-label="Go to previous page"
     size="default"
-    className={cn("gap-1 pl-2.5", className)}
+    className={cn("gap-1 pl-2.5", className, {
+      "cursor-not-allowed pointer-events-none opacity-50": disabled,
+    })}
     {...props}
+    onClick={(e) => {
+      if (disabled) {
+        e.preventDefault();
+        return;
+      }
+      onClick?.(e);
+    }}
   >
     <ChevronLeftIcon className="h-4 w-4" />
     <span>Previous</span>
   </PaginationLink>
-)
-PaginationPrevious.displayName = "PaginationPrevious"
+);
 
+PaginationPrevious.displayName = "PaginationPrevious";
 const PaginationNext = ({
   className,
+  disabled = false,
+  onClick,
   ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
+}: React.ComponentProps<typeof PaginationLink> & {
+  disabled?: boolean;
+  onClick?: (e: React.MouseEvent) => void;
+}) => (
   <PaginationLink
     aria-label="Go to next page"
     size="default"
-    className={cn("gap-1 pr-2.5", className)}
+    className={cn("gap-1 pr-2.5", className, {
+      "cursor-not-allowed pointer-events-none opacity-50": disabled,
+    })}
     {...props}
+    onClick={(e) => {
+      if (disabled) {
+        e.preventDefault();
+        return;
+      }
+      onClick?.(e);
+    }}
   >
     <span>Next</span>
     <ChevronRightIcon className="h-4 w-4" />
   </PaginationLink>
-)
+);
+
 PaginationNext.displayName = "PaginationNext"
 
 const PaginationEllipsis = ({

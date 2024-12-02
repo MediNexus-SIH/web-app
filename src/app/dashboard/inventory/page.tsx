@@ -42,6 +42,7 @@ import {
   HeaderLoadingComponent,
   InvLoadingComponent,
 } from "@/components/Inventory Components/InvLoadingComponent";
+import PaginationComponent from "@/components/PaginationComponent";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -56,11 +57,25 @@ export default function Component() {
       expiry_date: string;
       quantity: number;
       unit_price: number;
+      supplier: string;
+      category: string;
     }>
   >([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
 
   const { items, loading, error, addItems, fetchItems } = useInventory();
   const { showToast } = useShowToast();
+
+  const totalPages = useMemo(
+    () => Math.ceil(items.length / pageSize),
+    [items, pageSize]
+  );
+
+  const paginatedItems = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    return items.slice(startIndex, startIndex + pageSize);
+  }, [items, page, pageSize]);
 
   const [currentItem, setCurrentItem] = useState<{
     department: string;
@@ -69,6 +84,8 @@ export default function Component() {
     expiry_date: string;
     quantity: number;
     unit_price: number;
+    supplier: string;
+    category: string;
   }>({
     department: "",
     item_name: "",
@@ -76,6 +93,8 @@ export default function Component() {
     expiry_date: "",
     quantity: 0,
     unit_price: 0,
+    supplier: "",
+    category: "",
   });
 
   const [qrItems, setQrItems] = useState<
@@ -87,6 +106,10 @@ export default function Component() {
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
     undefined
   );
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleValueChange = (value: string) => {
     setSelectedValue(value);
@@ -130,14 +153,16 @@ export default function Component() {
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Dharmeshwar and Kallu")
+    console.log("Test 1", currentItem);
     if (
       !currentItem.item_name ||
       !currentItem.quantity ||
       !currentItem.batch_number ||
       !currentItem.department ||
       !currentItem.expiry_date ||
-      !currentItem.unit_price
+      !currentItem.unit_price ||
+      !currentItem.category ||
+      !currentItem.supplier
     ) {
       showToast(
         "Incomplete Item Details",
@@ -174,6 +199,8 @@ export default function Component() {
       expiry_date: "",
       batch_number: "",
       unit_price: 0,
+      supplier: "",
+      category: "",
       department: "",
     });
     setSelectedValue("");
@@ -182,6 +209,8 @@ export default function Component() {
   const handleCurrentItemChange = (
     field:
       | "item_name"
+      | "supplier"
+      | "category"
       | "quantity"
       | "batch_number"
       | "unit_price"
@@ -192,8 +221,8 @@ export default function Component() {
   };
 
   const addManualItem = () => {
-    console.log("hulalla")
-    console.log("current item ",currentItem)
+    console.log("hulalla");
+    console.log("current item ", currentItem);
     if (
       currentItem.item_name &&
       currentItem.quantity &&
@@ -202,7 +231,7 @@ export default function Component() {
       currentItem.unit_price &&
       currentItem.department
     ) {
-      console.log("Enteredfghnhnjhn")
+      console.log("Enteredfghnhnjhn");
       setManualItems((prev) => [...prev, currentItem]);
       setCurrentItem({
         item_name: "",
@@ -210,6 +239,8 @@ export default function Component() {
         expiry_date: "",
         batch_number: "",
         unit_price: 0,
+        supplier: "",
+        category: "",
         department: "",
       });
       setSelectedValue("");
@@ -225,6 +256,8 @@ export default function Component() {
       expiry_date: "",
       batch_number: "",
       unit_price: 0,
+      supplier: "",
+      category: "",
       department: "",
     });
     setSelectedValue("");
@@ -268,6 +301,90 @@ export default function Component() {
       return expiryDate <= thresholdDate;
     }).length;
   }, [items, thresholdDate]);
+
+  // const PaginationComponent: React.FC<PaginationProps> = ({
+  //   page,
+  //   totalPages,
+  //   handlePageChange,
+  // }) => {
+  //   // Generate pagination links
+  //   const generatePaginationLinks = () => {
+  //     if (totalPages <= 2) {
+  //       // If total pages <= 3, show all the pages
+  //       return Array.from({ length: totalPages }, (_, index) => index + 1);
+  //     }
+
+  //     // If total pages > 3, show a "..." and the relevant page links
+  //     const pageLinks = [];
+
+  //     if (page === 1) {
+  //       // First page: Show 1, 2, and '...'
+  //       pageLinks.push(1, 2, "...");
+  //     } else if (page === totalPages) {
+  //       // Last page: Show '...', second-to-last, last pages
+  //       pageLinks.push("...", totalPages - 2, totalPages - 1, totalPages);
+  //     } else {
+  //       // Middle pages: Show previous, current, and next page
+  //       pageLinks.push(page - 1, page, page + 1);
+
+  //       // Add "..." if there are pages skipped on the left
+  //       if (page > 2) pageLinks.unshift("...");
+
+  //       // Add "..." if there are pages skipped on the right
+  //       if (page < totalPages - 1) pageLinks.push("...");
+  //     }
+
+  //     // Handle the case where we're close to the end but the logic still needs adjustment
+  //     if (page > totalPages - 3) {
+  //       pageLinks.unshift("...");
+  //       pageLinks.push(totalPages - 2, totalPages - 1, totalPages);
+  //     }
+
+  //     return pageLinks;
+  //   };
+
+  //   const paginationLinks = generatePaginationLinks();
+
+  //   return (
+  //     <Pagination>
+  //       <PaginationContent>
+  //         <PaginationItem>
+  //           <PaginationPrevious
+  //             href="#"
+  //             onClick={() => handlePageChange(page - 1)}
+  //             disabled={page === 1}
+  //           />
+  //         </PaginationItem>
+
+  //         {paginationLinks.map((link, index) => (
+  //           <PaginationItem key={index}>
+  //             {link === "..." ? (
+  //               <PaginationLink href="#" isActive={false}>
+  //                 ...
+  //               </PaginationLink>
+  //             ) : (
+  //               <PaginationLink
+  //                 href="#"
+  //                 isActive={link === page}
+  //                 onClick={() => handlePageChange(parseInt(link))}
+  //               >
+  //                 {link}
+  //               </PaginationLink>
+  //             )}
+  //           </PaginationItem>
+  //         ))}
+
+  //         <PaginationItem>
+  //           <PaginationNext
+  //             href="#"
+  //             onClick={() => handlePageChange(page + 1)}
+  //             disabled={page === totalPages}
+  //           />
+  //         </PaginationItem>
+  //       </PaginationContent>
+  //     </Pagination>
+  //   );
+  // };
 
   return (
     <React.Fragment>
@@ -327,13 +444,41 @@ export default function Component() {
                   />
                   <TotalCostCard totalPrice={totalPrice} error={error} />
                 </div>
-                <InventoryItemsCard items={items} error={error} />
+                <InventoryItemsCard items={paginatedItems} error={error} />
+                <PaginationComponent
+                  handlePageChange={handlePageChange}
+                  page={page}
+                  totalPages={totalPages}
+                />
+                {/* <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={() => handlePageChange(page - 1)}
+                        disabled={page === 1}
+                      />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink href="#" isActive>
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={() => handlePageChange(page + 1)}
+                        disabled={page === totalPages}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination> */}
               </div>
             </React.Fragment>
           ) : (
             <React.Fragment>
               <Popover>
-                <PopoverTrigger asChild >
+                <PopoverTrigger asChild>
                   <div className="flex items-center justify-end ml-auto space-x-2">
                     <Button className="flex space-x-2">
                       <Plus className="flex h-4 w-4 space-x-2" />
@@ -468,6 +613,27 @@ export default function Component() {
                         }}
                         placeholder="Enter unit price"
                       />
+                      <div className="space-y-2">
+                        <Label htmlFor="item-name">Item Supplier</Label>
+                        <Input
+                          id="item-supplier"
+                          value={currentItem.supplier}
+                          onChange={(e) =>
+                            handleCurrentItemChange("supplier", e.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="item-name">Item Category</Label>
+                        <Input
+                          id="item-category"
+                          placeholder="First Aid..."
+                          value={currentItem.category}
+                          onChange={(e) =>
+                            handleCurrentItemChange("category", e.target.value)
+                          }
+                        />
+                      </div>
                     </div>
                     <Button
                       type="button"
@@ -510,6 +676,14 @@ export default function Component() {
                               <div className="text-sm text-muted-foreground mt-1">
                                 <span className="font-medium">Dept:</span>{" "}
                                 {item.department}
+                              </div>
+                              <div className="text-sm text-muted-foreground mt-1">
+                                <span className="font-medium">Item Supp:</span>{" "}
+                                {item.supplier}
+                              </div>
+                              <div className="text-sm text-muted-foreground mt-1">
+                                <span className="font-medium">Category:</span>{" "}
+                                {item.category}
                               </div>
                             </div>
                             <Button

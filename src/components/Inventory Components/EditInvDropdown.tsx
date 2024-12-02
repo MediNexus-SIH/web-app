@@ -14,6 +14,7 @@ const EditInvDropdown = () => {
         <DropdownMenuItem>Adjust Quantity</DropdownMenuItem>
         <DropdownMenuItem>Mark as Expired</DropdownMenuItem>
         <DropdownMenuItem>Reorder</DropdownMenuItem>
+        <DropdownMenuItem>Delete Item</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { DotIcon, Plus, ListOrdered, Filter } from "lucide-react";
 import {
   DropdownMenu,
@@ -41,6 +41,7 @@ import { Option, SelectDropdown } from "@/components/SelectDropdown";
 import { useOrder } from "@/hooks/use-order";
 import { Order, OrderItem } from "@/lib/interfaces";
 import OrderLoadingComponent from "@/components/Order Components/OrderLoadingComponent";
+import PaginationComponent from "@/components/PaginationComponent";
 
 const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
   return (
@@ -65,8 +66,7 @@ const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
             status={order.status}
             paymentStatus={order.paymentStatus ? "Paid" : "Unpaid"}
             hospital={order.hospital.hospitalName}
-            // amount={`$${order.totalAmount.toFixed(2)}`}
-            amount={`$${order.total_amount}`}
+            amount={`$${order.total_amount.toFixed(2)}`}
             actions={
               <Button variant="outline" size="icon" className="h-8 w-8">
                 <DotIcon className="h-4 w-4" />
@@ -79,6 +79,7 @@ const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
     </Table>
   );
 };
+
 const OrderFilters: React.FC<{
   selectedFilters: string[];
   setSelectedFilters: React.Dispatch<React.SetStateAction<string[]>>;
@@ -252,8 +253,7 @@ const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         {loading ? (
-          <div>
-            {loading}....</div>
+          <div>{loading}....</div>
         ) : (
           <React.Fragment>
             <DialogHeader>
@@ -311,56 +311,74 @@ export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("date");
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+
   const { loading, error, orders, fetchOrders } = useOrder();
 
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
 
-  useEffect(() => {
-    if (orders) {
-      let result = [...orders];
+  // Filtered orders across all items (for search)
+  const searchFilteredOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter(
+      (order) =>
+        order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.hospital.hospitalName
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+    );
+  }, [orders, searchQuery]);
 
-      // Apply search
-      if (searchQuery) {
-        result = result.filter(
-          (order) =>
-            order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            order.hospital.hospitalName
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-        );
-      }
+  // Total pages based on search-filtered orders
+  const totalPages = useMemo(() => {
+    return Math.ceil(searchFilteredOrders.length / pageSize);
+  }, [searchFilteredOrders, pageSize]);
 
-      // Apply filters
-      if (selectedFilters.length > 0) {
-        result = result.filter((order) =>
-          selectedFilters.includes(order.status.toLowerCase())
-        );
-      }
+  // Paginated and search-filtered orders
+  const paginatedSearchOrders = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    return searchFilteredOrders.slice(startIndex, startIndex + pageSize);
+  }, [searchFilteredOrders, page, pageSize]);
 
-      // Apply sorting
-      result.sort((a, b) => {
-        if (sortBy === "date") {
-          return (
-            new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
-          );
-        } else if (sortBy === "status") {
-          return a.status.localeCompare(b.status);
-        } else if (sortBy === "amount") {
-          return b.total_amount - a.total_amount;
-        }
-        return 0;
-      });
+  // Filtered orders for the current page (with status filters and sorting)
+  const filteredPaginatedOrders = useMemo(() => {
+    let result = [...paginatedSearchOrders];
 
-      setFilteredOrders(result);
+    // Apply filters
+    if (selectedFilters.length > 0) {
+      result = result.filter((order) =>
+        selectedFilters.includes(order.status.toLowerCase())
+      );
     }
-  }, [orders, searchQuery, selectedFilters, sortBy]);
+
+    // Apply sorting
+    result.sort((a, b) => {
+      if (sortBy === "date") {
+        return (
+          new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
+        );
+      } else if (sortBy === "status") {
+        return a.status.localeCompare(b.status);
+      } else if (sortBy === "amount") {
+        return b.total_amount - a.total_amount;
+      }
+      return 0;
+    });
+
+    return result;
+  }, [paginatedSearchOrders, selectedFilters, sortBy]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchQuery(e.target.value);
+      setPage(1); // Reset to first page on search
     },
     []
   );
@@ -405,9 +423,14 @@ export default function OrdersPage() {
           </div>
         </div>
         <div className="p-2 md:p-5">
-          <OrderTable orders={filteredOrders} />
+          <OrderTable orders={filteredPaginatedOrders} />
         </div>
       </div>
+      <PaginationComponent
+        page={page}
+        totalPages={totalPages}
+        handlePageChange={handlePageChange}
+      />
       <div className="grid gap-8 mt-8">
         <div className="grid md:grid-cols-2 gap-6">
           <TotalSalesChart />
