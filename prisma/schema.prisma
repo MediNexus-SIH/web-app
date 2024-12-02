@@ -29,7 +29,9 @@ model Hospital {
   unifiedInventorySupplyDemand UnifiedInventorySupplyDemand[] @relation("HospitalUnifiedInventorySupplyDemand")
   medicalInventories          MedicalInventory[]          @relation("HospitalMedicalInventory")
   orders                      Order[]                     @relation("HospitalOrders")
+  notifications               Notification[]              @relation("HospitalNotifications")
 }
+
 
 model Departments {
   id                          String                      @id @default(uuid())
@@ -176,6 +178,35 @@ model UnifiedInventorySupplyDemand {
   vendor                      Vendors                     @relation("VendorUnifiedInventorySupplyDemand", fields: [vendor_id], references: [vendor_id])
   hospital                    Hospital                    @relation("HospitalUnifiedInventorySupplyDemand", fields: [hospital_id], references: [id])
 }
+
+model Notification {
+  id              String           @id @default(uuid())
+  hospital_id     String?          // Optional if the notification is not specific to a hospital
+  department_id   String?          // Optional if the notification is department-specific
+  type            NotificationType
+  message         String
+  status          NotificationStatus @default(UNREAD)
+  created_at      DateTime          @default(now())
+  read_at         DateTime?         // Nullable, timestamp when the notification was marked as read
+
+  // Relations
+  hospital        Hospital?         @relation("HospitalNotifications", fields: [hospital_id], references: [id])
+}
+
+
+enum NotificationType {
+  ORDER_STATUS
+  LOW_STOCK
+  RESOURCE_SHARING
+  BLOOD_BANK
+  VENDOR_ORDER
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+}
+
 
 enum OrderStatus {
   PENDING

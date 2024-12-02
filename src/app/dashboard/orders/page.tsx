@@ -320,42 +320,30 @@ export default function OrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Filtered orders across all items (for search)
-  const searchFilteredOrders = useMemo(() => {
+  // Filtered orders across all items (for search and status)
+  const filteredOrders = useMemo(() => {
     if (!orders) return [];
-    return orders.filter(
-      (order) =>
+
+    return orders.filter((order) => {
+      // Search filter
+      const matchesSearch =
         order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
         order.hospital.hospitalName
           .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-    );
-  }, [orders, searchQuery]);
+          .includes(searchQuery.toLowerCase());
 
-  // Total pages based on search-filtered orders
-  const totalPages = useMemo(() => {
-    return Math.ceil(searchFilteredOrders.length / pageSize);
-  }, [searchFilteredOrders, pageSize]);
+      // Status filter
+      const matchesStatusFilter =
+        selectedFilters.length === 0 ||
+        selectedFilters.includes(order.status.toLowerCase());
 
-  // Paginated and search-filtered orders
-  const paginatedSearchOrders = useMemo(() => {
-    const startIndex = (page - 1) * pageSize;
-    return searchFilteredOrders.slice(startIndex, startIndex + pageSize);
-  }, [searchFilteredOrders, page, pageSize]);
+      return matchesSearch && matchesStatusFilter;
+    });
+  }, [orders, searchQuery, selectedFilters]);
 
-  // Filtered orders for the current page (with status filters and sorting)
-  const filteredPaginatedOrders = useMemo(() => {
-    let result = [...paginatedSearchOrders];
-
-    // Apply filters
-    if (selectedFilters.length > 0) {
-      result = result.filter((order) =>
-        selectedFilters.includes(order.status.toLowerCase())
-      );
-    }
-
-    // Apply sorting
-    result.sort((a, b) => {
+  // Sorting filtered orders
+  const sortedFilteredOrders = useMemo(() => {
+    return [...filteredOrders].sort((a, b) => {
       if (sortBy === "date") {
         return (
           new Date(b.order_date).getTime() - new Date(a.order_date).getTime()
@@ -367,9 +355,18 @@ export default function OrdersPage() {
       }
       return 0;
     });
+  }, [filteredOrders, sortBy]);
 
-    return result;
-  }, [paginatedSearchOrders, selectedFilters, sortBy]);
+  // Total pages based on filtered orders
+  const totalPages = useMemo(() => {
+    return Math.ceil(sortedFilteredOrders.length / pageSize);
+  }, [sortedFilteredOrders, pageSize]);
+
+  // Paginated and filtered orders
+  const paginatedFilteredOrders = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    return sortedFilteredOrders.slice(startIndex, startIndex + pageSize);
+  }, [sortedFilteredOrders, page, pageSize]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -423,7 +420,7 @@ export default function OrdersPage() {
           </div>
         </div>
         <div className="p-2 md:p-5">
-          <OrderTable orders={filteredPaginatedOrders} />
+          <OrderTable orders={paginatedFilteredOrders} />
         </div>
       </div>
       <PaginationComponent
