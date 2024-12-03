@@ -30,7 +30,8 @@ model Hospital {
   medicalInventories          MedicalInventory[]          @relation("HospitalMedicalInventory")
   orders                      Order[]                     @relation("HospitalOrders")
   notifications               Notification[]              @relation("HospitalNotifications")
-}
+  systemChecks                SystemCheck[]               @relation("HospitalSystemChecks")
+ }
 
 
 model Departments {
@@ -41,6 +42,7 @@ model Departments {
   department                  String
   hospital                    Hospital                    @relation("HospitalDepartments", fields: [hospital_id], references: [id])
   medicalInventory            MedicalInventory[]          @relation("DepartmentMedicalInventory")
+  notifications               Notification[]              @relation("DepartmentNotifications") 
 }
 
 model MedicalInventory {
@@ -51,12 +53,14 @@ model MedicalInventory {
   batch_number                String
   expiry_date                 DateTime
   quantity                    Int
+  threshold_quantity          Int                         @default(10) // Add this field
 
   department                  Departments                 @relation("DepartmentMedicalInventory", fields: [department_id], references: [id])
   hospital                    Hospital                    @relation("HospitalMedicalInventory", fields: [hospital_id], references: [id])
   item                        Item                        @relation(fields: [item_id], references: [item_id])
   stockReplenishmentLogs      StockReplenishmentLog[]     @relation("MedicalInventoryStockReplenishmentLogs")
   orderItems                  OrderItem[]                 @relation("OrderItemInventory")
+  notifications               Notification[]              @relation("InventoryNotifications")
 }
 
 model Order {
@@ -180,26 +184,44 @@ model UnifiedInventorySupplyDemand {
 }
 
 model Notification {
-  id              String           @id @default(uuid())
-  hospital_id     String?          // Optional if the notification is not specific to a hospital
-  department_id   String?          // Optional if the notification is department-specific
-  type            NotificationType
-  message         String
-  status          NotificationStatus @default(UNREAD)
-  created_at      DateTime          @default(now())
-  read_at         DateTime?         // Nullable, timestamp when the notification was marked as read
+  id                 String             @id @default(uuid())
+  hospital_id        String
+  department_id      String?
+  type               NotificationType
+  message            String
+  status             NotificationStatus @default(UNREAD)
+  created_at         DateTime           @default(now())
+  read_at            DateTime?
+  visibility         Boolean            @default(true)
+  inventory_id       String?
+  item_name          String?
+  current_quantity   Int?
+  threshold_quantity Int?
+  expiry_date        DateTime?
 
-  // Relations
-  hospital        Hospital?         @relation("HospitalNotifications", fields: [hospital_id], references: [id])
+  hospital           Hospital           @relation("HospitalNotifications", fields: [hospital_id], references: [id])
+  department         Departments?       @relation("DepartmentNotifications", fields: [department_id], references: [id])
+  inventory          MedicalInventory?  @relation("InventoryNotifications", fields: [inventory_id], references: [id])
 }
 
+model SystemCheck {
+  id         String   @id @default(uuid())
+  type       String
+  created_at DateTime @default(now())
+  hospital_id String
+  
+  hospital   Hospital @relation("HospitalSystemChecks", fields: [hospital_id], references: [id])
 
+  @@index([type, created_at])
+  @@index([hospital_id, type, created_at])
+}
 enum NotificationType {
   ORDER_STATUS
   LOW_STOCK
   RESOURCE_SHARING
   BLOOD_BANK
   VENDOR_ORDER
+  EXPIRING_SOON
 }
 
 enum NotificationStatus {

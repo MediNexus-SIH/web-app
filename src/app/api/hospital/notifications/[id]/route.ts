@@ -1,6 +1,8 @@
 import prisma from "@/config/prisma.config";
 import { NextResponse } from "next/server";
 
+import { NotificationStatus } from "@/lib/NotiEnums";
+
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } }

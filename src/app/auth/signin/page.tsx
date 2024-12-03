@@ -41,15 +41,30 @@ export default function Component() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  // const session = await getServerSideProps();
-  // if (session.sessionStatus) {
-  //   redirect("/dashboard");
-  // }
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   useEffect(() => {
-    if (status === "authenticated" && session) {
-      router.push("/dashboard");
-    }
+    let redirectTimer: NodeJS.Timeout;
+
+    const handleRedirection = async () => {
+      if (status === "authenticated" && session) {
+        setIsRedirecting(true);
+
+        // Add a slight delay to ensure smooth transition
+        redirectTimer = setTimeout(() => {
+          router.push("/dashboard");
+        }, 500); // Adjust delay as needed
+      }
+    };
+
+    handleRedirection();
+
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
   }, [session, status, router]);
+
+  
   useEffect(() => {
     if (step === "otp") {
       otpRefs.current[0]?.focus();
@@ -224,13 +239,19 @@ export default function Component() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        Redirecting to dashboard...
+        {isRedirecting
+          ? "Redirecting to dashboard..."
+          : "Authentication complete"}
       </motion.p>
     </motion.div>
   );
 
   return (
-    <div className="bg-muted/40">
+    <div
+      className={`bg-muted/40 ${
+        isRedirecting ? "opacity-50 pointer-events-none" : ""
+      }`}
+    >
       <div className="items-end flex flex-col space-y-2 p-5">
         {step === "signin" && (
           <>

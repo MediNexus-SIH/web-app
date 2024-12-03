@@ -1,6 +1,6 @@
 import Link from "next/link";
 import DropdownMenuProfile from "./DropdrownMenuProfile";
-import NotificationPopup from "./NotificationPopup";
+import { NotificationPopup } from "./Notifications/notification-popup";
 import { Hospital } from "lucide-react";
 
 const TopBar = async ({ className }: { className?: string }) => {
