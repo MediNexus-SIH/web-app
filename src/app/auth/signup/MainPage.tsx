@@ -146,6 +146,26 @@ export default function MainPage() {
     }));
   };
 
+  const departmentAlreadyAdded = () => {
+    let flag = false;
+    if (
+      newDepartment.department &&
+      newDepartment.hod_name &&
+      newDepartment.hod_email
+    ) {
+      formData.departments.map((val) => {
+        val.department == newDepartment.department ? (flag = true) : null;
+      });
+      if (flag)
+        showToast(
+          "Department is already added",
+          "Department is already added, kindly add a different department",
+          "destructive"
+        );
+      return;
+    }
+  };
+
   const addDepartment = (e?: React.MouseEvent) => {
     console.log("Current newDepartment:", newDepartment);
     console.log("Current formData:", formData);
@@ -153,26 +173,13 @@ export default function MainPage() {
     if (e != null) {
       e.preventDefault();
     }
-    let departmentAlreadyAdded = false;
+
     if (
       newDepartment.department &&
       newDepartment.hod_name &&
       newDepartment.hod_email
     ) {
-      formData.departments.map((val) => {
-        val.department == newDepartment.department
-          ? (departmentAlreadyAdded = true)
-          : null;
-      });
-
-      if (departmentAlreadyAdded) {
-        showToast(
-          "Department is already added",
-          "Department is already added, kindly add a different department",
-          "destructive"
-        );
-        return;
-      }
+      departmentAlreadyAdded();
 
       return new Promise<void>((resolve) => {
         setFormData((prev) => {
@@ -738,7 +745,22 @@ export default function MainPage() {
         newDepartment.hod_email &&
         newDepartment.hod_name
       ) {
-        addDepartment();
+        await new Promise<void>((resolve) => {
+          setFormData((prev) => {
+            const newState = {
+              ...prev,
+              departments: [...prev.departments, newDepartment],
+            };
+            setNewDepartment({ department: "", hod_name: "", hod_email: "" });
+
+            console.log("After setting data", formData);
+
+            setSelectedDepartment("");
+
+            resolve();
+            return newState;
+          });
+        });
       }
 
       // Now validate the departments
