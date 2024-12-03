@@ -33,6 +33,11 @@ import {
 } from "@/lib/dropdownOptions";
 import { SelectDropdown } from "@/components/SelectDropdown";
 import useCreateHospital from "@/hooks/useCreateHospital";
+import LoadingComponents from "@/components/LoadingComponents";
+import checkExistingHospital from "@/lib/utils/check-hospital";
+import useCheckExistingHospital from "@/hooks/use-check-existing-hospital";
+import useCheckExistingDepartments from "@/hooks/use-check-existing-department";
+import useCheckAdmin from "@/hooks/use-check-admin";
 
 type Department = {
   department: string;
@@ -79,6 +84,14 @@ export default function MainPage() {
     security_question: "",
     security_answer: "",
   });
+
+  const { error: hospitalError, checkExistingHospital } =
+    useCheckExistingHospital();
+
+  const { checkExistingDepartments, error: deptError } =
+    useCheckExistingDepartments();
+
+  const { checkAdmin, error: adminError, adminFound } = useCheckAdmin();
 
   const [newDepartment, setNewDepartment] = useState<Department>({
     department: "",
@@ -133,8 +146,13 @@ export default function MainPage() {
     }));
   };
 
-  const addDepartment = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const addDepartment = (e?: React.MouseEvent) => {
+    console.log("Current newDepartment:", newDepartment);
+    console.log("Current formData:", formData);
+
+    if (e != null) {
+      e.preventDefault();
+    }
     let departmentAlreadyAdded = false;
     if (
       newDepartment.department &&
@@ -146,6 +164,7 @@ export default function MainPage() {
           ? (departmentAlreadyAdded = true)
           : null;
       });
+
       if (departmentAlreadyAdded) {
         showToast(
           "Department is already added",
@@ -154,26 +173,35 @@ export default function MainPage() {
         );
         return;
       }
-      setFormData((prev) => ({
-        ...prev,
-        departments: [...prev.departments, newDepartment],
-      }));
-      setNewDepartment({ department: "", hod_name: "", hod_email: "" });
-      setSelectedDepartment("");
+
+      return new Promise<void>((resolve) => {
+        setFormData((prev) => {
+          const newState = {
+            ...prev,
+            departments: [...prev.departments, newDepartment],
+          };
+          setNewDepartment({ department: "", hod_name: "", hod_email: "" });
+
+          console.log("After setting data", formData);
+
+          setSelectedDepartment("");
+
+          showToast(
+            "Department added successfully",
+            "Department addition was successful, feel free to add more or proceed to the next step.",
+            "default"
+          );
+          resolve();
+          return newState;
+        });
+      });
+    } else {
       showToast(
-        "Department added succesfully",
-        "Department addtion was successfull, if you want to add more feel free to do so, or proceed next",
-        "default"
+        "Incomplete Department Information",
+        "Please fill in all department fields.",
+        "destructive"
       );
-      return;
-    } else if (formData.departments) {
     }
-    showToast(
-      "Incomplete Department Information",
-      "Please fill in all department fields.",
-      "destructive"
-    );
-    return;
   };
 
   const removeDepartment = (index: number) => {
@@ -210,9 +238,9 @@ export default function MainPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setTimeout(() => {
-    }, 2000);
     const otp = otpValues.join("");
+
+    // OTP validation
     if (otp !== "123456") {
       showToast(
         "Invalid OTP",
@@ -222,46 +250,47 @@ export default function MainPage() {
       return;
     }
 
-    try {
-      await createHospital(formData);
-      if (formError) {
-        if (formError.startsWith("Validation error")) {
-          showToast(
-            "Signup Unsuccessful",
-            "You inputted something with the wrong format",
-            "destructive"
-          );
+    setIsLoading(true); // Set loading state before making the request
 
-          return;
-        } else if (formError.startsWith("Conflict error")) {
-          showToast(
-            "Signup Unsuccessful",
-            "A hospital or a department with this name or contact details already exists. Please try again later.",
-            "destructive"
-          );
-          return;
-        } else {
-          showToast(
-            "Signup Unsuccessful",
-            "An unknown error occurred. Please try again later.",
-            "destructive"
-          );
-        }
+    try {
+      const result = await createHospital(formData);
+
+      // If there is no formError, proceed to the next step
+      if (!formError) {
+        setStep((prev) => prev + 1);
+        setIsLoading(false); // Stop loading after successful submission
         return;
       }
 
-      setStep((prev) => prev + 1);
-      setIsLoading(true);
-
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      // Error handling based on formError codes (received from the backend)
+      if (formError === "VALIDATION_ERROR") {
+        showToast(
+          "Signup Unsuccessful",
+          "You inputted something with the wrong format",
+          "destructive"
+        );
+      } else if (formError === "CONFLICT_ERROR") {
+        showToast(
+          "Signup Unsuccessful",
+          "A hospital or a department with this name or contact details already exists. Please try again later.",
+          "destructive"
+        );
+      } else {
+        showToast(
+          "Signup Unsuccessful",
+          "An unknown error occurred. Please try again later.",
+          "destructive"
+        );
+      }
     } catch (error) {
+      // Generic error handling
       showToast(
         "Error",
         "An error occurred while creating the hospital. Please try again later.",
         "destructive"
       );
+    } finally {
+      setIsLoading(false); // Ensure loading state is turned off in case of error as well
     }
   };
 
@@ -633,9 +662,11 @@ export default function MainPage() {
 
   StepProgress.displayName = "StepProgress";
 
-  const validateStep = () => {
+  const validateStep = async () => {
     console.log(formData);
+
     if (step === 1) {
+      // Validate required fields for Step 1
       if (
         !formData.hospitalName ||
         !formData.address_line_1 ||
@@ -650,23 +681,20 @@ export default function MainPage() {
           "destructive"
         );
         return false;
-      } else if (formData.contact_number.length != 10) {
-        if (formData.contact_number.length < 10) {
-          showToast(
-            "Contact Number Incorrect",
-            "The contact number entered is smaller than 10.",
-            "destructive"
-          );
-          return false;
-        } else {
-          showToast(
-            "Contact Number Incorrect",
-            "The contact number entered is greater than 10.",
-            "destructive"
-          );
-          return false;
-        }
-      } else if (formData.pincode.length != 6) {
+      }
+
+      // Validate contact number length
+      if (formData.contact_number.length !== 10) {
+        const message =
+          formData.contact_number.length < 10
+            ? "The contact number entered is smaller than 10."
+            : "The contact number entered is greater than 10.";
+        showToast("Contact Number Incorrect", message, "destructive");
+        return false;
+      }
+
+      // Validate pincode length
+      if (formData.pincode.length !== 6) {
         showToast(
           "Pincode Incorrect",
           "The pincode should be of length 6.",
@@ -674,8 +702,47 @@ export default function MainPage() {
         );
         return false;
       }
+
+      // Check for existing hospital using the hook
+      const existingHospital = await checkExistingHospital(
+        formData.hospitalName,
+        formData.address_line_1,
+        formData.contact_number
+      );
+
+      if (hospitalError) {
+        showToast(
+          "Error Validating Hospital",
+          "An error occurred while checking for duplicate hospitals. Please try again later.",
+          "destructive"
+        );
+        return false;
+      }
+
+      if (
+        existingHospital &&
+        existingHospital.hospitalName === formData.hospitalName &&
+        existingHospital.address_line_1 === formData.address_line_1
+      ) {
+        showToast(
+          "Duplicate Hospital Found",
+          "A hospital with the same name and address already exists. Please provide a unique name or address.",
+          "destructive"
+        );
+        return false;
+      }
     } else if (step === 2) {
-      if (formData.departments.length === 0) {
+      // Validate departments for Step 2
+      if (
+        newDepartment.department &&
+        newDepartment.hod_email &&
+        newDepartment.hod_name
+      ) {
+        addDepartment();
+      }
+
+      // Now validate the departments
+      if (!formData.departments || formData.departments.length === 0) {
         showToast(
           "No Departments Added",
           "Please add at least one department.",
@@ -683,7 +750,75 @@ export default function MainPage() {
         );
         return false;
       }
+
+      if (
+        !(
+          newDepartment.department &&
+          newDepartment.hod_email &&
+          newDepartment.hod_name
+        ) &&
+        !(
+          !newDepartment.department &&
+          !newDepartment.hod_email &&
+          !newDepartment.hod_name
+        )
+      ) {
+        showToast(
+          "Incomplete Department Information",
+          "Please fill in all department fields or clear the fields if you do not want to add a department.",
+          "destructive"
+        );
+        return false;
+      }
+      const departmentNames = formData.departments.map((dept) =>
+        dept.department.trim().toLowerCase()
+      );
+
+      const uniqueDepartments = new Set(departmentNames);
+
+      if (uniqueDepartments.size !== departmentNames.length) {
+        showToast(
+          "Duplicate Departments",
+          "You have entered duplicate departments. Please ensure each department is unique.",
+          "destructive"
+        );
+        return false;
+      }
+
+      const existingDepartments = await checkExistingDepartments(
+        formData.departments.map((dept) => dept.hod_email)
+      );
+
+      if (deptError) {
+        showToast(
+          "Error Validating Departments",
+          "An error occurred while checking for duplicate departments. Please try again later.",
+          "destructive"
+        );
+        return false;
+      }
+
+      const conflictingDepartments = formData.departments
+        .filter((dept) => {
+          // Check if the HOD email exists in existingDepartments
+          return existingDepartments.some(
+            (existingDept: Department) =>
+              existingDept.hod_email === dept.hod_email
+          );
+        })
+        .map((dept) => dept.department); // Get the names of departments with conflicts
+
+      if (conflictingDepartments.length > 0) {
+        const conflictingDepartmentStr = conflictingDepartments.join(", ");
+        showToast(
+          "Duplicate HOD Email Found",
+          `The following departments have HOD emails that are already associated with existing departments: ${conflictingDepartmentStr}. Please provide unique HOD emails.`,
+          "destructive"
+        );
+        return false;
+      }
     } else if (step === 3) {
+      // Validate admin information for Step 3
       if (
         !formData.admin_name ||
         !formData.admin_email ||
@@ -697,6 +832,8 @@ export default function MainPage() {
         );
         return false;
       }
+
+      // Validate password match
       if (formData.password !== formData.confirmPassword) {
         showToast(
           "Password Mismatch",
@@ -705,18 +842,35 @@ export default function MainPage() {
         );
         return false;
       }
+      await checkAdmin(formData.admin_email);
+
+      if (adminFound) {
+        showToast(
+          "Email Already Exists",
+          "The admin email is already associated with an existing account.",
+          "destructive"
+        );
+        return false;
+      }
     }
+
     return true;
   };
 
-  const handleNext = () => {
-    if (validateStep()) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setStep((prev) => prev + 1);
-        setIsLoading(false);
-        showToast("Step Completed", "Moving to the next step.", "default");
-      }, 500);
+  const handleNext = async () => {
+    setIsLoading(true);
+    try {
+      if (await validateStep()) {
+        setTimeout(() => {
+          setStep((prev) => prev + 1);
+          setIsLoading(false);
+          showToast("Step Completed", "Moving to the next step.", "default");
+        }, 500);
+      }
+    } catch (err: any) {
+      showToast("An Unknown error occured", "", "destructive");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -754,7 +908,7 @@ export default function MainPage() {
         </CardHeader>
         <CardContent className="p-6">
           {step < 5 ? <StepProgress currentStep={step} /> : null}
-          <form onSubmit={handleSubmit}>
+          <div onSubmit={handleSubmit}>
             <div className="space-y-6">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -772,7 +926,7 @@ export default function MainPage() {
                 </motion.div>
               </AnimatePresence>
             </div>
-          </form>
+          </div>
         </CardContent>
         {step < 5 && (
           <CardFooter className={getCardFooterClassName(step)}>
@@ -789,11 +943,11 @@ export default function MainPage() {
             <div className="flex-grow"></div>
             {step < 4 ? (
               <Button onClick={handleNext} disabled={isLoading}>
-                {isLoading ? "Processing..." : "Next"}
+                {isLoading || isFormLoading ? <LoadingComponents /> : "Next"}
               </Button>
             ) : (
               <Button type="submit" onClick={handleSubmit} disabled={isLoading}>
-                {isLoading ? "Submitting..." : "Submit"}
+                {isLoading || isFormLoading ? <LoadingComponents /> : "Submit"}
               </Button>
             )}
           </CardFooter>
