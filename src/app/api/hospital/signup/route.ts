@@ -4,7 +4,7 @@ import { formSchema, FormData } from "@/lib/zodSchema/formSchema";
 import prisma from "@/config/prisma.config";
 import { z } from "zod";
 
-export default async function checkExistingHospital(
+async function checkExistingHospital(
   hospitalName: string,
   addressLine1: string,
   contact_number: string
