@@ -1,6 +1,6 @@
 import { getServerSideProps } from "@/lib/getServerSideProps";
-import MainPage from "./MainPage";
 import { redirect } from "next/navigation";
+import MainPage from "./MainPage";
 
 const page = async () => {
   const session = await getServerSideProps();
