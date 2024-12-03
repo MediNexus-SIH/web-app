@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import LoadingComponents from "@/components/LoadingComponents";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -182,7 +182,10 @@ export default function Component() {
         <Button
           variant="outline"
           onClick={() => {
-            redirect("/auth/signin");
+            setStep("signin"); // Reset state to "signin"
+            setEmail(""); // Clear email input
+            setPassword(""); // Clear password input
+            setOtpValues(["", "", "", "", "", ""]); // Clear OTP input if necessary
           }}
           className="text-white"
         >
@@ -191,6 +194,7 @@ export default function Component() {
       </motion.p>
     </motion.div>
   );
+
   const renderConfirmation = () => (
     <motion.div
       className="flex flex-col items-center justify-center h-full"
@@ -294,9 +298,7 @@ export default function Component() {
                   )}
                   {step === "otp" && (
                     <div className="space-y-2">
-                      <Label htmlFor="otp">
-                        Enter OTP
-                      </Label>
+                      <Label htmlFor="otp">Enter OTP</Label>
                       <div className="flex justify-between">
                         {otpValues.map((value, index) => (
                           <Input
