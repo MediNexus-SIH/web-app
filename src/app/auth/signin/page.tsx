@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import LoadingComponents from "@/components/LoadingComponents";
 import { toast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+
 export default function Component() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
@@ -41,16 +42,11 @@ export default function Component() {
   const router = useRouter();
   const { data: session, status } = useSession();
 
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
   useEffect(() => {
     let redirectTimer: NodeJS.Timeout;
 
     const handleRedirection = async () => {
       if (status === "authenticated" && session) {
-        setIsRedirecting(true);
-
-        // Add a slight delay to ensure smooth transition
         redirectTimer = setTimeout(() => {
           router.push("/dashboard");
         }, 500); // Adjust delay as needed
@@ -64,7 +60,6 @@ export default function Component() {
     };
   }, [session, status, router]);
 
-  
   useEffect(() => {
     if (step === "otp") {
       otpRefs.current[0]?.focus();
@@ -209,7 +204,6 @@ export default function Component() {
       </motion.p>
     </motion.div>
   );
-
   const renderConfirmation = () => (
     <motion.div
       className="flex flex-col items-center justify-center h-full"
@@ -239,19 +233,13 @@ export default function Component() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        {isRedirecting
-          ? "Redirecting to dashboard..."
-          : "Authentication complete"}
+        Redirecting to dashboard...
       </motion.p>
     </motion.div>
   );
 
   return (
-    <div
-      className={`bg-muted/40 ${
-        isRedirecting ? "opacity-50 pointer-events-none" : ""
-      }`}
-    >
+    <div className={`bg-muted/40 `}>
       <div className="items-end flex flex-col space-y-2 p-5">
         {step === "signin" && (
           <>
