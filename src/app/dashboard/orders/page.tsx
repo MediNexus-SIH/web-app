@@ -200,8 +200,6 @@ const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
         console.error("Item not found");
         return;
       }
-
-      console.log("hulel form data", formData);
       // Construct submissionData with all necessary fields
       const submissionData = {
         id: "generated-id", // Generate or assign an ID
@@ -231,7 +229,6 @@ const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
           hospitalName: "Sample Hospital", // Replace with actual hospital info
         },
       };
-      console.log("Submission data:", submissionData);
       try {
         await createOrder(submissionData);
 

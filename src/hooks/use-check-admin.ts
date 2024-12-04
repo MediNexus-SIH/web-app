@@ -4,21 +4,18 @@ interface UseCheckAdminEmailResponse {
   checkAdmin: (email: string) => Promise<void>;
   isLoading: boolean;
   error: string | null;
-  adminFound: boolean | null;
 }
 
-const useCheckAdmin = (): UseCheckAdminEmailResponse => {
+const useCheckAdmin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [adminFound, setAdminFound] = useState<boolean | null>(null);
 
-  const checkAdmin = async (email: string) => {
+  const checkAdmin = async (email: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-    setAdminFound(null);
 
     try {
-      const response = await fetch("/api/hospital/check-admin-email", {
+      const response = await fetch("/api/hospital/check-admin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,16 +27,14 @@ const useCheckAdmin = (): UseCheckAdminEmailResponse => {
 
       if (!response.ok) {
         setError(data.error || "Something went wrong. Please try again.");
-      } else {
-        if (data.existingAdmin) {
-          setAdminFound(true); // Admin email found
-        } else {
-          setAdminFound(false); // No admin found with this email
-        }
+        return false;
       }
+
+      return data.existingAdmin || false; // Return true if admin exists, false otherwise
     } catch (err) {
       console.error("Error checking admin email:", err);
       setError("An error occurred while checking the email.");
+      return false;
     } finally {
       setIsLoading(false);
     }
@@ -49,7 +44,6 @@ const useCheckAdmin = (): UseCheckAdminEmailResponse => {
     checkAdmin,
     isLoading,
     error,
-    adminFound,
   };
 };
 

@@ -91,7 +91,7 @@ export default function MainPage() {
   const { checkExistingDepartments, error: deptError } =
     useCheckExistingDepartments();
 
-  const { checkAdmin, error: adminError, adminFound } = useCheckAdmin();
+  const { checkAdmin, error: adminError, } = useCheckAdmin();
 
   const [newDepartment, setNewDepartment] = useState<Department>({
     department: "",
@@ -167,9 +167,6 @@ export default function MainPage() {
   };
 
   const addDepartment = (e?: React.MouseEvent) => {
-    console.log("Current newDepartment:", newDepartment);
-    console.log("Current formData:", formData);
-
     if (e != null) {
       e.preventDefault();
     }
@@ -188,8 +185,6 @@ export default function MainPage() {
             departments: [...prev.departments, newDepartment],
           };
           setNewDepartment({ department: "", hod_name: "", hod_email: "" });
-
-          console.log("After setting data", formData);
 
           setSelectedDepartment("");
 
@@ -670,7 +665,6 @@ export default function MainPage() {
   StepProgress.displayName = "StepProgress";
 
   const validateStep = async () => {
-    console.log(formData);
 
     if (step === 1) {
       // Validate required fields for Step 1
@@ -739,32 +733,43 @@ export default function MainPage() {
         return false;
       }
     } else if (step === 2) {
-      // Validate departments for Step 2
-      if (
+      // Validate required fields for new department
+      const isNewDepartmentValid =
         newDepartment.department &&
-        newDepartment.hod_email &&
-        newDepartment.hod_name
+        newDepartment.hod_name &&
+        newDepartment.hod_email;
+
+      let updatedDepartments = [...formData.departments]; // Use a local variable for updated departments
+
+      if (isNewDepartmentValid) {
+        // Add the new department to the local variable
+        updatedDepartments.push(newDepartment);
+
+        // Update the state
+        setFormData((prev) => ({
+          ...prev,
+          departments: updatedDepartments,
+        }));
+
+        // Reset the newDepartment and selectedDepartment states
+        setNewDepartment({ department: "", hod_name: "", hod_email: "" });
+        setSelectedDepartment("");
+      } else if (
+        newDepartment.department ||
+        newDepartment.hod_name ||
+        newDepartment.hod_email
       ) {
-        await new Promise<void>((resolve) => {
-          setFormData((prev) => {
-            const newState = {
-              ...prev,
-              departments: [...prev.departments, newDepartment],
-            };
-            setNewDepartment({ department: "", hod_name: "", hod_email: "" });
-
-            console.log("After setting data", formData);
-
-            setSelectedDepartment("");
-
-            resolve();
-            return newState;
-          });
-        });
+        // Incomplete department fields
+        showToast(
+          "Incomplete Department Information",
+          "Please fill in all department fields or clear the fields if you do not want to add a department.",
+          "destructive"
+        );
+        return false;
       }
 
-      // Now validate the departments
-      if (!formData.departments || formData.departments.length === 0) {
+      // Validate that at least one department exists using the local variable
+      if (updatedDepartments.length === 0) {
         showToast(
           "No Departments Added",
           "Please add at least one department.",
@@ -773,29 +778,10 @@ export default function MainPage() {
         return false;
       }
 
-      if (
-        !(
-          newDepartment.department &&
-          newDepartment.hod_email &&
-          newDepartment.hod_name
-        ) &&
-        !(
-          !newDepartment.department &&
-          !newDepartment.hod_email &&
-          !newDepartment.hod_name
-        )
-      ) {
-        showToast(
-          "Incomplete Department Information",
-          "Please fill in all department fields or clear the fields if you do not want to add a department.",
-          "destructive"
-        );
-        return false;
-      }
-      const departmentNames = formData.departments.map((dept) =>
+      // Check for duplicate department names
+      const departmentNames = updatedDepartments.map((dept) =>
         dept.department.trim().toLowerCase()
       );
-
       const uniqueDepartments = new Set(departmentNames);
 
       if (uniqueDepartments.size !== departmentNames.length) {
@@ -807,11 +793,11 @@ export default function MainPage() {
         return false;
       }
 
-      const existingDepartments = await checkExistingDepartments(
-        formData.departments.map((dept) => dept.hod_email)
-      );
+      // Check for duplicate HOD emails with existing departments
+      const hodEmails = updatedDepartments.map((dept) => dept.hod_email);
+      const existingDepartments = await checkExistingDepartments(hodEmails);
 
-      if (deptError) {
+      if (!existingDepartments) {
         showToast(
           "Error Validating Departments",
           "An error occurred while checking for duplicate departments. Please try again later.",
@@ -820,25 +806,28 @@ export default function MainPage() {
         return false;
       }
 
-      const conflictingDepartments = formData.departments
-        .filter((dept) => {
-          // Check if the HOD email exists in existingDepartments
-          return existingDepartments.some(
+      const conflictingDepartments = updatedDepartments
+        .filter((dept) =>
+          existingDepartments.some(
             (existingDept: Department) =>
               existingDept.hod_email === dept.hod_email
-          );
-        })
-        .map((dept) => dept.department); // Get the names of departments with conflicts
+          )
+        )
+        .map((dept) => dept.department);
 
       if (conflictingDepartments.length > 0) {
-        const conflictingDepartmentStr = conflictingDepartments.join(", ");
         showToast(
           "Duplicate HOD Email Found",
-          `The following departments have HOD emails that are already associated with existing departments: ${conflictingDepartmentStr}. Please provide unique HOD emails.`,
+          `The following departments have HOD emails that are already associated with existing departments: ${conflictingDepartments.join(
+            ", "
+          )}. Please provide unique HOD emails.`,
           "destructive"
         );
         return false;
       }
+
+      // All validations passed
+      return true;
     } else if (step === 3) {
       // Validate admin information for Step 3
       if (
@@ -864,9 +853,8 @@ export default function MainPage() {
         );
         return false;
       }
-      await checkAdmin(formData.admin_email);
-
-      if (adminFound) {
+      const existingAdmin = await checkAdmin(formData.admin_email);
+      if (existingAdmin) {
         showToast(
           "Email Already Exists",
           "The admin email is already associated with an existing account.",

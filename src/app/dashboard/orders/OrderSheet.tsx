@@ -67,7 +67,6 @@ export function OrderSheet({
   // Refresh effect to simulate state updates after payment
   useEffect(() => {
     if (paymentStatus === "Paid") {
-      console.log("Payment completed. State refreshed.");
     }
   }, [paymentStatus]);
 
