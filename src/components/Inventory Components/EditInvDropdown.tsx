@@ -111,7 +111,7 @@ const EditInvDropdown = ({ product }: { product: ProductDetails }) => {
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete {product.name}? This action cannot
-              be undone. Type "delete" to confirm.
+              be undone. Type &quot;delete&quot; to confirm.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
