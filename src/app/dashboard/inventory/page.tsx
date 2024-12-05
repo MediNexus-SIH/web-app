@@ -38,10 +38,7 @@ import useInventory from "@/hooks/use-inventory";
 import LoadingComponents from "@/components/LoadingComponents";
 import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
 import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
-import {
-  HeaderLoadingComponent,
-  InvLoadingComponent,
-} from "@/components/Inventory Components/InvLoadingComponent";
+import { InvLoadingComponent } from "@/components/Inventory Components/InvLoadingComponent";
 import PaginationComponent from "@/components/PaginationComponent";
 
 export default function Component() {
@@ -70,12 +67,12 @@ export default function Component() {
       category: string;
     }>
   >([]);
+
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
 
   const { items, loading, error, addItems, fetchItems } = useInventory();
   const { showToast } = useShowToast();
-
   const totalPages = useMemo(
     () => Math.ceil(items.length / pageSize),
     [items, pageSize]
@@ -162,30 +159,46 @@ export default function Component() {
 
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Test 1", currentItem);
+
+    // Validate the currentItem
     if (
-      !currentItem.item_name ||
-      !currentItem.quantity ||
-      !currentItem.batch_number ||
-      !currentItem.department ||
-      !currentItem.expiry_date ||
-      !currentItem.unit_price ||
-      !currentItem.category ||
-      !currentItem.supplier
+      (!currentItem.item_name ||
+        !currentItem.quantity ||
+        !currentItem.batch_number ||
+        !currentItem.department ||
+        !currentItem.expiry_date ||
+        !currentItem.unit_price ||
+        !currentItem.category ||
+        !currentItem.supplier) &&
+      manualItems.length === 0
     ) {
       showToast(
-        "Incomplete Item Details",
-        "Please provide all required item details before submitting.",
+        "Cannot Submit Items",
+        "Please fill in all required fields for the current item or add at least one item to the list before submitting.",
         "destructive"
       );
       return;
     }
 
-    let itemsToSubmit = manualItems.length > 0 ? manualItems : [currentItem];
+    // Ensure the currentItem is added to the manualItems list if not already
+    let itemsToSubmit = [...manualItems];
+    if (
+      currentItem.item_name &&
+      currentItem.quantity &&
+      currentItem.batch_number &&
+      currentItem.expiry_date &&
+      currentItem.unit_price &&
+      currentItem.department &&
+      currentItem.category &&
+      currentItem.supplier &&
+      !manualItems.includes(currentItem)
+    ) {
+      itemsToSubmit.push(currentItem);
+    }
 
     try {
       await addItems(itemsToSubmit);
-      await fetchItems();
+      await fetchItems(); // Refresh the items list
       showToast(
         "Items Added Successfully",
         "The items have been added to the inventory.",
@@ -200,6 +213,7 @@ export default function Component() {
       );
     }
 
+    // Reset states
     setIsDialogOpen(false);
     setManualItems([]);
     setCurrentItem({

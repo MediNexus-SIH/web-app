@@ -16,6 +16,7 @@ import TableInvRow from "./TableInvRow";
 
 interface ItemInv {
   id?: string;
+  category: string;
   department: string;
   item_name: string;
   batch_number: string;
@@ -53,6 +54,7 @@ export default function InventoryItemsCard({
           <TableHeader>
             <TableRow>
               <TableHead>Item</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead>Department</TableHead>
               <TableHead>Quantity</TableHead>
               <TableHead>Batch Number</TableHead>
@@ -66,6 +68,7 @@ export default function InventoryItemsCard({
               <TableInvRow
                 id={item.id || ""}
                 key={item.id}
+                category={item.category}
                 item={item.item_name}
                 department={item.department}
                 quantity={item.quantity.toString()}

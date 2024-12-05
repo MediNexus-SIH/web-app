@@ -64,7 +64,25 @@ export function OrderSheet({
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
   }>({});
+  const orderStatusColor =
+    status === "SUCCESS"
+      ? "bg-green-500"
+      : status === "PENDING"
+      ? "bg-yellow-500"
+      : "bg-red-500";
 
+  const orderStatusTextColor =
+    status === "SUCCESS"
+      ? "text-green-50"
+      : status === "PENDING"
+      ? "text-yellow-50"
+      : "text-red-50";
+
+  const paymentStatusColor =
+    paymentStatus === "Paid" ? "bg-blue-500" : "bg-orange-700";
+
+  const paymentStatusTextColor =
+    paymentStatus === "Paid" ? "text-blue-50" : "text-orange-50";
   // Refresh effect to simulate state updates after payment
   useEffect(() => {
     if (paymentStatus === "Paid") {
@@ -125,13 +143,8 @@ export function OrderSheet({
               <h3 className="text-lg font-semibold">Order Status</h3>
 
               <Badge
-                variant={
-                  status.toLowerCase() as
-                    | "default"
-                    | "secondary"
-                    | "destructive"
-                }
-                className="capitalize"
+                variant="outline"
+                className={`${orderStatusColor} ${orderStatusTextColor}`}
               >
                 {toSentenceCase(status)}
               </Badge>
@@ -163,10 +176,8 @@ export function OrderSheet({
                     </div>
                     <div>
                       <Badge
-                        variant={
-                          paymentStatus === "Paid" ? "success" : "failure"
-                        }
-                        className="capitalize"
+                        variant="outline"
+                        className={`${paymentStatusColor} ${paymentStatusTextColor}`}
                       >
                         {paymentStatus}
                       </Badge>

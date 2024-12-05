@@ -7,6 +7,7 @@ import EditInvDropdown from "./EditInvDropdown";
 const TableInvRow = ({
   id,
   item,
+  category,
   department,
   quantity,
   batchNumber,
@@ -15,6 +16,7 @@ const TableInvRow = ({
 }: {
   id: string;
   item: string;
+  category: string;
   department: string;
   quantity: string;
   batchNumber: string;
@@ -68,15 +70,17 @@ const TableInvRow = ({
     name: item,
     quantity: localQuantity,
     expiry_date: localExpiration,
-    setLocalQuantity, // Pass setter function for quantity
-    setLocalExpiration, // Pass setter function for expiration
+    setLocalQuantity,
+    setLocalExpiration,
   };
-  console.log("Local Expiry", localExpiration)
-  console.log("Local Quantity", localQuantity);
+
   return (
     <TableRow>
       <TableCell>
         <div className="font-medium">{item}</div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{category}</div>
       </TableCell>
       <TableCell>
         <div className="font-medium">{department}</div>
