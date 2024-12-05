@@ -62,11 +62,15 @@ const OrderTable: React.FC<{ orders: Order[] }> = ({ orders }) => {
           <OrderTableRow
             key={order.id}
             orderId={order.id}
-            order_date={new Date(order.order_date).toLocaleDateString()}
+            order_date={new Date(order.order_date).toLocaleDateString("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })}
             status={order.status}
             paymentStatus={order.paymentStatus ? "Paid" : "Unpaid"}
             hospital={order.hospital.hospitalName}
-            amount={`$${order.total_amount.toFixed(2)}`}
+            amount={`₹${order.total_amount.toFixed(2)}`}
             actions={
               <Button variant="outline" size="icon" className="h-8 w-8">
                 <DotIcon className="h-4 w-4" />
@@ -171,7 +175,7 @@ const NewOrderDialog: React.FC<NewOrderDialogProps> = ({ loading }) => {
     quantity: "",
     expected_delivery_date: "",
   });
-
+  console.log("Hulelelnnjnbvnb",items)
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -316,7 +320,7 @@ export default function OrdersPage() {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
-
+  console.log("Orders LOG",orders)
   // Filtered orders across all items (for search and status)
   const filteredOrders = useMemo(() => {
     if (!orders) return [];

@@ -26,14 +26,17 @@ Font.register({
 const DateContainer = () => {
   return (
     <div className="flex justify-end w-full">
-         <Text
-      // style={{ fontSize: 10, fontFamily: "Roboto", color: "#6C757D" }}
-      style={{ fontSize: 10, color: "#6C757D", justifyContent: "flex-end" }}
-    >
-      {new Date().toLocaleDateString()}
-    </Text>
+      <Text
+        // style={{ fontSize: 10, fontFamily: "Roboto", color: "#6C757D" }}
+        style={{ fontSize: 10, color: "#6C757D", justifyContent: "flex-end" }}
+      >
+        {new Date().toLocaleDateString("en-GB", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })}
+      </Text>
     </div>
-   
   );
 };
 

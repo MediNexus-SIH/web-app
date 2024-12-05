@@ -1,8 +1,11 @@
+"use client";
+import { useState } from "react";
 import { Badge } from "../ui/badge";
 import { TableCell, TableRow } from "../ui/table";
 import EditInvDropdown from "./EditInvDropdown";
 
 const TableInvRow = ({
+  id,
   item,
   department,
   quantity,
@@ -10,6 +13,7 @@ const TableInvRow = ({
   unitPrice,
   expiration,
 }: {
+  id: string;
   item: string;
   department: string;
   quantity: string;
@@ -17,7 +21,11 @@ const TableInvRow = ({
   unitPrice: string;
   expiration: string;
 }) => {
-  const quantityOfItem = parseInt(quantity);
+  // Local state for quantity and expiration
+  const [localQuantity, setLocalQuantity] = useState(quantity);
+  const [localExpiration, setLocalExpiration] = useState(expiration);
+
+  const quantityOfItem = parseInt(localQuantity);
   const quantityColor =
     quantityOfItem > 50
       ? "bg-green-500"
@@ -32,8 +40,8 @@ const TableInvRow = ({
       : "text-red-50";
 
   // Format expiration date
-  const expirationDate = new Date(expiration);
-  const formattedExpiration = expirationDate.toLocaleDateString("en-US", {
+  const expirationDate = new Date(localExpiration);
+  const formattedExpiration = expirationDate.toLocaleDateString("en-GB", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
@@ -55,6 +63,16 @@ const TableInvRow = ({
     expirationTextColor = "text-green-50";
   }
 
+  const product = {
+    id: id,
+    name: item,
+    quantity: localQuantity,
+    expiry_date: localExpiration,
+    setLocalQuantity, // Pass setter function for quantity
+    setLocalExpiration, // Pass setter function for expiration
+  };
+  console.log("Local Expiry", localExpiration)
+  console.log("Local Quantity", localQuantity);
   return (
     <TableRow>
       <TableCell>
@@ -68,25 +86,25 @@ const TableInvRow = ({
           variant="outline"
           className={`${quantityColor} ${quantityTextColor}`}
         >
-          {quantity}
+          {localQuantity}
         </Badge>
       </TableCell>
       <TableCell>
         <div className="font-medium">{batchNumber}</div>
       </TableCell>
       <TableCell>
-        <div className="font-medium">{unitPrice}</div>
+        <div className="font-medium">₹{unitPrice}</div>
       </TableCell>
       <TableCell>
         <Badge
           variant="outline"
           className={`${expirationColor} ${expirationTextColor}`}
         >
-          {formattedExpiration} {/* Display the formatted expiration date */}
+          {formattedExpiration}
         </Badge>
       </TableCell>
       <TableCell>
-        <EditInvDropdown />
+        <EditInvDropdown product={product} />
       </TableCell>
     </TableRow>
   );

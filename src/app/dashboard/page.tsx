@@ -4,7 +4,7 @@ import DashboardInventoryCard from "@/components/Dashboard Cards/DashboardInvent
 import DashboardAlertCard from "@/components/Dashboard Cards/DashboardAlertCard";
 import DashboardOrdersCard from "@/components/Dashboard Cards/DashboardOrderCard";
 import DashboardSupplyChainCard from "@/components/Dashboard Cards/DashboardSupplyChain";
-import useInventory from "@/hooks/useInventory";
+import useInventory from "@/hooks/use-inventory";
 import React, { useEffect, useMemo, useState } from "react";
 import { DashboardLoadingComponent } from "@/components/Dashboard Cards/DashboardLoadingComponent";
 

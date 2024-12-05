@@ -25,6 +25,29 @@ const OrderTableRow: React.FC<TableRowProps> = ({
   actions,
   orderItems,
 }) => {
+  const orderStatusColor =
+    status === "SUCCESS"
+      ? "bg-green-500"
+      : status === "PENDING"
+      ? "bg-yellow-500"
+      : "bg-red-500";
+
+  const orderStatusTextColor =
+    status === "SUCCESS"
+      ? "text-green-50"
+      : status === "PENDING"
+      ? "text-yellow-50"
+      : "text-red-50";
+
+  const paymentStatusColor =
+    paymentStatus === "Paid"
+      ? "bg-blue-500" 
+      : "bg-orange-700"; 
+
+  const paymentStatusTextColor =
+    paymentStatus === "Paid"
+      ? "text-blue-50" 
+      : "text-orange-50"; 
   return (
     <TableRow>
       <TableCell>
@@ -41,18 +64,16 @@ const OrderTableRow: React.FC<TableRowProps> = ({
       <TableCell>{order_date}</TableCell>
       <TableCell>
         <Badge
-          variant={
-            status.toLowerCase() as "default" | "secondary" | "destructive"
-          }
-          className="text-xs"
+          variant="outline"
+          className={`${orderStatusColor} ${orderStatusTextColor}`}
         >
           {toSentenceCase(status)}
         </Badge>
       </TableCell>
       <TableCell>
         <Badge
-          variant={paymentStatus === "Paid" ? "success" : "failure"}
-          className="capitalize"
+          variant="outline"
+          className={`${paymentStatusColor} ${paymentStatusTextColor}`}
         >
           {paymentStatus}
         </Badge>

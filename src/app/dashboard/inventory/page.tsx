@@ -34,7 +34,7 @@ import {
 import { DatePicker } from "@/components/ui/date-picker";
 import { SelectDropdown } from "@/components/SelectDropdown";
 import useDepartments from "@/hooks/useDepartments";
-import useInventory from "@/hooks/useInventory";
+import useInventory from "@/hooks/use-inventory";
 import LoadingComponents from "@/components/LoadingComponents";
 import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
 import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
@@ -49,6 +49,15 @@ export default function Component() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  interface Item {
+    id: string;
+    item_name: string;
+    department: string;
+    quantity: number;
+    batch_number: string;
+    expiry_date: string;
+    unit_price: number;
+  }
   const [manualItems, setManualItems] = useState<
     Array<{
       department: string;
@@ -302,90 +311,6 @@ export default function Component() {
     }).length;
   }, [items, thresholdDate]);
 
-  // const PaginationComponent: React.FC<PaginationProps> = ({
-  //   page,
-  //   totalPages,
-  //   handlePageChange,
-  // }) => {
-  //   // Generate pagination links
-  //   const generatePaginationLinks = () => {
-  //     if (totalPages <= 2) {
-  //       // If total pages <= 3, show all the pages
-  //       return Array.from({ length: totalPages }, (_, index) => index + 1);
-  //     }
-
-  //     // If total pages > 3, show a "..." and the relevant page links
-  //     const pageLinks = [];
-
-  //     if (page === 1) {
-  //       // First page: Show 1, 2, and '...'
-  //       pageLinks.push(1, 2, "...");
-  //     } else if (page === totalPages) {
-  //       // Last page: Show '...', second-to-last, last pages
-  //       pageLinks.push("...", totalPages - 2, totalPages - 1, totalPages);
-  //     } else {
-  //       // Middle pages: Show previous, current, and next page
-  //       pageLinks.push(page - 1, page, page + 1);
-
-  //       // Add "..." if there are pages skipped on the left
-  //       if (page > 2) pageLinks.unshift("...");
-
-  //       // Add "..." if there are pages skipped on the right
-  //       if (page < totalPages - 1) pageLinks.push("...");
-  //     }
-
-  //     // Handle the case where we're close to the end but the logic still needs adjustment
-  //     if (page > totalPages - 3) {
-  //       pageLinks.unshift("...");
-  //       pageLinks.push(totalPages - 2, totalPages - 1, totalPages);
-  //     }
-
-  //     return pageLinks;
-  //   };
-
-  //   const paginationLinks = generatePaginationLinks();
-
-  //   return (
-  //     <Pagination>
-  //       <PaginationContent>
-  //         <PaginationItem>
-  //           <PaginationPrevious
-  //             href="#"
-  //             onClick={() => handlePageChange(page - 1)}
-  //             disabled={page === 1}
-  //           />
-  //         </PaginationItem>
-
-  //         {paginationLinks.map((link, index) => (
-  //           <PaginationItem key={index}>
-  //             {link === "..." ? (
-  //               <PaginationLink href="#" isActive={false}>
-  //                 ...
-  //               </PaginationLink>
-  //             ) : (
-  //               <PaginationLink
-  //                 href="#"
-  //                 isActive={link === page}
-  //                 onClick={() => handlePageChange(parseInt(link))}
-  //               >
-  //                 {link}
-  //               </PaginationLink>
-  //             )}
-  //           </PaginationItem>
-  //         ))}
-
-  //         <PaginationItem>
-  //           <PaginationNext
-  //             href="#"
-  //             onClick={() => handlePageChange(page + 1)}
-  //             disabled={page === totalPages}
-  //           />
-  //         </PaginationItem>
-  //       </PaginationContent>
-  //     </Pagination>
-  //   );
-  // };
-
   return (
     <React.Fragment>
       <Toaster />
@@ -450,29 +375,6 @@ export default function Component() {
                   page={page}
                   totalPages={totalPages}
                 />
-                {/* <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
-                        onClick={() => handlePageChange(page - 1)}
-                        disabled={page === 1}
-                      />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href="#" isActive>
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext
-                        href="#"
-                        onClick={() => handlePageChange(page + 1)}
-                        disabled={page === totalPages}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination> */}
               </div>
             </React.Fragment>
           ) : (
@@ -666,9 +568,14 @@ export default function Component() {
                               </div>
                               <div className="text-sm text-muted-foreground mt-1">
                                 <span className="font-medium">Exp:</span>{" "}
-                                {new Date(
-                                  item.expiry_date
-                                ).toLocaleDateString()}{" "}
+                                {new Date(item.expiry_date).toLocaleDateString(
+                                  "en-GB",
+                                  {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                  }
+                                )}{" "}
                                 |
                                 <span className="font-medium ml-2">Price:</span>{" "}
                                 ${item.unit_price}

@@ -14,19 +14,20 @@ import {
 } from "../ui/table";
 import TableInvRow from "./TableInvRow";
 
-interface Item {
-  item_name: string;
+interface ItemInv {
+  id?: string;
   department: string;
-  quantity: number;
+  item_name: string;
   batch_number: string;
   expiry_date: string;
+  quantity: number;
   unit_price: number;
 }
 export default function InventoryItemsCard({
   items,
   error,
 }: {
-  items: Item[];
+  items: ItemInv[];
   error: any;
 }) {
   if (error) {
@@ -38,7 +39,6 @@ export default function InventoryItemsCard({
       </Card>
     );
   }
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -62,9 +62,10 @@ export default function InventoryItemsCard({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {items.map((item, index) => (
+            {items.map((item) => (
               <TableInvRow
-                key={index + 1}
+                id={item.id || ""}
+                key={item.id}
                 item={item.item_name}
                 department={item.department}
                 quantity={item.quantity.toString()}

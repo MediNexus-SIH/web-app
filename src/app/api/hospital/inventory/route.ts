@@ -161,3 +161,113 @@ export async function GET() {
     );
   }
 }
+
+// PUT method to update inventory item details
+export async function PUT(req: Request) {
+  const sessionResult = await validateSession();
+  if ("error" in sessionResult) {
+    return NextResponse.json(
+      { error: sessionResult.error },
+      { status: sessionResult.status }
+    );
+  }
+
+  const { userId } = sessionResult;
+
+  try {
+    const { id, quantity, expiry_date } = await req.json();
+
+    if (!id || (quantity == null && !expiry_date)) {
+      return NextResponse.json(
+        {
+          error:
+            "Item ID and at least one field to update (quantity or expiry_date) are required.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Verify the item exists and belongs to the user's hospital
+    const item = await prisma.medicalInventory.findFirst({
+      where: { id, hospital_id: userId },
+    });
+
+    if (!item) {
+      return NextResponse.json(
+        { error: "Item not found or access denied." },
+        { status: 404 }
+      );
+    }
+
+    // Update the inventory item
+    const updatedItem = await prisma.medicalInventory.update({
+      where: { id },
+      data: {
+        ...(quantity != null && { quantity }),
+        ...(expiry_date && { expiry_date: new Date(expiry_date) }),
+      },
+    });
+
+    return NextResponse.json(updatedItem, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Unable to update inventory item." },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE method to remove an inventory item
+export async function DELETE(req: Request) {
+  const sessionResult = await validateSession();
+
+  if ("error" in sessionResult) {
+    return NextResponse.json(
+      { error: sessionResult.error },
+      { status: sessionResult.status }
+    );
+  }
+
+  const { userId } = sessionResult;
+
+  try {
+    const url = new URL(req.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Inventory item ID is required." },
+        { status: 400 }
+      );
+    }
+
+    // Verify the item exists and belongs to the user's hospital
+    const item = await prisma.medicalInventory.findFirst({
+      where: { id: id, hospital_id: userId },
+    });
+
+    if (!item) {
+      return NextResponse.json(
+        { error: "Item not found or access denied." },
+        { status: 404 }
+      );
+    }
+
+    // Delete the inventory item
+    await prisma.medicalInventory.delete({
+      where: { id: id },
+    });
+
+    return NextResponse.json(
+      { message: "Item deleted successfully." },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Unable to delete inventory item." },
+      { status: 500 }
+    );
+  }
+}

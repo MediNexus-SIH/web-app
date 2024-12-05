@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import {
   Calendar,
@@ -8,6 +8,7 @@ import {
   MapPin,
   ChevronDown,
   ChevronUp,
+  IndianRupee,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,7 +88,7 @@ export function OrderSheet({
     alert(
       "Payment processing... This is where you'd integrate a payment gateway."
     );
-    setPaymentStatus("Paid"); 
+    setPaymentStatus("Paid");
   };
 
   const handlePopoverOpenChange = (open: boolean, index: number) => {
@@ -201,7 +202,7 @@ export function OrderSheet({
                       >
                         <span>{item.item.item_name}</span>
                         <span className="flex items-center">
-                          {item.quantity} x ${item.unit_price.toFixed(2)}
+                          {item.quantity} x ₹ {item.unit_price.toFixed(2)}
                           {expandedItems[index] ? (
                             <ChevronUp className="ml-2 h-4 w-4" />
                           ) : (
@@ -224,7 +225,13 @@ export function OrderSheet({
                             Supplier: {item.item.supplier}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Unit Price: ${item.item.unit_price}
+                            <div className="flex space-x-2">
+                              <div>Unit Price:</div>
+                              <div className="flex items-center">
+                                <IndianRupee className="h-3 w-3 items-center" />
+                                <div>{item.item.unit_price}</div>
+                              </div>
+                            </div>
                           </p>
                         </div>
                       </div>
