@@ -39,8 +39,7 @@ export default function LocationTrackerInner() {
 
       mapInstanceRef.current = mapInstance;
 
-      const url =
-        "https://order-tracker.chickenkiller.com/";
+      const url = "https://order-server-phi.vercel.app/";
       const socket = io(url);
 
       socket.on("locationUpdate", (location: Location) => {

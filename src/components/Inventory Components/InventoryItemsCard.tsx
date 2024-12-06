@@ -31,6 +31,7 @@ export default function InventoryItemsCard({
       </Card>
     );
   }
+  console.log(items.length,items);
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">

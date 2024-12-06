@@ -9,7 +9,7 @@ import ExpiryCard from "@/components/Inventory Components/ExpiryCard";
 import LowStockCard from "@/components/Inventory Components/LowStockCard";
 import TotalItemsCard from "@/components/Inventory Components/TotalItemsCard";
 import InventoryItemsCard from "@/components/Inventory Components/InventoryItemsCard";
-import { Loader2, ClipboardList, QrCode, X, Plus } from "lucide-react";
+import { Loader2, ClipboardList, QrCode, X, Plus, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -40,33 +40,26 @@ import TotalCostCard from "@/components/Inventory Components/TotalCostCard";
 import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
 import { InvLoadingComponent } from "@/components/Inventory Components/InvLoadingComponent";
 import PaginationComponent from "@/components/PaginationComponent";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   interface Item {
-    id: string;
     item_name: string;
+    supplier: string;
+    category: string;
     department: string;
     quantity: number;
     batch_number: string;
     expiry_date: string;
     unit_price: number;
   }
-  const [manualItems, setManualItems] = useState<
-    Array<{
-      department: string;
-      item_name: string;
-      batch_number: string;
-      expiry_date: string;
-      quantity: number;
-      unit_price: number;
-      supplier: string;
-      category: string;
-    }>
-  >([]);
+
+  const [manualItems, setManualItems] = useState<Item[]>([]);
 
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
@@ -103,9 +96,18 @@ export default function Component() {
     category: "",
   });
 
-  const [qrItems, setQrItems] = useState<
-    Array<{ name: string; quantity: string }>
-  >([]);
+  const [qrItems, setQrItems] = useState<Item[]>([
+    {
+      department: "Emergency",
+      item_name: "Panadol",
+      batch_number: "1234",
+      expiry_date: "2023-12-31",
+      quantity: 100,
+      unit_price: 2.5,
+      supplier: "Pharmco",
+      category: "First Aid",
+    },
+  ]);
 
   const [isScanning, setIsScanning] = useState(false);
 
@@ -127,23 +129,39 @@ export default function Component() {
   }, [fetchItems, refreshTrigger]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
+    let socket: WebSocket;
 
     if (isScanning) {
-      intervalId = setInterval(() => {
-        fetch("https://xyz-backend.com/scanned-items")
-          .then((response) => response.json())
-          .then((data) => {
-            setQrItems((prevItems) => [...prevItems, ...data]);
-          })
-          .catch((error) =>
-            console.error("Error fetching scanned items:", error)
-          );
-      }, 5000);
+      // Establish WebSocket connection
+      socket = new WebSocket("wss://order-tracker.chickenkiller.com/update-qr");
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established.");
+      };
+
+      socket.onmessage = (event) => {
+        try {
+          const newItems: Item[] = JSON.parse(event.data);
+          setQrItems((prevItems) => [...prevItems, ...newItems]);
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+        }
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket connection closed.");
+      };
     }
 
+    // Cleanup function
     return () => {
-      if (intervalId) clearInterval(intervalId);
+      if (socket) {
+        socket.close();
+      }
     };
   }, [isScanning]);
 
@@ -155,6 +173,29 @@ export default function Component() {
       setIsSheetOpen(true);
       setIsScanning(true);
     }
+  };
+
+  const handleQRSubmit = async () => {
+    try {
+      await addItems(qrItems);
+      await fetchItems();
+      showToast(
+        "Items Added Successfully",
+        "The items have been added to the inventory.",
+        "default"
+      );
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (err: any) {
+      showToast(
+        "Error Adding Items",
+        "An error occurred while adding items. Please try again.",
+        "destructive"
+      );
+    }
+    console.log("Submitting items:", qrItems);
+    // Reset the scanned items and close the sheet
+    setQrItems([]);
+    setIsSheetOpen(false);
   };
 
   const handleManualSubmit = async (e: React.FormEvent) => {
@@ -267,6 +308,10 @@ export default function Component() {
     }
   };
 
+  const handleDeleteItem = (index: number) => {
+    setQrItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  };
+
   const handleCancel = () => {
     setIsDialogOpen(false);
     setManualItems([]);
@@ -288,7 +333,7 @@ export default function Component() {
   const removeManualItem = (index: number) => {
     setManualItems((prev) => prev.filter((_, i) => i !== index));
   };
-
+  console.log(paginatedItems)
   const totalPrice = useMemo(() => {
     let totalPrice = 0;
     items.map((value) => {
@@ -641,7 +686,7 @@ export default function Component() {
             if (!open) setIsScanning(false);
           }}
         >
-          <SheetContent>
+          <SheetContent className="w-full sm:max-w-lg">
             <SheetHeader>
               <SheetTitle>Scan QR Code</SheetTitle>
               <SheetDescription>
@@ -649,26 +694,68 @@ export default function Component() {
                 items will appear here.
               </SheetDescription>
             </SheetHeader>
-            <div className="mt-4">
+            <div className="mt-6">
               {isScanning ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Scanning...</span>
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <span className="text-lg font-medium">Scanning...</span>
                 </div>
               ) : (
-                <Button onClick={() => setIsScanning(true)}>
+                <Button onClick={() => setIsScanning(true)} className="w-full">
                   Start Scanning
                 </Button>
               )}
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-6 space-y-4 max-h-[60vh] overflow-y-auto">
               {qrItems.map((item, index) => (
-                <div key={index} className="flex justify-between items-center">
-                  <span>Item Name: {item.name}</span>
-                  <span>Quantity: {item.quantity}</span>
-                </div>
+                <Card key={index} className="bg-secondary">
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-start">
+                      <div className="space-y-1">
+                        <h3 className="font-semibold text-lg">
+                          {item.item_name}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Batch: {item.batch_number}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Expires:{" "}
+                          {new Date(item.expiry_date).toLocaleDateString(
+                            "en-GB",
+                            {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                            }
+                          )}
+                        </p>
+                        <p className="text-sm">Quantity: {item.quantity}</p>
+                        <p className="text-sm">
+                          Price: ${item.unit_price.toFixed(2)}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {item.supplier}
+                        </p>
+                      </div>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => handleDeleteItem(index)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
+            {qrItems.length > 0 && (
+              <div className="mt-6">
+                <Button onClick={handleQRSubmit} className="w-full">
+                  Submit All Items
+                </Button>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </div>
