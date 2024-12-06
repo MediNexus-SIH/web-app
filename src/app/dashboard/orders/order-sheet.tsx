@@ -83,7 +83,6 @@ const OrderSheet = ({ loading }: { loading: boolean }) => {
   }, []);
 
   const handleAddToCart = useCallback(async () => {
-    console.log("Form Data", formData);
     const selectedItem = items.find(
       (item) =>
         item.item_name === formData.item_name &&
@@ -108,7 +107,6 @@ const OrderSheet = ({ loading }: { loading: boolean }) => {
     }
   }, [formData, items, dropdownDepartments, addToCart]);
 
-  console.log("Depart", dropdownDepartments);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>

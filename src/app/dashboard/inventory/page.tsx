@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useShowToast } from "@/hooks/useShowToast";
+import io from "socket.io-client";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
 import BreadCrumb from "@/components/BreadCrumb";
@@ -41,6 +42,7 @@ import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
 import { InvLoadingComponent } from "@/components/Inventory Components/InvLoadingComponent";
 import PaginationComponent from "@/components/PaginationComponent";
 import { Card, CardContent } from "@/components/ui/card";
+import { json } from "stream/consumers";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -128,42 +130,104 @@ export default function Component() {
     fetchItems();
   }, [fetchItems, refreshTrigger]);
 
-  useEffect(() => {
-    let socket: WebSocket;
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch(
+  //         "https://order-server-phi.vercel.app/last-qr"
+  //       ); // Replace with your actual API endpoint
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       const data = await response.json();
+  //       console.log(data);
+  //       // setQrData(data); // Update the state with fetched data
+  //     } catch (error) {
+  //       // setError(error.message); // Handle errors
+  //     }
+  //   };
+  //   fetchData();
+  //   const intervalId = setInterval(() => {
+  //     fetchData();
+  //   }, 5000);
+  //   // Cleanup on component unmount
+  //   return () => {
+  //     clearInterval(intervalId); // Stop the interval when the component is unmounted
+  //   };
+  // }, []);
 
-    if (isScanning) {
-      // Establish WebSocket connection
-      socket = new WebSocket("wss://order-tracker.chickenkiller.com/update-qr");
+  function convertToJSON(data: string) {
+    const cleanedData = data
+      .replace(/\s*([:,])\s*/g, "$1") 
+      .replace(/\s+/g, " ") 
+      .replace(/(\w+):/g, '"$1":') 
+      .replace(/,(\s*)}/g, "}"); 
 
-      socket.onopen = () => {
-        console.log("WebSocket connection established.");
-      };
-
-      socket.onmessage = (event) => {
-        try {
-          const newItems: Item[] = JSON.parse(event.data);
-          setQrItems((prevItems) => [...prevItems, ...newItems]);
-        } catch (error) {
-          console.error("Error parsing WebSocket message:", error);
-        }
-      };
-
-      socket.onerror = (error) => {
-        console.error("WebSocket error:", error);
-      };
-
-      socket.onclose = () => {
-        console.log("WebSocket connection closed.");
-      };
+    
+    try {
+      const jsonData = JSON.parse(cleanedData);
+      return jsonData;
+    } catch (e) {
+      console.error("Invalid JSON:", e);
+      return null;
     }
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://order-server-phi.vercel.app/last-qr"
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
 
-    // Cleanup function
-    return () => {
-      if (socket) {
-        socket.close();
+        const result = await response.json();
+        console.log("Received data:", result);
+
+        if (result?.data) {
+          const jsonResult = convertToJSON(result.data);
+
+          const parsedData = jsonResult || {};
+
+          const mappedData = [
+            {
+              department: parsedData.department || "Unknown",
+              item_name: parsedData.item_name || "Unknown",
+              batch_number: parsedData.batch_number || "Unknown",
+              expiry_date: parsedData.expiry_date || "Unknown",
+              quantity: parsedData.quantity || 0,
+              unit_price: parsedData.unit_price || 0,
+              supplier: parsedData.supplier || "Unknown",
+              category: parsedData.category || "Unknown",
+            },
+          ];
+
+          if (
+            !qrItems.some(
+              (item) => item.batch_number === mappedData[0].batch_number
+            )
+          ) {
+            setQrItems((prevItems) => [...prevItems, ...mappedData]);
+          }
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
       }
     };
-  }, [isScanning]);
+
+    fetchData();
+
+    const intervalId = setInterval(fetchData, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [qrItems]);
+
+  useEffect(() => {
+    console.log("Updated qrItems:", qrItems);
+  }, [qrItems]);
 
   const handleAddItem = (method: "manual" | "qr") => {
     setAddMethod(method);
@@ -333,7 +397,6 @@ export default function Component() {
   const removeManualItem = (index: number) => {
     setManualItems((prev) => prev.filter((_, i) => i !== index));
   };
-  console.log(paginatedItems)
   const totalPrice = useMemo(() => {
     let totalPrice = 0;
     items.map((value) => {
@@ -717,6 +780,9 @@ export default function Component() {
                         </h3>
                         <p className="text-sm text-muted-foreground">
                           Batch: {item.batch_number}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Departmen: {item.department}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           Expires:{" "}

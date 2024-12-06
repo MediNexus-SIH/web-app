@@ -8,7 +8,7 @@ export async function PUT(
   try {
     const { id } = params;
     const { quantity } = await request.json();
-    console.log("id", id);
+
     // Validate input
     if (!id || quantity === undefined || quantity < 0) {
       return NextResponse.json(

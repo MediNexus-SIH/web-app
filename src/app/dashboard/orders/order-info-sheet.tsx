@@ -115,7 +115,6 @@ const OrderInfoSheet = ({
   };
 
   const displayId = orderId.length > 10 ? `${orderId.slice(0, 7)}...` : orderId;
-  console.log("OrderInfoSheet -> orderItems", orderItems);
   return (
     <Sheet>
       <SheetTrigger asChild>
