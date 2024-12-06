@@ -57,8 +57,8 @@ export default function InventoryItemsCard({
           <TableBody>
             {items.map((item) => (
               <TableInvRow
-                id={item.id || ""}
-                key={item.id}
+                id={item.item_id || ""}
+                key={item.item_id}
                 category={item.category}
                 item={item.item_name}
                 department={item.department}
