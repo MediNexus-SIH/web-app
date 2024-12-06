@@ -244,8 +244,6 @@ export default function Component() {
   };
 
   const addManualItem = () => {
-    console.log("hulalla");
-    console.log("current item ", currentItem);
     if (
       currentItem.item_name &&
       currentItem.quantity &&
@@ -254,7 +252,6 @@ export default function Component() {
       currentItem.unit_price &&
       currentItem.department
     ) {
-      console.log("Enteredfghnhnjhn");
       setManualItems((prev) => [...prev, currentItem]);
       setCurrentItem({
         item_name: "",

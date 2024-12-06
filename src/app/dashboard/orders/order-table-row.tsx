@@ -1,7 +1,7 @@
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import OrderSheet from "./OrderSheet";
+import OrderInfoSheet from "./order-info-sheet";
 import { OrderItem } from "@/lib/interfaces";
 import toSentenceCase from "@/hooks/toSentenceCase";
 interface TableRowProps {
@@ -9,7 +9,6 @@ interface TableRowProps {
   order_date: string;
   status: string;
   paymentStatus: string;
-  hospital: string;
   amount: string;
   actions: React.ReactNode;
   orderItems: OrderItem[];
@@ -20,7 +19,6 @@ const OrderTableRow: React.FC<TableRowProps> = ({
   order_date,
   status,
   paymentStatus,
-  hospital,
   amount,
   actions,
   orderItems,
@@ -51,12 +49,11 @@ const OrderTableRow: React.FC<TableRowProps> = ({
   return (
     <TableRow>
       <TableCell>
-        <OrderSheet
+        <OrderInfoSheet
           orderId={orderId}
           date={order_date}
           status={status}
           paymentStatus={paymentStatus}
-          hospital={hospital}
           amount={amount}
           orderItems={orderItems}
         />
@@ -78,7 +75,6 @@ const OrderTableRow: React.FC<TableRowProps> = ({
           {paymentStatus}
         </Badge>
       </TableCell>
-      <TableCell>{hospital}</TableCell>
       <TableCell>{amount}</TableCell>
       <TableCell>{actions}</TableCell>
     </TableRow>

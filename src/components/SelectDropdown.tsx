@@ -13,14 +13,16 @@ export interface Option {
 }
 
 interface SelectDropdownProps {
-  value?: string,
-  name?:string
+  className?: string;
+  value?: string;
+  name?: string;
   options: Option[];
   onValueChange: (value: string) => void;
-  placeholder: string;
+  placeholder?: string;
 }
 
 export const SelectDropdown: React.FC<SelectDropdownProps> = ({
+  className,
   value,
   name,
   options,
@@ -29,8 +31,8 @@ export const SelectDropdown: React.FC<SelectDropdownProps> = ({
 }) => {
   return (
     <Select value={value} name={name} onValueChange={onValueChange}>
-      <SelectTrigger>
-        <SelectValue placeholder={value === "" ? placeholder : undefined} />{" "}
+      <SelectTrigger className={`${className}`}>
+        <SelectValue placeholder={value === "" ? undefined : placeholder} />{" "}
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (

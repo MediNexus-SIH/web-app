@@ -1,15 +1,6 @@
 "use client";
+import { Item } from "@/lib/interfaces";
 import { useCallback, useState } from "react";
-
-interface Item {
-  id?: string;
-  department: string;
-  item_name: string;
-  batch_number: string;
-  expiry_date: string;
-  quantity: number;
-  unit_price: number;
-}
 
 const useInventory = () => {
   const [items, setItems] = useState<Item[]>([]);
@@ -28,7 +19,7 @@ const useInventory = () => {
 
       // Sort items before setting state
       const sortedItems = data.sort((a: Item, b: Item) =>
-        a.id?.localeCompare(b.id || "")
+        a.item_id?.localeCompare(b.item_id || "")
       );
       setItems(sortedItems);
     } catch (err: any) {
@@ -58,7 +49,7 @@ const useInventory = () => {
       setItems((prevItems) => {
         const updatedItems = [...prevItems, ...newItems];
         return updatedItems.sort(
-          (a, b) => a.id?.localeCompare(b.id || "") || 0
+          (a, b) => a.item_id?.localeCompare(b.item_id || "") || 0
         );
       });
     } catch (err: any) {
@@ -87,7 +78,7 @@ const useInventory = () => {
       // Update item locally
       setItems((prevItems) =>
         prevItems.map((item) =>
-          item.id === id ? { ...item, ...updates } : item
+          item.item_id === id ? { ...item, ...updates } : item
         )
       );
     } catch (err: any) {
@@ -110,7 +101,7 @@ const useInventory = () => {
       }
 
       // Remove the item locally
-      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      setItems((prevItems) => prevItems.filter((item) => item.item_id !== id));
     } catch (err: any) {
       setError(err.message);
     } finally {

@@ -31,8 +31,9 @@ model Hospital {
   orders                      Order[]                     @relation("HospitalOrders")
   notifications               Notification[]              @relation("HospitalNotifications")
   systemChecks                SystemCheck[]               @relation("HospitalSystemChecks")
- }
-
+ 
+  Cart                        Cart[]                      @relation("HospitalCart")
+}
 
 model Departments {
   id                          String                      @id @default(uuid())
@@ -40,9 +41,12 @@ model Departments {
   hod_name                    String
   hod_email                   String                      @unique
   department                  String
+
   hospital                    Hospital                    @relation("HospitalDepartments", fields: [hospital_id], references: [id])
+  cartItems                   CartItem[]                  // Relation to items in carts
+  orderItems                  OrderItem[]                 @relation("OrderItemDepartment")
   medicalInventory            MedicalInventory[]          @relation("DepartmentMedicalInventory")
-  notifications               Notification[]              @relation("DepartmentNotifications") 
+  notifications               Notification[]              @relation("DepartmentNotifications")
 }
 
 model MedicalInventory {
@@ -61,6 +65,8 @@ model MedicalInventory {
   stockReplenishmentLogs      StockReplenishmentLog[]     @relation("MedicalInventoryStockReplenishmentLogs")
   orderItems                  OrderItem[]                 @relation("OrderItemInventory")
   notifications               Notification[]              @relation("InventoryNotifications")
+
+  CartItem CartItem[]
 }
 
 model Order {
@@ -82,11 +88,41 @@ model OrderItem {
   item_id                     String
   quantity                    Int
   unit_price                  Float
+  department_id               String
   medical_inventory_id        String?
+  orderPlaced                 Boolean                     @default(false)
 
+  
   order                       Order                       @relation("OrderItems", fields: [order_id], references: [id])
-  item                        Item                        @relation(fields: [item_id], references: [item_id])
+  department                  Departments                 @relation("OrderItemDepartment", fields: [department_id], references: [id])
+  item                        Item                        @relation("Item/OrderItem",fields: [item_id], references: [item_id])
   medicalInventory            MedicalInventory?           @relation("OrderItemInventory", fields: [medical_inventory_id], references: [id])
+}
+
+model Cart {
+  id                 String            @id @default(uuid())
+  hospital_id        String            // Reference to the user owning the cart
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
+
+  cartItems          CartItem[]        // Relation to items in the cart
+
+  hospital           Hospital           @relation("HospitalCart", fields: [hospital_id], references: [id])
+}
+
+model CartItem {
+  id                 String            @id @default(uuid())
+  cart_id            String
+  item_id            String
+  quantity           Int               @default(1)
+  unit_price         Float             // Price at the time of adding to the cart
+  department_id      String
+  medical_inventory_id String?
+
+  cart               Cart              @relation(fields: [cart_id], references: [id])
+  item               Item              @relation(fields: [item_id], references: [item_id])
+  department         Departments       @relation(fields: [department_id], references: [id])
+  medicalInventory   MedicalInventory? @relation(fields: [medical_inventory_id], references: [id])
 }
 
 model StockReplenishmentLog {
@@ -109,8 +145,9 @@ model Item {
   category                    String
 
   medicalInventories          MedicalInventory[]
-  orderItems                  OrderItem[]
+  orderItems                  OrderItem[]                 @relation("Item/OrderItem")
   @@unique([item_name, supplier], name: "item_name_supplier")
+  CartItem CartItem[]
 }
 
 model ResourceSharing {
@@ -215,6 +252,7 @@ model SystemCheck {
   @@index([type, created_at])
   @@index([hospital_id, type, created_at])
 }
+
 enum NotificationType {
   ORDER_STATUS
   LOW_STOCK
@@ -228,7 +266,6 @@ enum NotificationStatus {
   UNREAD
   READ
 }
-
 
 enum OrderStatus {
   PENDING

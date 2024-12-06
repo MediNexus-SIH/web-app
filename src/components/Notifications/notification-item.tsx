@@ -32,7 +32,11 @@ export function NotificationItem({
               {notification.message}
             </p>
             <p className="text-sm text-muted-foreground">
-              {new Date(notification.created_at).toLocaleString()}
+              {new Date(notification.created_at).toLocaleDateString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}
             </p>
             <button
               className="text-sm text-primary underline-offset-4 hover:underline w-fit"

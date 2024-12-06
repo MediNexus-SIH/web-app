@@ -34,30 +34,28 @@ import dynamic from "next/dynamic";
 import { OrderItem } from "@/lib/interfaces";
 import toSentenceCase from "@/hooks/toSentenceCase";
 
-interface OrderSheetProps {
+interface OrderInfoSheetProps {
   orderId: string;
   date: string;
   status: string;
   paymentStatus: string;
-  hospital: string;
   amount: string;
   orderItems: OrderItem[];
 }
 
-const LocationTracker = dynamic(() => import("./LocationTracker"), {
+const LocationTracker = dynamic(() => import("./location-tracker"), {
   ssr: false,
   loading: () => <p>Loading map...</p>,
 });
 
-export function OrderSheet({
+const OrderInfoSheet = ({
   orderId,
   date,
   status,
   paymentStatus: initialPaymentStatus,
-  hospital,
   amount,
   orderItems,
-}: OrderSheetProps) {
+}: OrderInfoSheetProps) => {
   const [paymentStatus, setPaymentStatus] = useState(initialPaymentStatus);
   const [isTracking, setIsTracking] = useState(false);
   const [trackingProgress, setTrackingProgress] = useState(0);
@@ -117,7 +115,7 @@ export function OrderSheet({
   };
 
   const displayId = orderId.length > 10 ? `${orderId.slice(0, 7)}...` : orderId;
-
+  console.log("OrderInfoSheet -> orderItems", orderItems);
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -158,14 +156,6 @@ export function OrderSheet({
                   <p className="text-sm text-muted-foreground">{date}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4">
-                <Package className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm font-medium">Hospital</p>
-                  <p className="text-sm text-muted-foreground">{hospital}</p>
-                </div>
-              </div>
-
               <div className="flex items-center w-full space-x-4">
                 <CreditCard className="h-5 w-5 text-muted-foreground" />
                 <div className="flex flex-col w-full">
@@ -211,9 +201,9 @@ export function OrderSheet({
                         variant="outline"
                         className="w-full justify-between text-left font-normal"
                       >
-                        <span>{item.item.item_name}</span>
+                        <span>{item.item_name}</span>
                         <span className="flex items-center">
-                          {item.quantity} x ₹ {item.unit_price.toFixed(2)}
+                          {item.quantity} x ₹ {(item.unit_price ?? 0).toFixed(2)}
                           {expandedItems[index] ? (
                             <ChevronUp className="ml-2 h-4 w-4" />
                           ) : (
@@ -227,20 +217,21 @@ export function OrderSheet({
                         <div className="space-y-2">
                           <h4 className="font-medium leading-none">Details</h4>
                           <p className="text-sm text-muted-foreground">
-                            Category: {item.item.category}
+                            Category: {item.item_category}
+                          </p>
+                        
+                          <p className="text-sm text-muted-foreground">
+                            Department {item.department}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Description: {item.item.description}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Supplier: {item.item.supplier}
+                            Supplier: {item.item_supplier}
                           </p>
                           <p className="text-sm text-muted-foreground">
                             <div className="flex space-x-2">
                               <div>Unit Price:</div>
                               <div className="flex items-center">
                                 <IndianRupee className="h-3 w-3 items-center" />
-                                <div>{item.item.unit_price}</div>
+                                <div>{item.unit_price}</div>
                               </div>
                             </div>
                           </p>
@@ -302,6 +293,6 @@ export function OrderSheet({
       </SheetContent>
     </Sheet>
   );
-}
+};
 
-export default OrderSheet;
+export default OrderInfoSheet;

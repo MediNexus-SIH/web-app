@@ -30,7 +30,7 @@ const TotalCostCard = ({
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
-        <CardTitle>Total Items</CardTitle>
+        <CardTitle>Total Items Cost</CardTitle>
         <CardDescription>
           The total cost of medical supplies in your inventory.
         </CardDescription>

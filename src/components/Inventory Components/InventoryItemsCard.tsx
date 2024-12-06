@@ -1,3 +1,4 @@
+import { Item } from "@/lib/interfaces";
 import {
   Card,
   CardContent,
@@ -14,21 +15,11 @@ import {
 } from "../ui/table";
 import TableInvRow from "./TableInvRow";
 
-interface ItemInv {
-  id?: string;
-  category: string;
-  department: string;
-  item_name: string;
-  batch_number: string;
-  expiry_date: string;
-  quantity: number;
-  unit_price: number;
-}
 export default function InventoryItemsCard({
   items,
   error,
 }: {
-  items: ItemInv[];
+  items: Item[];
   error: any;
 }) {
   if (error) {

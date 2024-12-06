@@ -1,4 +1,4 @@
-import { Order } from "@/lib/interfaces";
+import { Order, OrderItem } from "@/lib/interfaces";
 import { useState, useCallback } from "react";
 
 export const useOrder = () => {
@@ -55,31 +55,62 @@ export const useOrder = () => {
     }
   }, []);
 
-  const updateOrder = useCallback(async (id: string, updatedOrder: Order) => {
+  const updateOrderItems = useCallback(
+    async (orderId: string, updatedItems: OrderItem[]) => {
+      try {
+        const response = await fetch(`/api/orders/${orderId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            orderItems: updatedItems,
+          }),
+        });
+
+        if (!response.ok) {
+          setError("Failed to update order items");
+        }
+
+        const updatedOrder = await response.json();
+        setOrders(
+          (orders || []).map((order) =>
+            order.id === orderId ? updatedOrder : order
+          )
+        );
+      } catch (error) {
+        console.error("Error updating order items:", error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [orders]
+  );
+
+  const cancelOrder = async (id: string) => {
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(`/api/orders/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedOrder),
+        body: JSON.stringify( {status: "CANCELLED" }),
       });
 
       if (!response.ok) {
-        throw new Error(`Error updating order: ${response.statusText}`);
+        setError("Failed to cancel order");
       }
 
-      const data = await response.json();
-      return data;
-    } catch (error: any) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      const updatedOrder = await response.json();
+      setOrders(
+        (orders || []).map((order) => (order.id === id ? updatedOrder : order))
+      );
+    } catch (error) {
+      console.error("Error cancelling order:", error);
     }
-  }, []);
+  };
 
   const deleteOrder = useCallback(async (id: string) => {
     setLoading(true);
@@ -109,7 +140,8 @@ export const useOrder = () => {
     orders,
     createOrder,
     fetchOrders,
-    updateOrder,
+    updateOrderItems,
+    cancelOrder,
     deleteOrder,
   };
 };
