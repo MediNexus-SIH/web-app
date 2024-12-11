@@ -98,18 +98,7 @@ export default function Component() {
     category: "",
   });
 
-  const [qrItems, setQrItems] = useState<Item[]>([
-    {
-      department: "Emergency",
-      item_name: "Panadol",
-      batch_number: "1234",
-      expiry_date: "2023-12-31",
-      quantity: 100,
-      unit_price: 2.5,
-      supplier: "Pharmco",
-      category: "First Aid",
-    },
-  ]);
+  const [qrItems, setQrItems] = useState<Item[]>([]);
 
   const [isScanning, setIsScanning] = useState(false);
 
