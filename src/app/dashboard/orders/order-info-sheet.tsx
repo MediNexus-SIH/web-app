@@ -33,6 +33,7 @@ import {
 import dynamic from "next/dynamic";
 import { OrderItem } from "@/lib/interfaces";
 import toSentenceCase from "@/hooks/toSentenceCase";
+import IndicatorLabel from "@/components/indicator-label";
 
 interface OrderInfoSheetProps {
   orderId: string;
@@ -138,13 +139,13 @@ const OrderInfoSheet = ({
           <div className="py-6 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Order Status</h3>
-
-              <Badge
+              <IndicatorLabel color={orderStatusColor} attribute={toSentenceCase(status)}/>
+              {/* <Badge
                 variant="outline"
                 className={`${orderStatusColor} ${orderStatusTextColor}`}
               >
                 {toSentenceCase(status)}
-              </Badge>
+              </Badge> */}
             </div>
             <Separator />
             <div className="space-y-4">
@@ -164,12 +165,13 @@ const OrderInfoSheet = ({
                       {amount}
                     </div>
                     <div>
-                      <Badge
+                      <IndicatorLabel color={paymentStatusColor} attribute={toSentenceCase(paymentStatus)}/>
+                      {/* <Badge
                         variant="outline"
                         className={`${paymentStatusColor} ${paymentStatusTextColor}`}
                       >
                         {paymentStatus}
-                      </Badge>
+                      </Badge> */}
                     </div>
                   </div>
                 </div>

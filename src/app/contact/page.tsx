@@ -13,7 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Mail, Phone, MapPin } from "lucide-react";
-import dynamic from "next/dynamic";
 
 import { SiteHeader2 } from "@/components/SiteHeader2";
  

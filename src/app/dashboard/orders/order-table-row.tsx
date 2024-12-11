@@ -4,6 +4,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import OrderInfoSheet from "./order-info-sheet";
 import { OrderItem } from "@/lib/interfaces";
 import toSentenceCase from "@/hooks/toSentenceCase";
+import IndicatorLabel from "@/components/indicator-label";
 interface TableRowProps {
   orderId: string;
   order_date: string;
@@ -60,20 +61,28 @@ const OrderTableRow: React.FC<TableRowProps> = ({
       </TableCell>
       <TableCell>{order_date}</TableCell>
       <TableCell>
-        <Badge
+        <IndicatorLabel
+          color={orderStatusColor}
+          attribute={toSentenceCase(status)}
+        />
+        {/* <Badge
           variant="outline"
           className={`${orderStatusColor} ${orderStatusTextColor}`}
         >
           {toSentenceCase(status)}
-        </Badge>
+        </Badge> */}
       </TableCell>
       <TableCell>
-        <Badge
+        <IndicatorLabel
+          color={paymentStatusColor}
+          attribute={toSentenceCase(paymentStatus)}
+        />
+        {/* <Badge
           variant="outline"
           className={`${paymentStatusColor} ${paymentStatusTextColor}`}
         >
           {paymentStatus}
-        </Badge>
+        </Badge> */}
       </TableCell>
       <TableCell>{amount}</TableCell>
       <TableCell>{actions}</TableCell>

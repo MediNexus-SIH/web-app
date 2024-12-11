@@ -16,12 +16,17 @@ export default function LocationTrackerInner() {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
+  const polylineRef = useRef<L.Polyline | null>(null);
+  const locationHistoryRef = useRef<[number, number][]>([]);
 
   const [location, setLocation] = useState<Location | null>(null);
 
   useEffect(() => {
-    // Only initialize the map if it hasn't been initialized already
-    if (typeof window !== "undefined" && mapRef.current && !mapInstanceRef.current) {
+    if (
+      typeof window !== "undefined" &&
+      mapRef.current &&
+      !mapInstanceRef.current
+    ) {
       console.log("Initializing map...");
 
       const mapInstance = L.map(mapRef.current).setView([0, 0], 2);
@@ -30,7 +35,6 @@ export default function LocationTrackerInner() {
         attribution: "©️ OpenStreetMap contributors",
       }).addTo(mapInstance);
 
-      // Set default marker icon
       const defaultIcon = L.icon({
         iconUrl: markerIcon.src,
         shadowUrl: markerShadow.src,
@@ -38,6 +42,13 @@ export default function LocationTrackerInner() {
       L.Marker.prototype.options.icon = defaultIcon;
 
       mapInstanceRef.current = mapInstance;
+
+      // Initialize polyline
+      polylineRef.current = L.polyline([], {
+        color: "#0066cc",
+        weight: 4,
+        opacity: 0.7,
+      }).addTo(mapInstance);
 
       const url = "https://order-server-phi.vercel.app/";
       const socket = io(url);
@@ -53,16 +64,21 @@ export default function LocationTrackerInner() {
           console.log("Fetched last location:", location);
           if (location && location.latitude && location.longitude) {
             setLocation(location);
+            locationHistoryRef.current.push([
+              location.latitude,
+              location.longitude,
+            ]);
           } else {
             console.warn("Invalid location data received:", location);
           }
         })
-        .catch((error) => console.error("Error fetching last location:", error));
+        .catch((error) =>
+          console.error("Error fetching last location:", error)
+        );
 
       return () => {
         console.log("Cleaning up map...");
 
-        // Remove map and marker on component unmount or re-render
         if (mapInstanceRef.current) {
           mapInstanceRef.current.remove();
           mapInstanceRef.current = null;
@@ -71,22 +87,24 @@ export default function LocationTrackerInner() {
           markerRef.current.remove();
           markerRef.current = null;
         }
+        if (polylineRef.current) {
+          polylineRef.current.remove();
+          polylineRef.current = null;
+        }
         socket.disconnect();
       };
     }
   }, []);
 
-  // Set an interval to reload map every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       if (mapInstanceRef.current && location) {
-        // Optionally, you can refetch data if needed
         console.log("Refreshing map with location every 5 seconds...");
         updateMap(location);
       }
-    }, 5000); // 5 seconds interval
+    }, 5000);
 
-    return () => clearInterval(interval); // Clean up the interval on unmount
+    return () => clearInterval(interval);
   }, [location]);
 
   useEffect(() => {
@@ -102,12 +120,28 @@ export default function LocationTrackerInner() {
     if (mapInstanceRef.current) {
       if (!markerRef.current) {
         console.log("Creating new marker");
-        markerRef.current = L.marker([latitude, longitude]).addTo(mapInstanceRef.current);
+        markerRef.current = L.marker([latitude, longitude]).addTo(
+          mapInstanceRef.current
+        );
       } else {
         console.log("Updating existing marker");
         markerRef.current.setLatLng([latitude, longitude]);
       }
+
+      // Update polyline
+      locationHistoryRef.current.push([latitude, longitude]);
+      if (polylineRef.current) {
+        polylineRef.current.setLatLngs(locationHistoryRef.current);
+      }
+
       mapInstanceRef.current.setView([latitude, longitude], 15);
+
+      // Fit the map to show the entire polyline
+      if (locationHistoryRef.current.length > 1) {
+        mapInstanceRef.current.fitBounds(polylineRef.current!.getBounds(), {
+          padding: [50, 50],
+        });
+      }
     } else {
       console.warn("Map instance not available");
     }
