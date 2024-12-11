@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Badge } from "../ui/badge";
 import { TableCell, TableRow } from "../ui/table";
 import EditInvDropdown from "./EditInvDropdown";
+import IndicatorLabel from "../indicator-label";
 
 const TableInvRow = ({
   id,
@@ -86,12 +86,7 @@ const TableInvRow = ({
         <div className="font-medium">{department}</div>
       </TableCell>
       <TableCell>
-        <Badge
-          variant="outline"
-          className={`${quantityColor} ${quantityTextColor}`}
-        >
-          {localQuantity}
-        </Badge>
+        <IndicatorLabel color={quantityColor} attribute={localQuantity} />
       </TableCell>
       <TableCell>
         <div className="font-medium">{batchNumber}</div>
@@ -100,12 +95,10 @@ const TableInvRow = ({
         <div className="font-medium">₹{unitPrice}</div>
       </TableCell>
       <TableCell>
-        <Badge
-          variant="outline"
-          className={`${expirationColor} ${expirationTextColor}`}
-        >
-          {formattedExpiration}
-        </Badge>
+        <IndicatorLabel
+          color={expirationColor}
+          attribute={formattedExpiration}
+        />
       </TableCell>
       <TableCell>
         <EditInvDropdown product={product} />
