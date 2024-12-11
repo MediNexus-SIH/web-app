@@ -175,10 +175,11 @@ export default function Component() {
         console.log("Received data:", result);
 
         if (result?.data) {
+          console.log("Entering.....")
           const jsonResult = convertToJSON(result.data);
-
+          console.log("json:  ",jsonResult)
           const parsedData = jsonResult || {};
-
+          console.log("parsedData:  ",parsedData)
           const mappedData = [
             {
               department: parsedData.department || "Unknown",
