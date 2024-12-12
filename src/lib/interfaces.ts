@@ -40,3 +40,22 @@ export interface CartItem {
   unit_price: number;
   department: string;
 }
+
+export interface Ticket {
+  id: string;
+  title: string;
+  description: string;
+  expectedResolutionDate: Date;
+  status: "open" | "in-progress" | "resolved";
+  priority: string;
+  createdBy: string;
+  createdAt: Date;
+  type: string;
+  department: string;
+  location: string;
+  contactInfo: string;
+  category: string;
+  attachments: any[];
+  urgentCare: boolean;
+}
+
