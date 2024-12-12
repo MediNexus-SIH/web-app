@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import BreadCrumb from "@/components/BreadCrumb"
+import BreadCrumb from "@/components/BreadCrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
@@ -47,9 +47,9 @@ export default function ReportAnalytics() {
       outOfStock: 10,
     },
     criticalItems: [
-      { name: "Item A", status: "Low Stock" },
-      { name: "Item B", status: "Expiring Soon" },
-      { name: "Item C", status: "Out of Stock" },
+      { name: "Disprin", status: "Low Stock" },
+      { name: "Broncorex", status: "Expiring Soon" },
+      { name: "Oximeter", status: "Out of Stock" },
     ],
   };
 
@@ -119,17 +119,17 @@ export default function ReportAnalytics() {
           <CardContent>
             <ul className="space-y-2">
               <li className="flex justify-between items-center">
-                <span>Item A</span>
+                <span>Disprin</span>
                 <span className="text-red-500 font-semibold">Low Stock</span>
               </li>
               <li className="flex justify-between items-center">
-                <span>Item B</span>
+                <span>Cough Syrup</span>
                 <span className="text-yellow-500 font-semibold">
                   Expiring Soon
                 </span>
               </li>
               <li className="flex justify-between items-center">
-                <span>Item C</span>
+                <span>Oximeter</span>
                 <span className="text-red-500 font-semibold">Out of Stock</span>
               </li>
             </ul>
@@ -170,7 +170,7 @@ export default function ReportAnalytics() {
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell>Item X</TableCell>
+                <TableCell>Paracetamol</TableCell>
                 <TableCell>Pharmaceuticals</TableCell>
                 <TableCell>2023-08-15</TableCell>
                 <TableCell>
@@ -178,7 +178,7 @@ export default function ReportAnalytics() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Item Y</TableCell>
+                <TableCell>Oximeter</TableCell>
                 <TableCell>Medical Devices</TableCell>
                 <TableCell>2023-09-30</TableCell>
                 <TableCell>
@@ -186,11 +186,19 @@ export default function ReportAnalytics() {
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableCell>Item Z</TableCell>
+                <TableCell>Cough Syrup</TableCell>
                 <TableCell>Consumables</TableCell>
                 <TableCell>2023-07-31</TableCell>
                 <TableCell>
                   <span className="text-red-500">●</span> Critical
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Tablets </TableCell>
+                <TableCell>Consumables</TableCell>
+                <TableCell>2023-08-02</TableCell>
+                <TableCell>
+                  <span className="text-yellow-500">●</span> Critical
                 </TableCell>
               </TableRow>
             </TableBody>
@@ -240,6 +248,16 @@ export default function ReportAnalytics() {
                   <TableRow>
                     <TableCell>#1235</TableCell>
                     <TableCell>2023-07-02</TableCell>
+                    <TableCell>Completed</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>#1236</TableCell>
+                    <TableCell>2023-07-02</TableCell>
+                    <TableCell>Processing</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>#1237</TableCell>
+                    <TableCell>2023-07-03</TableCell>
                     <TableCell>Processing</TableCell>
                   </TableRow>
                 </TableBody>

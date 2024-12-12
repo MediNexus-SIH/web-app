@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 
 export function SiteHeader2() {
   return (
-    <header className="px-4 lg:px-6 h-14 flex items-center border-b-2 justify-between">
+    <div className="px-4 lg:px-6 h-14 flex items-center border-b-2 justify-between">
       <Link className="flex items-center justify-center" href="/">
         <Hospital className="h-6 w-6" />
         <span className="sr-only">MediNexus</span>
@@ -42,7 +42,7 @@ export function SiteHeader2() {
         </RevealAnimation>
       </div>
       <DialogBar className="md:hidden" />
-    </header>
+    </div>
   );
 }
 

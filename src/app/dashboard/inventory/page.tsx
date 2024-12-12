@@ -42,7 +42,6 @@ import NoItemComponent from "@/components/Inventory Components/NoItemComponent";
 import { InvLoadingComponent } from "@/components/Inventory Components/InvLoadingComponent";
 import PaginationComponent from "@/components/PaginationComponent";
 import { Card, CardContent } from "@/components/ui/card";
-import { json } from "stream/consumers";
 
 export default function Component() {
   const [addMethod, setAddMethod] = useState<"manual" | "qr" | null>(null);
@@ -119,80 +118,92 @@ export default function Component() {
     fetchItems();
   }, [fetchItems, refreshTrigger]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "https://order-server-phi.vercel.app/last-qr"
-  //       ); // Replace with your actual API endpoint
-  //       if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //       }
-  //       const data = await response.json();
-  //       console.log(data);
-  //       // setQrData(data); // Update the state with fetched data
-  //     } catch (error) {
-  //       // setError(error.message); // Handle errors
-  //     }
-  //   };
-  //   fetchData();
-  //   const intervalId = setInterval(() => {
-  //     fetchData();
-  //   }, 5000);
-  //   // Cleanup on component unmount
-  //   return () => {
-  //     clearInterval(intervalId); // Stop the interval when the component is unmounted
-  //   };
-  // }, []);
+function convertToJSON(data: string) {
+  const cleanedData = data
+    // Aggressive cleaning for dates and timestamps
+    .replace(
+      /("(?:manufacturingDate|expiryDate|timestamp)":)"(\d{4})-(\d{2})-(\d{2})[T ]?(\d{2}):(\d{2}):?(\d{2})?\.?(\d{3})?Z?"/g,
+      (
+        match,
+        prefix,
+        year,
+        month,
+        day,
+        hours,
+        minutes,
+        seconds,
+        milliseconds
+      ) => {
+        // Ensure we have all parts of the timestamp
+        const formattedHours = hours || "00";
+        const formattedMinutes = minutes || "00";
+        const formattedSeconds = seconds || "00";
+        const formattedMilliseconds = milliseconds || "000";
 
-  function convertToJSON(data: string) {
-    const cleanedData = data
-      .replace(/\s*([:,])\s*/g, "$1") 
-      .replace(/\s+/g, " ") 
-      .replace(/(\w+):/g, '"$1":') 
-      .replace(/,(\s*)}/g, "}"); 
+        return `${prefix}"${year}-${month}-${day}T${formattedHours}:${formattedMinutes}:${formattedSeconds}.${formattedMilliseconds}Z"`;
+      }
+    )
+    // Remove spaces around `:` and `,`
+    .replace(/\s*([:,])\s*/g, "$1")
+    // Replace multiple spaces with a single space
+    .replace(/\s+/g, " ")
+    // Add quotes around keys that aren't already quoted
+    .replace(/(\w+):/g, (match, key) => {
+      // Skip if the key is already in quotes
+      return match.startsWith('"') ? match : `"${key}":`;
+    })
+    // Remove trailing commas before `}`
+    .replace(/,(\s*)}/g, "}");
 
-    
-    try {
-      const jsonData = JSON.parse(cleanedData);
-      return jsonData;
-    } catch (e) {
-      console.error("Invalid JSON:", e);
-      return null;
-    }
+  try {
+    console.log("Cleaned Data:", cleanedData);
+    const jsonData = JSON.parse(cleanedData);
+    return jsonData;
+  } catch (e: any) {
+    console.error("Invalid JSON:", e.message);
+    console.error("Problematic data:", cleanedData);
+    return null;
   }
+}
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
           "https://order-server-phi.vercel.app/last-qr"
         );
+
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error(
+            `Network response was not ok: ${response.statusText}`
+          );
         }
 
         const result = await response.json();
-        console.log("Received data:", result);
+        if (result) {
+          const jsonResult = convertToJSON(result.qrData);
 
-        if (result?.data) {
-          console.log("Entering.....")
-          const jsonResult = convertToJSON(result.data);
-          console.log("json:  ",jsonResult)
-          const parsedData = jsonResult || {};
-          console.log("parsedData:  ",parsedData)
+          console.log("JSON Result:", jsonResult);
+
+          if (!jsonResult) {
+            throw new Error("Invalid JSON data");
+          }
+          const parsedData = result 
+
           const mappedData = [
             {
-              department: parsedData.department || "Unknown",
-              item_name: parsedData.item_name || "Unknown",
-              batch_number: parsedData.batch_number || "Unknown",
-              expiry_date: parsedData.expiry_date || "Unknown",
-              quantity: parsedData.quantity || 0,
-              unit_price: parsedData.unit_price || 0,
-              supplier: parsedData.supplier || "Unknown",
-              category: parsedData.category || "Unknown",
+              department: parsedData.department ,
+              item_name: parsedData.item_name ,
+              batch_number: parsedData.batch_number ,
+              expiry_date: parsedData.expiry_date ,
+              quantity: parsedData.quantity,
+              unit_price: parsedData.unit_price,
+              supplier: parsedData.supplier ,
+              category: parsedData.category ,
             },
           ];
-
+          console.log("Mapped Data:", mappedData);
+          // Ensure new data is added only if it's unique
           if (
             !qrItems.some(
               (item) => item.batch_number === mappedData[0].batch_number
@@ -207,11 +218,12 @@ export default function Component() {
     };
 
     fetchData();
-
-    const intervalId = setInterval(fetchData, 5000);
-
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 5000);
+    // Cleanup on component unmount
     return () => {
-      clearInterval(intervalId);
+      clearInterval(intervalId); // Stop the interval when the component is unmounted
     };
   }, [qrItems]);
 

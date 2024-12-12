@@ -25,7 +25,7 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="px-4 lg:px-6 h-14 flex justify-between items-center border-b-2">
+    <div className="px-4 lg:px-6 h-14 flex justify-between items-center border-b-2">
       <Link href="/" className="flex items-center text-2xl font-bold">
         <Hospital className="mr-4" /> {/* Added margin-right to the icon */}
         MediNexus
@@ -71,7 +71,7 @@ export function SiteHeader() {
         </RevealAnimation>
       </div>
       <DialogBar className="md:hidden" />
-    </header>
+    </div>
   );
 }
 

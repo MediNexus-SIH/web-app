@@ -43,7 +43,7 @@ export function InventoryStatusChart() {
 
 export function DemandAnalyticsChart() {
   const data = {
-    labels: ["Item A", "Item B", "Item C", "Item D", "Item E"],
+    labels: ["Paracetamol", "Ibuprofen", "Cough Syrup", "Disprin", "Oximeter"],
     datasets: [
       {
         label: "Demand",

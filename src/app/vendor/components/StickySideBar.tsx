@@ -6,11 +6,10 @@ import {
   Users,
   ChartColumn,
   Settings,
-  Hospital,
 } from "lucide-react";
 import { SideBarComponent } from "./SideBarComponent";
 
-export default function StickySideBar({ className }: { className?: string }) {
+export default function StickySideBar2({ className }: { className?: string }) {
   return (
     <div
       className={`group hover:w-48 transition-all duration-500 ease-in-out m-2 w-12 flex-col bg-background flex ${className}`}
@@ -18,39 +17,23 @@ export default function StickySideBar({ className }: { className?: string }) {
       <div className="sticky top-0 flex flex-col w-full h-svh space-between py-4">
         {/* Top section with main navigation items */}
         <div className="flex flex-col gap-4 items-center h-full w-full">
+          <SideBarComponent path="/vendor" icon={<House />} title="Dashboard" />
           <SideBarComponent
-            path="/dashboard"
-            icon={<House />}
-            title="Dashboard"
-          />
-          <SideBarComponent
-            path="/dashboard/inventory"
+            path="/vendor/inventory"
             icon={<Package />}
             title="Inventory"
           />
+          <SideBarComponent path="/vendor/orders" icon={<Truck />} title="Orders" />
           <SideBarComponent
-            path="/dashboard/orders"
-            icon={<Truck />}
-            title="Orders"
-          />
-          <SideBarComponent
-            path="/dashboard/branches"
+            path="/vendor/hospitals"
             icon={<Users />}
-            title="Branches"
+            title="Hospitals"
           />
-          <SideBarComponent
-            path="/dashboard/reports"
-            icon={<ChartColumn />}
-            title="Reports"
-          />
-        </div>
 
-        {/* Settings at the bottom */}
-        <div className="mt-4">
           <SideBarComponent
-            path="/settings"
-            icon={<Settings />}
-            title="Settings"
+            path="/vendor/predictions"
+            icon={<ChartColumn />}
+            title="Predictions"
           />
         </div>
       </div>

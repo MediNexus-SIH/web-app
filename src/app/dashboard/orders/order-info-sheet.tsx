@@ -21,7 +21,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -34,6 +33,7 @@ import dynamic from "next/dynamic";
 import { OrderItem } from "@/lib/interfaces";
 import toSentenceCase from "@/hooks/toSentenceCase";
 import IndicatorLabel from "@/components/indicator-label";
+import { RatingSystem } from "./rating-system";
 
 interface OrderInfoSheetProps {
   orderId: string;
@@ -63,6 +63,7 @@ const OrderInfoSheet = ({
   const [expandedItems, setExpandedItems] = useState<{
     [key: number]: boolean;
   }>({});
+  const [rating, setRating] = useState(0);
   const orderStatusColor =
     status === "SUCCESS"
       ? "bg-green-500"
@@ -70,24 +71,19 @@ const OrderInfoSheet = ({
       ? "bg-yellow-500"
       : "bg-red-500";
 
-  const orderStatusTextColor =
-    status === "SUCCESS"
-      ? "text-green-50"
-      : status === "PENDING"
-      ? "text-yellow-50"
-      : "text-red-50";
-
   const paymentStatusColor =
     paymentStatus === "Paid" ? "bg-blue-500" : "bg-orange-700";
 
-  const paymentStatusTextColor =
-    paymentStatus === "Paid" ? "text-blue-50" : "text-orange-50";
-  // Refresh effect to simulate state updates after payment
   useEffect(() => {
     if (paymentStatus === "Paid") {
     }
   }, [paymentStatus]);
 
+  const handleRating = (value: number) => {
+    setRating(value);
+    // Here you would typically send this rating to your backend
+    console.log(`Vendor rated: ${value} stars`);
+  };
   const handleStartTracking = () => {
     setIsTracking(true);
     const interval = setInterval(() => {
@@ -139,13 +135,10 @@ const OrderInfoSheet = ({
           <div className="py-6 space-y-6">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Order Status</h3>
-              <IndicatorLabel color={orderStatusColor} attribute={toSentenceCase(status)}/>
-              {/* <Badge
-                variant="outline"
-                className={`${orderStatusColor} ${orderStatusTextColor}`}
-              >
-                {toSentenceCase(status)}
-              </Badge> */}
+              <IndicatorLabel
+                color={orderStatusColor}
+                attribute={toSentenceCase(status)}
+              />
             </div>
             <Separator />
             <div className="space-y-4">
@@ -165,13 +158,10 @@ const OrderInfoSheet = ({
                       {amount}
                     </div>
                     <div>
-                      <IndicatorLabel color={paymentStatusColor} attribute={toSentenceCase(paymentStatus)}/>
-                      {/* <Badge
-                        variant="outline"
-                        className={`${paymentStatusColor} ${paymentStatusTextColor}`}
-                      >
-                        {paymentStatus}
-                      </Badge> */}
+                      <IndicatorLabel
+                        color={paymentStatusColor}
+                        attribute={toSentenceCase(paymentStatus)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -204,7 +194,8 @@ const OrderInfoSheet = ({
                       >
                         <span>{item.item_name}</span>
                         <span className="flex items-center">
-                          {item.quantity} x ₹ {(item.unit_price ?? 0).toFixed(2)}
+                          {item.quantity} x ₹{" "}
+                          {(item.unit_price ?? 0).toFixed(2)}
                           {expandedItems[index] ? (
                             <ChevronUp className="ml-2 h-4 w-4" />
                           ) : (
@@ -220,7 +211,7 @@ const OrderInfoSheet = ({
                           <p className="text-sm text-muted-foreground">
                             Category: {item.item_category}
                           </p>
-                        
+
                           <p className="text-sm text-muted-foreground">
                             Department {item.department}
                           </p>
@@ -244,7 +235,14 @@ const OrderInfoSheet = ({
               ))}
             </div>
             <Separator />
-            {paymentStatus == "Paid" ? (
+ 
+            {paymentStatus == "Paid" && status == "SUCCESS" ? (
+              <>
+                <RatingSystem onRate={handleRating} givenRating = {rating} />
+              </>
+            ) : null}
+
+            {paymentStatus == "Paid" && status!=="SUCCESS"? (
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Real-time Tracking</h3>
                 {!isTracking ? (
@@ -278,7 +276,7 @@ const OrderInfoSheet = ({
               </div>
             ) : null}
 
-            {paymentStatus === "Unpaid" && (
+            {paymentStatus === "Unpaid" && status !== "CANCELLED" && (
               <>
                 <Separator />
                 <div className="space-y-4">

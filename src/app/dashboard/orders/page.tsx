@@ -14,8 +14,8 @@ import OrderStatusChart from "@/components/Graph Charts/OrderStatusChart";
 import SupplierPerformanceChart from "@/components/Graph Charts/SupplierPerformanceChart";
 import OrderLoadingComponent from "@/components/Order Components/OrderLoadingComponent";
 import Cart, { CartItem } from "./cart";
-
-import OrderSheet from "./order-sheet";
+import MedicalSupplyCart from "./temp/cart"
+import OrderSheet from "./temp/order-sheet";
 import OrderTable from "./order-table";
 import { useCart } from "@/hooks/use-cart";
 
@@ -32,6 +32,11 @@ export default function OrdersPage() {
     fetchOrders();
   }, [fetchOrders]);
 
+  const handleSubmitOrder = async (items:any) => {
+    // Implement your order submission logic here
+    console.log('Submitting order with items:', items);
+    // You would typically send this data to your backend API
+  };
   const handleCheckout = async (cartItems: CartItem[]) => {
     const currentDate = new Date();
     const randomDays = Math.floor(Math.random() * 3) + 3;
@@ -145,10 +150,12 @@ export default function OrdersPage() {
           <h1 className="text-2xl font-bold">Orders</h1>
           <div className="flex space-x-4 items-center">
             <div>
-              <OrderSheet loading={loading} />
+              <OrderSheet/>
+              {/* <OrderSheet loading={loading} /> */}
             </div>
             <div>
-              <Cart onCheckout={handleCheckout} />
+              <MedicalSupplyCart onSubmitOrder={handleSubmitOrder} />
+              {/* <Cart onCheckout={handleCheckout} /> */}
             </div>
           </div>
         </div>
